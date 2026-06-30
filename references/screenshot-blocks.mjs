@@ -12,6 +12,7 @@ const shots = [
   { url: '/self-hosted-chat-server-aws/', name: 'key-features-reverse',  sel: '.shs-kf-section',    i: 1 },
   { url: '/self-hosted-chat-server-aws/', name: 'feature-cards',         sel: '.shs-fc-section',    i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'link-cards',            sel: '.shs-lc-section',    i: 0 },
+  { url: '/healthcare/',                  name: 'cards-carousel',        sel: '.cc-section',        i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'bento-deployment',      sel: 'section:has(.shs-bento-grid)', i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'pricing-cards',         sel: '.ppc',               i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'testimonials-carousel', sel: '.tcar',              i: 0 },

@@ -73,6 +73,7 @@ Reversed (`'reverse' => true`):
 | `image` | string | theme-relative path (`images/foo.png`) or absolute URL — optional |
 | `image_alt` / `image_width` / `image_height` | string/int | alt + CLS dimensions |
 | `reverse` | bool | `true` = image on the LEFT |
+| `pad_top` / `pad_bottom` | string | optional vertical-padding overrides, e.g. `'var(--space-32)'` / `'48px'` (default = section rhythm) |
 
 ```php
 get_template_part( 'template-parts/section-split-card', null, array(
@@ -330,6 +331,40 @@ buttons.
 Row of case-study cards.
 
 ![Case studies](screenshots/case-studies.png)
+
+---
+
+## 13. Cards carousel — `section-cards-carousel.php`
+
+Title + lead on top, then a horizontal track of dark brand cards: one in focus, the
+next **peeks** from the right. Switch with the prev/next buttons (counter `n / total`)
+**or by dragging / swiping** (mouse and touch). Each card has a heading and one or more
+labelled text blocks (rendered as columns on wide cards). Best for use-cases, FAQs or
+"challenge → solution" content. `'light' => true` for white cards instead of dark.
+
+![Cards carousel](screenshots/cards-carousel.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | header (optional) |
+| `light` | bool | white cards instead of the default dark brand panel |
+| `cards` | array | **required**, any length — each: `title`, `blocks` (array of `{ label, text }`), optional `link_url` + `link_label` (renders a CTA pill) |
+
+```php
+get_template_part( 'template-parts/section-cards-carousel', null, array(
+  'title' => 'Healthcare Communication Use Cases',
+  'lead'  => 'Ethora addresses each scenario within a single platform.',
+  'cards' => array(
+    array( 'title' => 'Patient-provider messaging', 'blocks' => array(
+      array( 'label' => 'The challenge', 'text' => '…' ),
+      array( 'label' => 'How Ethora helps', 'text' => '…' ),
+    ) ),
+    // …any number
+  ),
+) );
+```
 
 ---
 

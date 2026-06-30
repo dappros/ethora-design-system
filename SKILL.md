@@ -108,6 +108,7 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Dark CTA** | `section-cta-dark.php` | Brand `.shs-dark` panel (eyebrow/heading/text/buttons). Use for EVERY dark CTA. |
 | **Pricing cards** | `section-pricing-cards.php` | 3-card pricing, middle highlighted, Monthly/Yearly toggle. |
 | **Testimonials carousel** | `section-testimonials-carousel.php` | Auto-advancing 3-up testimonial carousel with prev/next. |
+| **Cards carousel** | `section-cards-carousel.php` | Draggable horizontal slider of dark cards (next peeks); prev/next + swipe. For use-cases / challenge→solution. |
 | **Case studies** | `section-case-studies.php` | Case-study cards row. |
 
 Other partials exist (`section-choose-app`, `section-use-kit`, `section-quick-start`,
