@@ -14,7 +14,44 @@ guess from the markup.
 
 ---
 
-## 1. Split card — `section-split-card.php`
+## 1. Hero — `section-hero.php`
+
+Page opener on the brand diagonal gradient: eyebrow + `<h1>` + lead + CTA buttons +
+a green-check trust row on the left, a product visual (inline SVG or image) on the
+right, decorative rhombus corners, and an optional compliance strip below. Clears the
+fixed header via `--hero-pt`.
+
+![Hero](screenshots/hero.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | `title` → `<h1>`; all inline-HTML-friendly |
+| `buttons` | array | each: `label`, `style` (`primary`/`outline`/`light`/`ghost`), `url`, `new_tab`, `id`, or `modal: true` (renders a `.book-demo-button` that opens the Book-a-Call modal) |
+| `trust` | array | green-check items (strings) |
+| `media` | string | theme-relative path or URL — `.svg` is **inlined** (smooth GPU compositing), raster → `<img>` |
+| `media_alt` / `media_width` / `media_height` / `media_html` | | raster alt+dims, or raw markup override |
+| `rhombus` | bool | decorative corner shapes (default `true`) |
+| `compliance` | array | `{ label, items[] }` — bottom strip (optional) |
+
+```php
+get_template_part( 'template-parts/section-hero', null, array(
+  'title'   => 'Self-Hosted Chat Server: Deploy on AWS or On-Premises',
+  'lead'    => 'Build your own secure and private chat platform…',
+  'buttons' => array(
+    array( 'label' => 'Book a Call', 'style' => 'primary', 'modal' => true ),
+    array( 'label' => 'Get started', 'style' => 'outline', 'url' => 'https://app.chat.ethora.com/register', 'new_tab' => true, 'id' => 'accregred' ),
+  ),
+  'trust'      => array( '100% data ownership', 'Enterprise SLA', 'No vendor lock-in' ),
+  'media'      => 'images/hero-chat.svg',
+  'compliance' => array( 'label' => 'Compliance, built in at every layer.', 'items' => array( 'HIPAA', 'SOC 2', 'GDPR' ) ),
+) );
+```
+
+---
+
+## 2. Split card — `section-split-card.php`
 
 Brand-gradient card with a heading + paragraphs on one side and an image on the
 other. `reverse` puts the image on the left.
@@ -49,7 +86,7 @@ get_template_part( 'template-parts/section-split-card', null, array(
 
 ---
 
-## 2. Key features — `section-key-features.php`
+## 3. Key features — `section-key-features.php`
 
 Interactive accordion: one item open at a time, auto-cycles with a progress
 loader at the bottom of the open card (the loader drives the switch), product
@@ -88,7 +125,7 @@ get_template_part( 'template-parts/section-key-features', null, array(
 
 ---
 
-## 3. Feature cards — `section-feature-cards.php`
+## 4. Feature cards — `section-feature-cards.php`
 
 Responsive grid of cards on the brand gradient: coloured circular icon + heading +
 short text + optional "Learn more →" button. Auto-fit grid — works with any number
@@ -122,7 +159,7 @@ it restrained — don't turn it into a rainbow.
 
 ---
 
-## 4. Link cards — `section-link-cards.php`
+## 5. Link cards — `section-link-cards.php`
 
 Responsive grid of cards (icon tile + heading + description + "Read more →"). On
 hover the brand blue fills in from the bottom-right corner and the text/icon turn
@@ -161,7 +198,7 @@ get_template_part( 'template-parts/section-link-cards', null, array(
 
 ---
 
-## 5. Bento grid — *pattern* (inline on `page-self-hosted-server.php`)
+## 6. Bento grid — *pattern* (inline on `page-self-hosted-server.php`)
 
 Asymmetric bento: 2 large cards on top (a light brand-gradient card and a dark
 `.shs-dark` card, each with a screenshot "peeking" out of the bottom-right corner) +
@@ -176,7 +213,7 @@ self-contained and ready to parametrise.
 
 ---
 
-## 6. Dark CTA — `section-cta-dark.php`
+## 7. Dark CTA — `section-cta-dark.php`
 
 Brand `.shs-dark` panel (deep `--primary-dark` over `start-free.png`) with eyebrow /
 heading / text / buttons. **Use this for EVERY dark CTA / Book-a-Call block** — never
@@ -199,7 +236,7 @@ get_template_part( 'template-parts/section', 'cta-dark', array(
 
 ---
 
-## 7. Pricing cards — `section-pricing-cards.php`
+## 8. Pricing cards — `section-pricing-cards.php`
 
 Three pricing cards, middle highlighted, Monthly/Yearly toggle. Prices live in the
 `$pp_plans` array inside the partial (edit in one place).
@@ -213,7 +250,7 @@ the full pricing page.
 
 ---
 
-## 8. Testimonials carousel — `section-testimonials-carousel.php`
+## 9. Testimonials carousel — `section-testimonials-carousel.php`
 
 Auto-advancing carousel: 3 cards (2 on tablet, 1 on mobile), infinite loop, prev/next
 buttons.
@@ -224,7 +261,7 @@ buttons.
 
 ---
 
-## 9. Case studies — `section-case-studies.php`
+## 10. Case studies — `section-case-studies.php`
 
 Row of case-study cards.
 

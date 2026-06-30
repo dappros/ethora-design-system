@@ -3,6 +3,7 @@ import { chromium } from 'playwright';
 const OUT = process.argv[2];
 const base = 'http://ethora.local';
 const shots = [
+  { url: '/self-hosted-chat-server-aws/', name: 'hero',                  sel: '.ehero',             i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'split-card',            sel: '.shs-split-section', i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'split-card-reverse',    sel: '.shs-split-section', i: 1 },
   { url: '/self-hosted-chat-server-aws/', name: 'key-features',          sel: '.shs-kf-section',    i: 0 },

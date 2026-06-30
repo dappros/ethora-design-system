@@ -97,6 +97,7 @@ Screenshots, full prop tables and copy-paste snippets are in
 
 | Block | Partial | What it is |
 |---|---|---|
+| **Hero** | `section-hero.php` | Page opener: gradient bg, eyebrow/h1/lead + CTA buttons + trust row, product visual, optional compliance strip. |
 | **Split card** | `section-split-card.php` | Brand-gradient card: heading + paragraphs beside an image. `reverse` flips sides. |
 | **Key features** | `section-key-features.php` | Auto-cycling accordion (one item open, progress loader) + product image. `reverse` supported. |
 | **Feature cards** | `section-feature-cards.php` | Grid of gradient cards: coloured circle icon + heading + text + optional "Learn more". |
