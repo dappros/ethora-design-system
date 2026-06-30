@@ -376,6 +376,42 @@ get_template_part( 'template-parts/section-cards-carousel', null, array(
 
 ---
 
+## 14. Comparison — `section-comparison.php`
+
+A "build it yourself vs the recommended option" comparison: a capability column on the
+left, a plain **negative** column (red ✕ per row) and a **highlighted brand-blue
+recommended** column (green ✓ per row, solid-blue header, `RECOMMENDED` badge). Inside a
+white card. Responsive: a 3-column grid on desktop that **reflows to per-row cards** on
+mobile (column names repeat inside each option).
+
+![Comparison](screenshots/comparison.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | header (optional) |
+| `capability_label` | string | small label over the left column (default `Capability`) |
+| `col_a` | array | `{ title, subtitle, icon }` — the negative column (red ✕ rows) |
+| `col_b` | array | `{ title, subtitle, icon, recommended }` — the highlighted column (green ✓ rows) |
+| `rows` | array | **required** — each: `capability`, `a` (negative text), `b` (positive text) |
+
+```php
+get_template_part( 'template-parts/section-comparison', null, array(
+  'title' => 'Building it yourself vs Ethora\'s SDK',
+  'col_a' => array( 'title' => 'Custom build', 'subtitle' => 'Building your own', 'icon' => '<svg…wrench…>' ),
+  'col_b' => array( 'title' => 'Ethora SDK', 'subtitle' => 'Managed & pre-built', 'recommended' => true, 'icon' => '<svg…>' ),
+  'rows'  => array(
+    array( 'capability' => 'Time to deploy', 'a' => '3–6 months…', 'b' => 'Production-ready in 14 days' ),
+    // …
+  ),
+) );
+```
+
+The ✕ / ✓ row marks are built in (red / green). Keep it to two columns.
+
+---
+
 ## Other partials
 
 List everything with `ls template-parts/` and read each file's top docblock for its

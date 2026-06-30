@@ -114,6 +114,7 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Testimonials carousel** | `section-testimonials-carousel.php` | Auto-advancing 3-up testimonial carousel with prev/next. |
 | **Cards carousel** | `section-cards-carousel.php` | Draggable horizontal slider of dark cards (next peeks); prev/next + swipe. For use-cases / challenge→solution. |
 | **Case studies** | `section-case-studies.php` | Case-study cards row. |
+| **Comparison** | `section-comparison.php` | Capability vs negative (✕) vs highlighted recommended (✓) column; responsive (cards on mobile). |
 
 Other partials exist (`section-choose-app`, `section-use-kit`, `section-quick-start`,
 `section-book-call-modal`, `section-pricing`, …) — list them with
