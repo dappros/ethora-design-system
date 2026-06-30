@@ -6,6 +6,7 @@ const shots = [
   { url: '/self-hosted-chat-server-aws/', name: 'hero',                  sel: '.ehero',             i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'split-card',            sel: '.shs-split-section', i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'split-card-reverse',    sel: '.shs-split-section', i: 1 },
+  { url: '/healthcare/',                  name: 'split-card-dark',        sel: '.shs-split-section.is-dark', i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'key-features',          sel: '.shs-kf-section',    i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'key-features-reverse',  sel: '.shs-kf-section',    i: 1 },
   { url: '/self-hosted-chat-server-aws/', name: 'feature-cards',         sel: '.shs-fc-section',    i: 0 },

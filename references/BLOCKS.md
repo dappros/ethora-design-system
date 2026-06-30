@@ -86,7 +86,33 @@ get_template_part( 'template-parts/section-split-card', null, array(
 
 ---
 
-## 3. Key features — `section-key-features.php`
+## 3. Blue statement band — `section-split-card.php` (`dark: true`)
+
+A **full-bleed** brand dark-blue section (the `.shs-dark` treatment: deep `--primary-dark`
+#002398 over the brand image) with a heading + paragraphs in white. The colour runs
+edge-to-edge — background **and** side gutters are blue — while the text stays aligned to
+the content container. It's the `dark` variant of the split card: pass `'dark' => true`
+(usually without an image, for a bold statement / section divider).
+
+![Blue statement band](screenshots/split-card-dark.png)
+
+**Props** — same as Split card (#2) plus:
+
+| Prop | Type | Notes |
+|---|---|---|
+| `dark` | bool | `true` = full-bleed brand dark-blue section, white text (eyebrow → `--accent-on-dark`, links → white) |
+
+```php
+get_template_part( 'template-parts/section-split-card', null, array(
+  'title'      => 'Enable secure in-app communication for healthcare teams',
+  'paragraphs' => array( 'One bold statement paragraph…' ),
+  'dark'       => true,
+) );
+```
+
+---
+
+## 4. Key features — `section-key-features.php`
 
 Interactive accordion: one item open at a time, auto-cycles with a progress
 loader at the bottom of the open card (the loader drives the switch), product
@@ -125,7 +151,7 @@ get_template_part( 'template-parts/section-key-features', null, array(
 
 ---
 
-## 4. Feature cards — `section-feature-cards.php`
+## 5. Feature cards — `section-feature-cards.php`
 
 Responsive grid of cards on the brand gradient: coloured circular icon + heading +
 short text + optional "Learn more →" button. Auto-fit grid — works with any number
@@ -159,7 +185,7 @@ it restrained — don't turn it into a rainbow.
 
 ---
 
-## 5. Link cards — `section-link-cards.php`
+## 6. Link cards — `section-link-cards.php`
 
 Responsive grid of cards (icon tile + heading + description + "Read more →"). On
 hover the brand blue fills in from the bottom-right corner and the text/icon turn
@@ -198,7 +224,7 @@ get_template_part( 'template-parts/section-link-cards', null, array(
 
 ---
 
-## 6. Bento grid — *pattern* (inline on `page-self-hosted-server.php`)
+## 7. Bento grid — *pattern* (inline on `page-self-hosted-server.php`)
 
 Asymmetric bento: 2 large cards on top (a light brand-gradient card and a dark
 `.shs-dark` card, each with a screenshot "peeking" out of the bottom-right corner) +
@@ -213,7 +239,7 @@ self-contained and ready to parametrise.
 
 ---
 
-## 7. Dark CTA — `section-cta-dark.php`
+## 8. Dark CTA — `section-cta-dark.php`
 
 Brand `.shs-dark` panel (deep `--primary-dark` over `start-free.png`) with eyebrow /
 heading / text / buttons. **Use this for EVERY dark CTA / Book-a-Call block** — never
@@ -236,7 +262,7 @@ get_template_part( 'template-parts/section', 'cta-dark', array(
 
 ---
 
-## 8. Pricing cards — `section-pricing-cards.php`
+## 9. Pricing cards — `section-pricing-cards.php`
 
 Three pricing cards, middle highlighted, Monthly/Yearly toggle. Prices live in the
 `$pp_plans` array inside the partial (edit in one place).
@@ -250,7 +276,7 @@ the full pricing page.
 
 ---
 
-## 9. Testimonials carousel — `section-testimonials-carousel.php`
+## 10. Testimonials carousel — `section-testimonials-carousel.php`
 
 Auto-advancing carousel: 3 cards (2 on tablet, 1 on mobile), infinite loop, prev/next
 buttons.
@@ -261,7 +287,7 @@ buttons.
 
 ---
 
-## 10. Case studies — `section-case-studies.php`
+## 11. Case studies — `section-case-studies.php`
 
 Row of case-study cards.
 
