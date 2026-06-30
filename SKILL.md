@@ -115,6 +115,7 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Cards carousel** | `section-cards-carousel.php` | Draggable horizontal slider of dark cards (next peeks); prev/next + swipe. For use-cases / challenge→solution. |
 | **Case studies** | `section-case-studies.php` | Case-study cards row. |
 | **Comparison** | `section-comparison.php` | Capability vs negative (✕) vs highlighted recommended (✓) column; responsive (cards on mobile). |
+| **Feature spotlight** | `section-feature-spotlight.php` | Big flagship blue card (chat mockup + chips) + numbered white cards. For a headline capability + supporting features. |
 
 Other partials exist (`section-choose-app`, `section-use-kit`, `section-quick-start`,
 `section-book-call-modal`, `section-pricing`, …) — list them with

@@ -412,6 +412,42 @@ The ✕ / ✓ row marks are built in (red / green). Keep it to two columns.
 
 ---
 
+## 15. Feature spotlight — `section-feature-spotlight.php`
+
+A "flagship + grid" feature layout: title + lead, then one big **flagship** card on a
+brand-blue gradient (numbered `01`, label + heading + text + chips, with a built-in **chat
+mockup** or an image on the right), followed by a grid of smaller **numbered white cards**
+(`02`, `03` …) — tinted icon + heading + text. Responsive (flagship stacks, cards reflow).
+
+![Feature spotlight](screenshots/feature-spotlight.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | header (optional) |
+| `flagship` | array | `{ label, title, text, chips[], chat{ name,status,question,answer,file,avatar_icon } }` — or `image` + `image_alt` instead of `chat` |
+| `items` | array | the smaller cards (numbered from 02) — each `{ icon (svg stroke="currentColor"), title, text }` |
+
+```php
+get_template_part( 'template-parts/section-feature-spotlight', null, array(
+  'title'    => 'AI-Powered Healthcare Assistant',
+  'lead'     => '…',
+  'flagship' => array(
+    'label' => 'Flagship capability', 'title' => 'Intelligent patient FAQ handling', 'text' => '…',
+    'chips' => array( 'Trained on your docs', '24/7 answers' ),
+    'chat'  => array( 'name' => 'Ethora Assistant', 'question' => 'What should I do before my MRI scan?',
+                      'answer' => 'For your MRI: avoid metal jewelry…', 'file' => 'pre-op-guide.pdf' ),
+  ),
+  'items'    => array(
+    array( 'icon' => '<svg…>', 'title' => 'Clinical query routing', 'text' => '…' ),
+    // …
+  ),
+) );
+```
+
+---
+
 ## Other partials
 
 List everything with `ls template-parts/` and read each file's top docblock for its
