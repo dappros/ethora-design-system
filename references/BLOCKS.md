@@ -418,6 +418,10 @@ List everything with `ls template-parts/` and read each file's top docblock for 
 params: `section-choose-app`, `section-use-kit`, `section-quick-start`,
 `section-pricing`, `section-cta`, `section-testimonials`, `section-book-call-modal`.
 
+`section-use-kit` (sticky illustration + benefits list) supports **`'sticky' => true`** (the
+left image sticks while the list scrolls, like `.shs-whatis`) and **inline-SVG benefit icons**
+(pass a raw `<svg stroke="#fff"…>` instead of a filename for a thematic icon on the blue tile).
+
 ---
 
 ## How these screenshots were made
