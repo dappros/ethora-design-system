@@ -69,6 +69,10 @@ Full detail and the token table are in [`DESIGN.md`](../../../DESIGN.md). The ha
 - **Buttons:** the brand CTAs (Get started / Book a Call) — `--radius-btn`, Open Sans
   600; primary = `--primary` bg + white (hover `--primary-dark`); outline = `2px solid
   --primary` + primary text. No pill or other-radius CTAs.
+- **Slider / nav (switch) buttons:** prev/next for any carousel/slider use ONLY the brand
+  `.slider-btn` standard (as in *Our Case Studies*) — 40px (2.5rem) square, radius
+  `--radius-btn` (12px), `1px solid --primary` border, transparent bg, `--primary` chevron,
+  hover → `--primary-light`, centred. Never invent another nav-button style.
 - **Header:** one header on every page — the light-blue gradient bar (never plain
   white). A page's first section clears the fixed header with `padding-top:
   var(--hero-pt)`.

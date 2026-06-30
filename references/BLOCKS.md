@@ -336,11 +336,12 @@ Row of case-study cards.
 
 ## 13. Cards carousel — `section-cards-carousel.php`
 
-Title + lead on top, then a horizontal track of dark brand cards: one in focus, the
-next **peeks** from the right. Switch with the prev/next buttons (counter `n / total`)
-**or by dragging / swiping** (mouse and touch). Each card has a heading and one or more
-labelled text blocks (rendered as columns on wide cards). Best for use-cases, FAQs or
-"challenge → solution" content. `'light' => true` for white cards instead of dark.
+Title + lead on top, then a **full-width** track of dark brand cards: each card has a
+**text column on the left and an image on the right**; the next card **peeks** from the
+right edge. Switch with the **centred** prev/next buttons (the brand `.slider-btn`
+standard) **or by dragging / swiping** (mouse and touch). Text blocks stack vertically and
+are labelled. Best for use-cases or "challenge → solution" content. `'light' => true` for
+white cards instead of dark.
 
 ![Cards carousel](screenshots/cards-carousel.png)
 
@@ -350,17 +351,24 @@ labelled text blocks (rendered as columns on wide cards). Best for use-cases, FA
 |---|---|---|
 | `eyebrow` / `title` / `lead` | string | header (optional) |
 | `light` | bool | white cards instead of the default dark brand panel |
-| `cards` | array | **required**, any length — each: `title`, `blocks` (array of `{ label, text }`), optional `link_url` + `link_label` (renders a CTA pill) |
+| `cards` | array | **required**, any length — each: `title`, `blocks` (array of `{ label, text }`, stacked), `image` + `image_alt` (right side, optional → text spans full width without it), optional `link_url` + `link_label` (CTA pill) |
+
+Nav buttons follow the **slider/nav button RULE** (`.slider-btn`: 40px, `--radius-btn`,
+`1px --primary` border, transparent, `--primary` chevron, hover `--primary-light`, centred).
 
 ```php
 get_template_part( 'template-parts/section-cards-carousel', null, array(
   'title' => 'Healthcare Communication Use Cases',
   'lead'  => 'Ethora addresses each scenario within a single platform.',
   'cards' => array(
-    array( 'title' => 'Patient-provider messaging', 'blocks' => array(
-      array( 'label' => 'The challenge', 'text' => '…' ),
-      array( 'label' => 'How Ethora helps', 'text' => '…' ),
-    ) ),
+    array(
+      'title' => 'Patient-provider messaging',
+      'image' => 'images/foo.png', 'image_alt' => '…',
+      'blocks' => array(
+        array( 'label' => 'The challenge', 'text' => '…' ),
+        array( 'label' => 'How Ethora helps', 'text' => '…' ),
+      ),
+    ),
     // …any number
   ),
 ) );
