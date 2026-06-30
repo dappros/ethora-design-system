@@ -100,6 +100,7 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Hero** | `section-hero.php` | Page opener: gradient bg, eyebrow/h1/lead + CTA buttons + trust row, product visual, optional compliance strip. |
 | **Split card** | `section-split-card.php` | Brand-gradient card: heading + paragraphs beside an image. `reverse` flips sides. |
 | **Blue statement band** | `section-split-card.php` (`dark: true`) | Full-bleed brand dark-blue section, heading + paragraphs in white. Edge-to-edge colour. |
+| **Scroll-telling** | `section-why.php` | Pinned title + changing image (left), text track that slides per step on scroll (right); mobile accordion. |
 | **Key features** | `section-key-features.php` | Auto-cycling accordion (one item open, progress loader) + product image. `reverse` supported. |
 | **Feature cards** | `section-feature-cards.php` | Grid of gradient cards: coloured circle icon + heading + text + optional "Learn more". |
 | **Link cards** | `section-link-cards.php` | Grid of cards (icon + heading + text + "Read more →") that fill brand blue on hover. For related links / SDKs / industries. |

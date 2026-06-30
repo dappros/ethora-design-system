@@ -34,6 +34,7 @@ fixed header via `--hero-pt`.
 | `media_alt` / `media_width` / `media_height` / `media_html` | | raster alt+dims, or raw markup override |
 | `rhombus` | bool | decorative corner shapes (default `true`) |
 | `compliance` | array | `{ label, items[] }` — bottom strip (optional) |
+| `full_height` | bool | `min-height: 100vh`, content vertically centred below the fixed header (default `true`; set `false` for a compact hero) |
 
 ```php
 get_template_part( 'template-parts/section-hero', null, array(
@@ -112,7 +113,44 @@ get_template_part( 'template-parts/section-split-card', null, array(
 
 ---
 
-## 4. Key features — `section-key-features.php`
+## 4. Scroll-telling — `section-why.php`
+
+A scroll-driven "telling" section: a **pinned** pane on the left (eyebrow + title + lead +
+a changing image) and, on the right, a text track that slides up as you scroll — the image
+swaps and the matching numbered step highlights at each threshold. On mobile it collapses to
+a tap-to-open **accordion** (one step's image at a time). Self-contained (CSS + JS once),
+supports multiple instances. Each step needs its own image.
+
+![Scroll-telling](screenshots/why.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | pinned header (eyebrow + h2 + lead) |
+| `numbered` | bool | show `01/02/03` markers (default `true`) |
+| `rhombus` | bool | decorative background shape (default `true`) |
+| `steps` | array | **required**, 2+ — each: `title`, `text` (inline HTML), `image` (path/URL, used desktop **and** mobile), `image_alt` |
+
+```php
+get_template_part( 'template-parts/section-why', null, array(
+  'eyebrow' => 'Why self-host with Ethora',
+  'title'   => 'Full ownership without the operational burden',
+  'lead'    => 'A self-hosted chat server is a messaging platform you deploy…',
+  'steps'   => array(
+    array( 'title' => 'Complete data ownership', 'text' => 'Full control over…',
+           'image' => 'images/foo-one.png', 'image_alt' => '…' ),
+    // …2+ steps, each with its own image
+  ),
+) );
+```
+
+Scroll length scales with step count (~60vh per step). Best for a short narrative of 3–5
+steps where each has a supporting visual.
+
+---
+
+## 5. Key features — `section-key-features.php`
 
 Interactive accordion: one item open at a time, auto-cycles with a progress
 loader at the bottom of the open card (the loader drives the switch), product
@@ -151,7 +189,7 @@ get_template_part( 'template-parts/section-key-features', null, array(
 
 ---
 
-## 5. Feature cards — `section-feature-cards.php`
+## 6. Feature cards — `section-feature-cards.php`
 
 Responsive grid of cards on the brand gradient: coloured circular icon + heading +
 short text + optional "Learn more →" button. Auto-fit grid — works with any number
@@ -185,7 +223,7 @@ it restrained — don't turn it into a rainbow.
 
 ---
 
-## 6. Link cards — `section-link-cards.php`
+## 7. Link cards — `section-link-cards.php`
 
 Responsive grid of cards (icon tile + heading + description + "Read more →"). On
 hover the brand blue fills in from the bottom-right corner and the text/icon turn
@@ -224,7 +262,7 @@ get_template_part( 'template-parts/section-link-cards', null, array(
 
 ---
 
-## 7. Bento grid — *pattern* (inline on `page-self-hosted-server.php`)
+## 8. Bento grid — *pattern* (inline on `page-self-hosted-server.php`)
 
 Asymmetric bento: 2 large cards on top (a light brand-gradient card and a dark
 `.shs-dark` card, each with a screenshot "peeking" out of the bottom-right corner) +
@@ -239,7 +277,7 @@ self-contained and ready to parametrise.
 
 ---
 
-## 8. Dark CTA — `section-cta-dark.php`
+## 9. Dark CTA — `section-cta-dark.php`
 
 Brand `.shs-dark` panel (deep `--primary-dark` over `start-free.png`) with eyebrow /
 heading / text / buttons. **Use this for EVERY dark CTA / Book-a-Call block** — never
@@ -262,7 +300,7 @@ get_template_part( 'template-parts/section', 'cta-dark', array(
 
 ---
 
-## 9. Pricing cards — `section-pricing-cards.php`
+## 10. Pricing cards — `section-pricing-cards.php`
 
 Three pricing cards, middle highlighted, Monthly/Yearly toggle. Prices live in the
 `$pp_plans` array inside the partial (edit in one place).
@@ -276,7 +314,7 @@ the full pricing page.
 
 ---
 
-## 10. Testimonials carousel — `section-testimonials-carousel.php`
+## 11. Testimonials carousel — `section-testimonials-carousel.php`
 
 Auto-advancing carousel: 3 cards (2 on tablet, 1 on mobile), infinite loop, prev/next
 buttons.
@@ -287,7 +325,7 @@ buttons.
 
 ---
 
-## 11. Case studies — `section-case-studies.php`
+## 12. Case studies — `section-case-studies.php`
 
 Row of case-study cards.
 
