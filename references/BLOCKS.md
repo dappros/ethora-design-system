@@ -337,8 +337,7 @@ Row of case-study cards.
 ## 13. Cards carousel — `section-cards-carousel.php`
 
 Title + lead on top, then a **full-width** track of dark brand cards: each card has a
-**text column on the left and an image on the right**; the next card **peeks** from the
-right edge. Switch with the **centred** prev/next buttons (the brand `.slider-btn`
+**text column on the left and an image on the right**; the **active card is centred** and its neighbours **peek equally** on both sides (and scale up/down on switch). Switch with the **centred** prev/next buttons (the brand `.slider-btn`
 standard) **or by dragging / swiping** (mouse and touch). Text blocks stack vertically and
 are labelled. Best for use-cases or "challenge → solution" content. `'light' => true` for
 white cards instead of dark.
