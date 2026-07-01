@@ -132,6 +132,7 @@ supports multiple instances. Each step needs its own image.
 | `numbered` | bool | show `01/02/03` markers (default `true`) |
 | `rhombus` | bool | decorative background shape (default `true`) |
 | `steps` | array | **required**, 2+ — each: `title`, `text` (inline HTML), `image` (path/URL, used desktop **and** mobile), `image_alt` |
+| `frame` | bool | default `true` (card frame: shadow + radius + `cover`). Set **false** for self-framed images (own bg/shadow) → shows whole image (`contain`), no extra frame |
 
 ```php
 get_template_part( 'template-parts/section-why', null, array(
