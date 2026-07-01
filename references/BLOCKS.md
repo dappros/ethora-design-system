@@ -282,7 +282,9 @@ self-contained and ready to parametrise.
 
 Brand `.shs-dark` panel (deep `--primary-dark` over `start-free.png`) with eyebrow /
 heading / text / buttons. **Use this for EVERY dark CTA / Book-a-Call block** — never
-hand-roll a near-black panel.
+hand-roll a near-black panel. Params: `eyebrow`, `heading`, `text`, `id`, `buttons`
+(`label` / `url` / `style` `light`|`ghost` / `modal`), and **`wide`** (`true` = full-bleed
+panel spanning the section width, only the 24px gutter — not capped at `--content-max`).
 
 ![Dark CTA](screenshots/cta-dark.png)
 
