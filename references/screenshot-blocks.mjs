@@ -20,6 +20,9 @@ const shots = [
   { url: '/self-hosted-chat-server-aws/', name: 'testimonials-carousel', sel: '.tcar',              i: 0 },
   { url: '/self-hosted-chat-server-aws/', name: 'case-studies',          sel: '.case-studies',      i: 0 },
   { url: '/pricing/',                     name: 'cta-dark',              sel: '.cta-dark',          i: 0 },
+  { url: '/deadsimplechat-alternative/',  name: 'deployment',            sel: '.dep-section',       i: 0 },
+  { url: '/deadsimplechat-alternative/',  name: 'compliance-cards',      sel: '.cmpl-section',      i: 0 },
+  { url: '/deadsimplechat-alternative/',  name: 'stats',                 sel: '.sb-section',        i: 0 },
 ];
 
 const browser = await chromium.launch({ channel: 'chrome' });
