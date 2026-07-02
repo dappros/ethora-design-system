@@ -16,10 +16,10 @@ This is the design contract for the **ethora-theme** WordPress theme. If you
 follow it, you cannot drift outside the brand. Two things govern every change:
 
 1. **The rules** — colour, type, spacing, radius, width. Source of truth is
-   [`css/tokens.css`](../../../css/tokens.css) (the machine source) and
-   [`DESIGN.md`](../../../DESIGN.md) (the human guide). A condensed version is below.
+   [`css/tokens.css`](css/tokens.css) (the machine source) and
+   [`DESIGN.md`](DESIGN.md) (the human guide). A condensed version is below.
 2. **The blocks** — ready-made, reusable sections in
-   [`template-parts/`](../../../template-parts/). Reuse these instead of inventing
+   [`template-parts/`](template-parts/). Reuse these instead of inventing
    new layouts. Full catalog with screenshots + props: **[`references/BLOCKS.md`](references/BLOCKS.md)**.
 
 > The reference implementation is **`page-self-hosted-server.php`** — fully
@@ -36,7 +36,7 @@ token, **add it to `css/tokens.css` first**, then use it. This is the "no
 
 ## Workflow — do this every time
 
-1. **Read** [`css/tokens.css`](../../../css/tokens.css) and skim [`DESIGN.md`](../../../DESIGN.md).
+1. **Read** [`css/tokens.css`](css/tokens.css) and skim [`DESIGN.md`](DESIGN.md).
 2. **Before building a section, check the catalog** ([`references/BLOCKS.md`](references/BLOCKS.md)).
    If a block fits, reuse it via `get_template_part()` — don't rebuild it.
 3. **Build with tokens only.** Match the surrounding code's idiom.
@@ -48,7 +48,7 @@ token, **add it to `css/tokens.css` first**, then use it. This is the "no
 
 ## Non-negotiable rules (summary)
 
-Full detail and the token table are in [`DESIGN.md`](../../../DESIGN.md). The hard ones:
+Full detail and the token table are in [`DESIGN.md`](DESIGN.md). The hard ones:
 
 - **Tokens only.** No literal hex/px for colour, type, spacing, radius, width.
 - **Colour:** brand blue `--primary` `#0052CD` + grey does ~90%. Dark/CTA panels use
@@ -91,7 +91,7 @@ Full detail and the token table are in [`DESIGN.md`](../../../DESIGN.md). The ha
   var(--hero-pt)`.
 - **Dark panels:** ALWAYS the brand `.shs-dark` treatment (`--primary-dark` ~85% over
   `images/start-free.png`) — **never near-black**. For Book-a-Call / dark CTA blocks
-  reuse [`template-parts/section-cta-dark.php`](../../../template-parts/section-cta-dark.php).
+  reuse [`template-parts/section-cta-dark.php`](template-parts/section-cta-dark.php).
 
 ## Quality floor (every page/section)
 

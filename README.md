@@ -3,26 +3,32 @@
 A **[Claude Code](https://claude.com/claude-code) skill** that encodes the design
 contract for the Ethora WordPress theme (`ethora-theme`): the non-negotiable design
 rules **plus** a catalog of ready-made, reusable section blocks (with screenshots and
-copy-paste usage). Install it into a theme and any developer — or Claude — can build
-or redesign pages without drifting off-brand.
+copy-paste usage). Any developer — or Claude — can build or redesign pages without
+drifting off-brand.
+
+This repository is **self-contained** — it bundles everything the skill references
+(tokens, human guide, rules, and the actual block code), so you can read and use it
+standalone, not only from inside the theme.
 
 ## What's inside
 
-| File | What it is |
+| File / dir | What it is |
 |---|---|
 | `SKILL.md` | Entry point — the hard rules (tokens only, max 1200px width, Open Sans, brand blue, 16px spacing) + workflow + block-catalog table. Auto-loaded by Claude Code. |
-| `references/BLOCKS.md` | Full catalog: each reusable block with a **screenshot**, prop table and a copy-paste `get_template_part()` snippet. |
-| `references/screenshots/` | Rendered screenshots of every block. |
+| `DESIGN.md` | Human-readable design guide: palette, type scale, spacing, radius, containers, button/toggle/slider rules, quality floor. |
+| `CLAUDE.md` | Project instructions (the same hard rules, restated as an always-on contract for Claude Code working in the theme). |
+| `css/tokens.css` | **The machine source of truth** — every colour/size/spacing/radius/width token in one `:root`. Build only with `var(--token)`. |
+| `template-parts/` | The actual reusable block partials (`section-*.php`). Each is self-contained (ships its own `<style>`) and driven by `get_template_part()` args. |
+| `references/BLOCKS.md` | Full catalog: each reusable block + the **Core UI primitives** with a **screenshot**, prop table and a copy-paste `get_template_part()` snippet. |
+| `references/screenshots/` | Rendered screenshots of every block and primitive. |
 | `references/screenshot-blocks.mjs` | Playwright script to regenerate the screenshots. |
 
-The skill is designed to live **inside the theme** at `.claude/skills/ethora-theme/`.
-Its relative links (`../../../css/tokens.css`, `../../../DESIGN.md`,
-`../../../template-parts/`) resolve to the theme root once installed there.
+All in-repo links resolve locally, so the docs are navigable straight from a
+standalone clone.
 
-## Install
+## Install into a theme
 
-From the **root of your theme** (the folder that contains `css/tokens.css` and
-`DESIGN.md`):
+Drop the skill into your theme's `.claude/skills/` so Claude Code auto-discovers it:
 
 ```bash
 git clone https://github.com/dappros/ethora-design-system.git .claude/skills/ethora-theme
@@ -39,6 +45,10 @@ ethora-theme skill").
 >   | tar -xz --strip-components=1 -C .claude/skills/ethora-theme
 > ```
 
+The bundled `css/tokens.css` and `template-parts/` are the canonical copies. In a live
+Ethora theme the same files also exist at the theme root — treat this repo as the
+source and keep the theme in sync with it (or vice-versa) when tokens or blocks change.
+
 ## Update
 
 ```bash
@@ -47,11 +57,12 @@ cd .claude/skills/ethora-theme && git pull
 
 ## How to use
 
-1. Read `SKILL.md` for the hard rules and the workflow.
-2. Before building a section, check `references/BLOCKS.md` — reuse a block via
-   `get_template_part()` instead of inventing a new layout.
-3. Build with `var(--token)` values only (the theme's `css/tokens.css` is the single
-   source of truth). Never hardcode hex/px.
+1. Read `SKILL.md` for the hard rules and the workflow; skim `DESIGN.md` for the values.
+2. Before building a section, check `references/BLOCKS.md` — reuse a block from
+   `template-parts/` via `get_template_part()` instead of inventing a new layout.
+3. Build with `var(--token)` values only (`css/tokens.css` is the single source of
+   truth). Never hardcode hex/px. Reuse the locked **Core UI primitives** (CTA buttons,
+   slider/nav buttons, toggle switch, `--gradient-brand` blue section) exactly.
 
 ## Regenerate screenshots
 
@@ -65,5 +76,5 @@ node references/screenshot-blocks.mjs references/screenshots
 ---
 
 Maintained by [Dappros](https://github.com/dappros) for the Ethora theme. The
-canonical source of design values is the theme's `css/tokens.css`; this skill
-restates the rules so they're enforced everywhere the skill is installed.
+canonical source of design values is `css/tokens.css`; this skill restates the rules
+so they're enforced everywhere the skill is installed.

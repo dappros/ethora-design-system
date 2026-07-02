@@ -1,0 +1,213 @@
+/* ============================================================
+   Ethora — Design Tokens (SINGLE SOURCE OF TRUTH)
+   ------------------------------------------------------------
+   Strict rules for the whole site: colour, type (size / weight /
+   line-height / tracking), spacing, radius, container width,
+   shadow, z-index. Edit a value HERE and it cascades everywhere.
+   When building a page, use var(--token) — do NOT hardcode values.
+   Loaded globally before every other stylesheet (functions.php).
+   ============================================================ */
+:root {
+
+  /* ============================================================
+     1. COLOUR
+     ============================================================ */
+
+  /* ---- Brand blue ramp (primary = #0052CD) ---- */
+  --brand-50:  #f3f4fc;
+  --brand-100: #e7eaf9;
+  --brand-150: #f3f6fc;   /* active nav-item tint */
+  --brand-200: #c2d1f0;
+  --brand-250: #c6dffa;
+  --brand-300: #99b4e6;
+  --brand-400: #437ed4;
+  --brand-500: #0052cd;   /* PRIMARY */
+  --brand-600: #004ac2;
+  --brand-700: #0040b6;
+  --brand-800: #0035ab;
+  --brand-900: #002398;   /* deep brand */
+  --brand-950: #001766;
+
+  /* ---- Brand aliases ---- */
+  --primary:         var(--brand-500);
+  --primary-dark:    var(--brand-900);   /* #002398 */
+  --primary-hover:   #003fa6;            /* filled-button hover */
+  --primary-light:   #e7edf9;            /* soft brand tint */
+  --primary-tint-05: rgba(0, 82, 205, 0.05);
+  --primary-tint-10: rgba(0, 82, 205, 0.10);
+
+  /* ---- Brand gradients ---- */
+  /* Canonical full-bleed brand-blue SECTION background. The ONLY blue-fill background
+     for edge-to-edge sections (statement band, cards carousel, stats band). Never
+     hand-write this linear-gradient inline — always reference this token. */
+  --gradient-brand: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-800) 100%);
+
+  /* ---- Ink / text ---- */
+  --ink:             #0e1a33;   /* headings, strongest text */
+  --text-dark:       #121219;   /* legacy body-dark */
+  --text-medium:     #262626;
+  --text-body:       #46506a;   /* default paragraph */
+  --text-body-soft:  #5a6478;   /* secondary paragraph in cards */
+  --text-light:      #53575a;
+  --text-caption:    #6b7280;   /* captions / fine print (AA on white) */
+  --text-muted:      #8c8c8c;
+  --text-on-tint:    #5f6a82;   /* text on a light-blue tint cell */
+  --text-on-dark:    #cdd8ee;   /* body text on dark / brand panels */
+  --accent-on-dark:  #8fb4ff;   /* eyebrow / accent on dark panels */
+  --gray:            #595959;
+  --white:           #ffffff;
+
+  /* ---- Surfaces & borders ---- */
+  --surface:        #ffffff;
+  --background:     #f6f8fc;   /* app/page canvas */
+  --surface-alt:    #f4f7fd;   /* alternating section bg */
+  --surface-1:      #fbfcfe;   /* subtle row stripe */
+  --tint:           #eaf1ff;   /* icon-tile / soft chip */
+  --tint-strong:    #f2f7ff;   /* highlighted row / table column */
+  --border-color:   #e5e7eb;   /* legacy */
+  --border:         #e4e9f2;   /* card border */
+  --border-strong:  #cdd6e5;   /* outlined-button border */
+  --border-grid:    #e7ecf4;   /* hairline grid gaps */
+  --hairline:       #eaeef5;   /* section dividers */
+  --border-hair:    #eef1f6;   /* finest hairline */
+
+  /* ---- Semantic ---- */
+  --red:            #f45952;
+  --green:          #22c55e;
+  --success-strong: #0b6e3e;   /* "win"/positive text on tint */
+  --orange:         #f98216;
+  --purple:         #930a95;
+  --yellow:         #ffbc00;
+  --yellow-light:   #fff0d5;
+
+  /* ---- Third-party brand-logo colours (vendor marks ONLY — not part of the palette,
+     never use for UI. Official colours so real provider logos render correctly). ---- */
+  --logo-aws:       #ff9900;
+  --logo-gcp:       #4285f4;
+  --logo-azure:     #0078d4;
+
+  /* ============================================================
+     2. TYPOGRAPHY
+     ============================================================ */
+
+  /* ---- Families — Open Sans only (single typeface across the whole site).
+     All aliases point to Open Sans so any var(--font-*) renders Open Sans. ---- */
+  --font-body:    "Open Sans", system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-body);
+  --font-data:    var(--font-body);
+  --font-serif:   var(--font-body);
+  --font-sans:    var(--font-body);
+  --font-mono:    var(--font-body);
+
+  /* ---- Font weights ---- */
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+
+  /* ---- Font sizes — fixed steps ---- */
+  --fs-eyebrow: 12px;   /* mono kicker */
+  --fs-xs:   12px;
+  --fs-sm:   14px;
+  --fs-base: 15px;
+  --fs-md:   16px;
+  --fs-lg:   17px;      /* lead paragraph */
+  --fs-xl:   18px;      /* large body */
+  --fs-2xl:  20px;
+  --fs-3xl:  24px;
+
+  /* ---- Font sizes — fluid headings (clamp) ---- */
+  --fs-h3:      clamp(20px, 2.4vw, 24px);
+  --fs-h3-lg:   clamp(24px, 3vw, 34px);
+  --fs-h2:      clamp(28px, 3.8vw, 44px);   /* standard section heading */
+  --fs-h1:      clamp(30px, 4vw, 46px);
+  --fs-display: clamp(38px, 5.6vw, 68px);   /* hero */
+  --fs-cta:     clamp(32px, 4.5vw, 54px);   /* big CTA panel */
+
+  /* ---- Line heights ---- */
+  --lh-tight:    1.08;   /* large display headings */
+  --lh-heading:  1.1;
+  --lh-snug:     1.2;
+  --lh-base:     1.5;
+  --lh-relaxed:  1.65;   /* body copy */
+  --lh-loose:    1.7;    /* long-form reading */
+
+  /* ---- Letter spacing ---- */
+  --tracking-tight: -0.02em;   /* big serif headlines */
+  --tracking-snug:  -0.01em;
+  --tracking-wide:   0.12em;   /* eyebrows */
+  --tracking-wider:  0.14em;   /* nav / mono labels */
+
+  /* ============================================================
+     3. SPACING — STRICT 16px SCALE (RULE)
+     ------------------------------------------------------------
+     Use ONLY these tokens for margins / paddings / gaps — never
+     hand-type px (no 12px / 22px / 30px …). The scale is multiples
+     of 16: 16 / 32 / 48 / 64 / 80 / 96.
+     `--space-8` is the ONLY sub-16 value, allowed strictly for
+     inline micro-gaps (icon ↔ label, chip padding) — nothing else.
+     ============================================================ */
+  --space-8:   8px;    /* micro — inline icon/label gaps only */
+  --space-16:  16px;
+  --space-32:  32px;
+  --space-48:  48px;
+  --space-64:  64px;
+  --space-80:  80px;
+  --space-96:  96px;
+
+  /* ---- Section rhythm (responsive; endpoints on the 16 grid) ---- */
+  --section-y:    clamp(48px, 7vw, 96px);   /* vertical section padding */
+  --section-y-sm: clamp(48px, 6vw, 80px);
+  --section-x:    24px;   /* horizontal gutter — matches the header (.container padding) so section content lines up with the header */
+  --content-max:  calc(var(--container-xl) - 2 * var(--section-x));  /* 1152 — content width that aligns with the 1200 header container */
+
+  /* ============================================================
+     4. RADIUS
+     ============================================================ */
+  --radius-xs:   8px;
+  --radius-sm:   10px;
+  --radius-md:   12px;
+  --radius-lg:   14px;
+  --radius-xl:   16px;    /* buttons / inputs */
+  --radius-2xl:  18px;    /* cards */
+  --radius-3xl:  24px;    /* big cards / modals */
+  --radius-pill: 999px;   /* avatars, icon buttons, chips */
+  --radius-btn:  12px;    /* CTA buttons (Get started / Book a Call) — brand standard */
+  /* legacy aliases */
+  --border-radius:    0.5rem;
+  --border-radius-lg: 0.75rem;
+  --border-radius-xl: 1rem;
+
+  /* ============================================================
+     5. CONTAINER WIDTHS ("длина")
+     ============================================================ */
+  --container-xl: 1200px;   /* MAX content width — never exceed 1200px (rule) */
+  --container-2xl: 1200px;
+  --header-h:     92px;     /* fixed header height — first section top offset = header-h + gap */
+  --hero-pt:      calc(var(--header-h) + clamp(24px, 4vw, 64px));  /* standard top padding for a page's first/hero section */
+  --container-lg: 1080px;   /* text-led sections */
+  --container-md: 880px;    /* narrow text column */
+  --container-sm: 680px;
+  --measure:      760px;    /* comfortable reading measure */
+
+  /* ============================================================
+     6. SHADOWS
+     ============================================================ */
+  --shadow:       0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-card:  0 4px 35px rgba(0, 0, 0, 0.08);          /* floating brand card */
+  --shadow-hover: 0 4px 8px rgba(0, 0, 0, 0.2);            /* hover lift */
+  --shadow-lift:  0 24px 60px -34px rgba(15, 40, 100, 0.45); /* hero image / media */
+  --shadow-panel: 0 30px 70px -30px rgba(15, 40, 100, 0.30); /* dropdown / mega panel */
+
+  /* ============================================================
+     7. Z-INDEX
+     ============================================================ */
+  --z-header:  100;
+  --z-mega:    90;
+  --z-overlay: 9998;
+  --z-modal:   9999;
+
+  /* ---- Motion ---- */
+  --transition: all 0.3s ease;
+}
