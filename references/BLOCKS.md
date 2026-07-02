@@ -90,11 +90,12 @@ get_template_part( 'template-parts/section-split-card', null, array(
 
 ## 3. Blue statement band — `section-split-card.php` (`dark: true`)
 
-A **full-bleed** brand dark-blue section (the `.shs-dark` treatment: deep `--primary-dark`
-#002398 over the brand image) with a heading + paragraphs in white. The colour runs
-edge-to-edge — background **and** side gutters are blue — while the text stays aligned to
-the content container. It's the `dark` variant of the split card: pass `'dark' => true`
-(usually without an image, for a bold statement / section divider).
+A **full-bleed** brand-blue section (the brand gradient `brand-500 → brand-800`, same as
+`.sb-section` / the cards-carousel cards) with a heading + paragraphs in white. The colour
+runs edge-to-edge — background **and** side gutters are blue — while the text stays aligned
+to the content container. It's the `dark` variant of the split card: pass `'dark' => true`
+— either as a bold statement / section divider (no image) **or with an optional image
+on either side** (`image` + `reverse`), same as the light split card but full-bleed dark.
 
 ![Blue statement band](screenshots/split-card-dark.png)
 
@@ -450,6 +451,113 @@ get_template_part( 'template-parts/section-feature-spotlight', null, array(
 
 ---
 
+## 16. Deployment stack — `section-deployment.php`
+
+A centred header (eyebrow + title + lead), a row of platform chips (icon + label),
+then a dashed **"your infrastructure" container** that lays an architecture diagram
+out as native cards: stacked layer groups joined by down-arrows, a highlighted
+brand-tinted **core** group, and a two-column row of side-by-side groups (data +
+optional). Closes with a colour legend. Replaces a flat architecture PNG with an
+on-brand, responsive, tokenised layout. Self-contained (CSS once per request).
+
+![Deployment stack](screenshots/deployment.png)
+
+**Props** — ALL optional; the defaults reproduce the Ethora self-hosted stack, so a
+page usually overrides only `title` and `lead`.
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | header (default eyebrow `Deployment`) |
+| `platforms_label` | string | small label over the chips (default "The same stack, deployed anywhere") |
+| `platforms` | array | each: `label`, `icon` (line SVG `stroke="currentColor"`, optional). Defaults to AWS/Google Cloud/Azure/On-premises/AWS Marketplace/Private cloud |
+| `vpc_label` / `vpc_icon` | string | badge on the container top edge (default shield + "…data never leaves your VPC") |
+| `groups` | array | the layers — each: `label`, `note`, `badge` (e.g. `optional`), `tint` (`'core'` = soft-brand bg), `dashed` (bool), `dot` (`core`\|`edge`\|`data`\|`optional` marker), `half` (bool → shares a row with adjacent half groups), `cols` (1–3 fixed card columns), `cards` (each `title` + `subtitle`) |
+| `legend` | array | each: `label`, `dot` (same keys as group `dot`) |
+
+Layout rule: consecutive `half` groups flow into one two-column row; full-width
+groups stack, with a down-arrow drawn between two adjacent full-width layers.
+
+```php
+get_template_part( 'template-parts/section-deployment', null, array(
+  'title' => 'Your servers. Your data. Your rules.',
+  'lead'  => 'Self-hosting is the default with Ethora…',
+  // groups/platforms/legend fall back to the Ethora stack defaults
+) );
+```
+
+---
+
+## 17. Compliance cards — `section-compliance-cards.php`
+
+A responsive grid of white cards (**default 4-up**), each with a soft-blue rounded
+icon tile and a green **"✓ STATUS"** tag on the top row, then a heading and a short
+description. On hover the brand blue fills in from the bottom-right corner and the
+contents turn white (same effect as Link cards #7). For trust/compliance strips (GDPR,
+HIPAA, SOC 2 …); **omit `status` and it becomes a plain icon-card grid** (e.g. a
+product-modules / "what you get" section — set `cols: 3` for six items). Self-contained
+(CSS once per request); reflows to 2-up ≤900px, 1-up ≤560px.
+
+![Compliance cards](screenshots/compliance-cards.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | optional centred header |
+| `shade` | bool | tint the section bg + hairline borders |
+| `cols` | int | desktop columns, 2–4 (default 4) |
+| `cards` | array | **required** — each: `icon` (line SVG `stroke="currentColor"`, shown in the blue tile), `title`, `text` (inline HTML), `status` (optional — green ✓ tag, uppercased in CSS) |
+
+```php
+get_template_part( 'template-parts/section-compliance-cards', null, array(
+  'shade' => true,
+  'cards' => array(
+    array( 'title' => 'GDPR', 'status' => 'Compliant', 'text' => 'EU data protection…', 'icon' => '<svg …>' ),
+    array( 'title' => 'HIPAA', 'status' => 'In production', 'text' => 'Healthcare PHI…', 'icon' => '<svg …>' ),
+    // …
+  ),
+) );
+```
+
+Status text uses `--success-strong` (AA green on white). Keep the icons as line SVGs
+(`stroke="currentColor"`) — they inherit the brand-blue tile colour.
+
+---
+
+## 18. Stats band — `section-stats.php`
+
+A **full-bleed brand-blue** section (the same gradient as the `.cc-section` cards:
+`brand-500 → brand-800`) with an optional centred header and a row of flat stats
+separated by thin dividers — each a translucent icon tile, a big white number and a
+label. For "by the numbers" / impact strips. Self-contained (CSS once per request);
+stacks to a single column (with top dividers) on mobile.
+
+![Stats band](screenshots/stats.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | optional centred header (eyebrow → `--accent-on-dark`, heading white, lead `--text-on-dark`) |
+| `stats` | array | **required** — each: `icon` (line SVG `stroke="currentColor"`, white in the glass tile), `value` (big number), `label` |
+
+```php
+$si = 'width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+get_template_part( 'template-parts/section-stats', null, array(
+  'stats' => array(
+    array( 'value' => '~95%', 'label' => 'faster dev time', 'icon' => '<svg '.$si.'>…</svg>' ),
+    array( 'value' => '5 min', 'label' => 'widget install',  'icon' => '<svg '.$si.'>…</svg>' ),
+    // …
+  ),
+) );
+```
+
+Background is the brand-blue gradient shared with the cards carousel (`.cc-section`) —
+never a near-black fill. Icon tiles / dividers use translucent white
+(`rgba(255,255,255,.14/.16)`), the theme's established dark-panel pattern.
+
+---
+
 ## Other partials
 
 List everything with `ls template-parts/` and read each file's top docblock for its
@@ -459,6 +567,93 @@ params: `section-choose-app`, `section-use-kit`, `section-quick-start`,
 `section-use-kit` (sticky illustration + benefits list) supports **`'sticky' => true`** (the
 left image sticks while the list scrolls, like `.shs-whatis`) and **inline-SVG benefit icons**
 (pass a raw `<svg stroke="#fff"…>` instead of a filename for a thematic icon on the blue tile).
+Also: **`'outro_icon' => '<svg…>'`** renders the `outro` as a soft-blue **callout box** with the
+icon (wrap the lead in `<strong>` for a bold kicker), and **`'modifier' => 'use-kit-cards'`** makes
+each benefit row lift into a white card on hover (elevation + shadow).
+
+---
+
+## Core UI primitives (LOCKED — reuse exactly, never restyle)
+
+Below the section blocks sit four **primitives**. Unlike blocks (which you compose),
+these are the single canonical form for their job. There is exactly one of each — reuse
+the class/markup verbatim; do **not** invent a variant, change the radius/colour, or
+hand-roll a new one. All are tokenised.
+
+### P1. CTA buttons — `.btn .btn-primary` / `.btn-outline`
+
+The brand CTAs (Get started / Book a Call). Radius `--radius-btn` (12px), Open Sans 600.
+Primary = `--primary` bg + white (hover `--primary-dark` + lift); outline = transparent +
+`2px solid --primary` + primary text (hover `--primary-light`). On dark panels use
+`.btn-light` (white bg) / `.btn-outline-light`.
+
+![CTA buttons](screenshots/primitive-buttons.png)
+
+```html
+<a href="https://app.chat.ethora.com/register" class="btn btn-primary" id="accregred">Get started</a>
+<a href="#" class="btn btn-outline book-demo-button">Book a Call</a>   <!-- opens the Book-a-Call modal -->
+```
+
+Global CSS lives in `css/tokens.css` + `css/index.css`. The token-based partial variants
+(`.shs-btn*` in `section-hero`/`section-cta-dark`, `.ppc-btn`) follow the identical spec —
+prefer those inside their own blocks. **Never** create a pill or other-radius CTA.
+
+### P2. Slider / nav (switch) buttons — `.slider-btn`
+
+Prev/next for **any** carousel or slider (as in *Our Case Studies*). 40px (2.5rem) square,
+radius `--radius-btn` (12px), `1px solid --primary` border, transparent bg, `--primary`
+chevron, hover → `--primary-light`, centred. On a dark/brand background add `.light`
+(white border + chevron, hover translucent white).
+
+![Slider nav buttons](screenshots/primitive-slider-btn.png)
+
+```html
+<div class="slider-controls">
+  <button class="slider-btn prev" type="button" aria-label="Previous">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  </button>
+  <button class="slider-btn next" type="button" aria-label="Next">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+  </button>
+</div>
+```
+
+Always `type="button"` + `aria-label` (icon-only). **Never** invent another nav-button style.
+
+### P3. Toggle switch — `.ppc-toggle` / `.ppc-tg`
+
+Any binary/segmented toggle (Monthly/Yearly, tabs). A `--radius-pill` track on `--white`
+with a `--border`; segments in Open Sans 600; the **active segment filled `--ink` + white
+text**. An inline accent (e.g. a "15% OFF" tag) uses `--primary` (`--accent-on-dark` when active).
+
+![Toggle switch](screenshots/primitive-toggle.png)
+
+```html
+<div class="ppc-toggle" role="group" aria-label="Billing period">
+  <button type="button" class="ppc-tg active" data-bill="monthly">Monthly</button>
+  <button type="button" class="ppc-tg" data-bill="yearly">Yearly <span class="ppc-off">15% OFF</span></button>
+</div>
+```
+
+CSS ships inside `section-pricing-cards.php`. **Never** build a bespoke switch/toggle.
+
+### P4. Brand-blue section background — `--gradient-brand`
+
+The single blue-fill background for a **full-bleed section**: token `--gradient-brand`
+(`linear-gradient(135deg, var(--brand-500) 0%, var(--brand-800) 100%)`). Used by the Blue
+statement band (#3), Cards carousel (#13 `.cc-section`), Stats band (#18 `.sb-section`) and
+the Feature-spotlight flagship. White text on it: heading `#fff`, body `--text-on-dark`,
+eyebrow `--accent-on-dark`.
+
+![Brand-blue section background](screenshots/split-card-dark.png)
+
+```css
+.my-section { background: var(--gradient-brand); padding: var(--section-y) var(--section-x); }
+```
+
+**Never** hand-write that `linear-gradient` inline — reference the token, so one edit
+recolours every blue section. This is the *blue* fill; near-black is never allowed, and
+dark/CTA panels use the separate `.shs-dark` image treatment (#9).
 
 ---
 
@@ -474,5 +669,6 @@ node <script>.mjs ".claude/skills/ethora-theme/references/screenshots"
 ```
 
 Selectors: `.shs-split-section`, `.shs-kf-section`, `.shs-fc-section`,
-`section:has(.shs-bento-grid)`, `.cta-dark`, `.ppc`, `.tcar`, `.case-studies`.
+`section:has(.shs-bento-grid)`, `.cta-dark`, `.ppc`, `.tcar`, `.case-studies`,
+`.dep-section`, `.cmpl-section`, `.sb-section`.
 Re-run after editing a block to refresh its screenshot.

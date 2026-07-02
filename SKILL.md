@@ -66,13 +66,26 @@ Full detail and the token table are in [`DESIGN.md`](../../../DESIGN.md). The ha
   *centred* columns may use `--container-lg/md/sm` or `--measure`.
 - **Radius:** `--radius-*` tokens; CTA buttons are `--radius-btn` (12px); cards
   `--radius-2xl` (18) / big cards `--radius-3xl` (24); chips/avatars `--radius-pill`.
-- **Buttons:** the brand CTAs (Get started / Book a Call) — `--radius-btn`, Open Sans
+- **Buttons (CTA):** the brand CTAs (Get started / Book a Call) — `--radius-btn`, Open Sans
   600; primary = `--primary` bg + white (hover `--primary-dark`); outline = `2px solid
-  --primary` + primary text. No pill or other-radius CTAs.
+  --primary` + primary text. **Reuse the canonical classes — never restyle a button:**
+  `.btn .btn-primary` / `.btn-outline` / `.btn-light` / `.btn-outline-light` (global, `css/index.css`),
+  or the token-based partial variants that follow the exact same rule (`.shs-btn*` in
+  `section-hero`/`section-cta-dark`, `.ppc-btn`). No pill or other-radius CTAs. See
+  *Core UI primitives* in [`references/BLOCKS.md`](references/BLOCKS.md).
 - **Slider / nav (switch) buttons:** prev/next for any carousel/slider use ONLY the brand
   `.slider-btn` standard (as in *Our Case Studies*) — 40px (2.5rem) square, radius
   `--radius-btn` (12px), `1px solid --primary` border, transparent bg, `--primary` chevron,
-  hover → `--primary-light`, centred. Never invent another nav-button style.
+  hover → `--primary-light`, centred. Reuse the `.slider-btn` class — never invent another
+  nav-button style.
+- **Toggle switch:** any binary/segmented toggle (Monthly/Yearly, tabs) uses ONLY the brand
+  `.ppc-toggle` / `.ppc-tg` standard (as in the pricing cards) — a `--radius-pill` track on
+  `--white` with a `--border`, and the active segment filled `--ink` + white text. Reuse this
+  markup; never build a bespoke switch. See *Core UI primitives* in [`references/BLOCKS.md`](references/BLOCKS.md).
+- **Brand-blue section background:** the ONLY blue-fill background for a full-bleed section is
+  the token **`--gradient-brand`** (`brand-500 → brand-800`, 135deg) — the statement band, cards
+  carousel and stats band all use it. Never hand-write that `linear-gradient` inline; reference
+  the token. (Dark/CTA panels are different — those use the `.shs-dark` image treatment below.)
 - **Header:** one header on every page — the light-blue gradient bar (never plain
   white). A page's first section clears the fixed header with `padding-top:
   var(--hero-pt)`.
@@ -99,6 +112,11 @@ Each is a `template-parts/section-*.php` partial. Reuse via `get_template_part()
 Screenshots, full prop tables and copy-paste snippets are in
 **[`references/BLOCKS.md`](references/BLOCKS.md)** — read it before building a section.
 
+> Below the section blocks, BLOCKS.md also documents the **Core UI primitives** —
+> the single canonical CTA buttons, slider/nav buttons, toggle switch, and the
+> `--gradient-brand` blue section background. These are locked: reuse them exactly,
+> never restyle or reinvent.
+
 | Block | Partial | What it is |
 |---|---|---|
 | **Hero** | `section-hero.php` | Page opener: gradient bg, eyebrow/h1/lead + CTA buttons + trust row, product visual, optional compliance strip. |
@@ -116,6 +134,9 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Case studies** | `section-case-studies.php` | Case-study cards row. |
 | **Comparison** | `section-comparison.php` | Capability vs negative (✕) vs highlighted recommended (✓) column; responsive (cards on mobile). |
 | **Feature spotlight** | `section-feature-spotlight.php` | Big flagship blue card (chat mockup + chips) + numbered white cards. For a headline capability + supporting features. |
+| **Deployment stack** | `section-deployment.php` | Header + platform chips + dashed "your VPC" container laying an architecture diagram out as native cards (stacked layer groups + arrows, tinted core group, data/optional row) + legend. |
+| **Compliance cards** | `section-compliance-cards.php` | Grid of white cards (default 4-up): soft-blue icon tile + green "✓ STATUS" tag, heading, text. For trust/compliance strips or "capability + status" grids. |
+| **Stats band** | `section-stats.php` | Full-bleed brand-blue gradient band (same as `.cc-section`) with a header + flat divided stats: icon tile + big number + label. For "by the numbers" strips. |
 
 Other partials exist (`section-choose-app`, `section-use-kit`, `section-quick-start`,
 `section-book-call-modal`, `section-pricing`, …) — list them with
