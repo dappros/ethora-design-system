@@ -96,6 +96,11 @@ The two CTAs — **Get started** and **Book a Call** — are the brand standard 
 Never invent pill/other-radius CTAs. Reuse `.btn .btn-primary` / `.btn-outline`, or the
 token-based button classes (`.shs-btn`, `.ppc-btn`, `.cta-dark-btn`) which follow this rule.
 
+**Where the CSS lives (RULE).** The canonical, token-based CSS for all three interactive
+primitives — CTA buttons, slider/nav (switch) buttons and the toggle switch — ships in
+**`css/primitives.css`**. Load it after `css/tokens.css` and use those classes; never
+re-declare the styles in a page or partial.
+
 **Slider / nav (switch) buttons (RULE).** Prev/next buttons for any carousel or slider are the
 brand `.slider-btn` standard (as in the *Our Case Studies* section): **40px (2.5rem) square,
 radius `--radius-btn` (12px), `1px solid var(--primary)` border, transparent background,

@@ -41,6 +41,10 @@ The human-readable guide to the system is [`DESIGN.md`](DESIGN.md) (palette, typ
 spacing, radii, containers + a11y/perf quality floor). The reference page, fully on
 tokens, is `page-self-hosted-server.php`.
 
+The interactive primitives — CTA buttons, slider/nav (switch) buttons and the toggle
+switch — get their canonical, token-based CSS from **`css/primitives.css`** (loaded after
+`tokens.css`). Reuse those classes; never re-declare the styles in a page or partial.
+
 ### Hard markup rules (DO NOT break)
 
 1. **Content width — max 1200px.** Never exceed `--container-xl` (1200px, the header

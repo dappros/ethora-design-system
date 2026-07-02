@@ -1,0 +1,186 @@
+/* ============================================================
+   Ethora — Core UI primitives (CANONICAL, token-based)
+   ------------------------------------------------------------
+   The SINGLE source for the brand's interactive primitives:
+   CTA buttons, slider/nav (switch) buttons, and the toggle switch.
+
+   Load AFTER css/tokens.css (these rules reference its variables):
+     <link rel="stylesheet" href="css/tokens.css">
+     <link rel="stylesheet" href="css/primitives.css">
+
+   Use these exact classes for every button / slider control / toggle —
+   never restyle or reinvent them. All values come from tokens.css, so a
+   token edit recolours/reshapes every primitive at once.
+   ============================================================ */
+
+/* ============================================================
+   1. CTA BUTTONS — .btn + variant
+   ------------------------------------------------------------
+   Get started / Book a Call and every other CTA. Radius --radius-btn,
+   Open Sans 600. On light surfaces use .btn-primary / .btn-outline;
+   on dark/brand panels use .btn-light / .btn-ghost.
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  padding: 16px 28px;
+  border: 2px solid transparent;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-body);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-md);
+  line-height: 1.1;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease;
+}
+
+/* Primary (Get started) — filled brand blue */
+.btn-primary {
+  background-color: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+.btn-primary:hover,
+.btn-primary:focus-visible {
+  background-color: var(--primary-dark);
+  border-color: var(--primary-dark);
+  color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px var(--primary-tint-10);
+}
+.btn-primary:focus-visible {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+
+/* Outline (Book a Call) — transparent, brand-blue border + text */
+.btn-outline {
+  background-color: transparent;
+  color: var(--primary);
+  border-color: var(--primary);
+}
+.btn-outline:hover,
+.btn-outline:focus-visible {
+  background-color: var(--primary-light);
+  transform: translateY(-2px);
+}
+
+/* Light — white button for use ON dark/brand panels */
+.btn-light {
+  background-color: var(--white);
+  color: var(--primary);
+  border-color: var(--white);
+}
+.btn-light:hover,
+.btn-light:focus-visible {
+  background-color: rgba(255, 255, 255, .9);
+  transform: translateY(-2px);
+}
+
+/* Ghost — translucent outline for use ON dark/brand panels */
+.btn-ghost {
+  background-color: rgba(255, 255, 255, .12);
+  color: var(--white);
+  border-color: rgba(255, 255, 255, .3);
+}
+.btn-ghost:hover,
+.btn-ghost:focus-visible {
+  background-color: rgba(255, 255, 255, .2);
+  transform: translateY(-2px);
+}
+
+/* ============================================================
+   2. SLIDER / NAV (SWITCH) BUTTONS — .slider-btn
+   ------------------------------------------------------------
+   Prev/next for ANY carousel or slider (as in "Our Case Studies").
+   40px (2.5rem) square, radius --radius-btn, 1px --primary border,
+   transparent, --primary chevron, hover --primary-light. Put the
+   chevron <svg stroke="currentColor"> inside. Add .light on a
+   dark/brand background (white border + chevron).
+   ============================================================ */
+.slider-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-16);
+}
+.slider-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-btn);
+  background-color: transparent;
+  color: var(--primary);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.slider-btn:hover,
+.slider-btn:focus-visible {
+  background-color: var(--primary-light);
+}
+.slider-btn svg {
+  color: var(--primary);
+}
+/* on a dark / brand-blue background */
+.slider-btn.light {
+  border-color: var(--white);
+  color: var(--white);
+}
+.slider-btn.light:hover,
+.slider-btn.light:focus-visible {
+  background-color: rgba(255, 255, 255, .1);
+}
+.slider-btn.light svg {
+  color: var(--white);
+}
+
+/* ============================================================
+   3. TOGGLE SWITCH — .ppc-toggle / .ppc-tg
+   ------------------------------------------------------------
+   Any binary/segmented toggle (Monthly/Yearly, tabs). Pill track on
+   --white with a --border; the active segment is filled --ink + white
+   text. An inline accent tag (e.g. "15% OFF") uses --primary. Toggle
+   the .active class on click (JS lives with the block that uses it).
+   ============================================================ */
+.ppc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+}
+.ppc-tg {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: 9px 20px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: none;
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  color: var(--text-body);
+  cursor: pointer;
+  transition: background .2s ease, color .2s ease;
+}
+.ppc-tg.active {
+  background: var(--ink);
+  color: var(--white);
+}
+.ppc-off {
+  font-size: 11px;
+  font-weight: var(--fw-bold);
+  color: var(--primary);
+}
+.ppc-tg.active .ppc-off {
+  color: var(--accent-on-dark);
+}
