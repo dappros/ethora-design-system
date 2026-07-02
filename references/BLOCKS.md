@@ -580,6 +580,16 @@ these are the single canonical form for their job. There is exactly one of each 
 the class/markup verbatim; do **not** invent a variant, change the radius/colour, or
 hand-roll a new one. All are tokenised.
 
+> **The canonical CSS for the primitives ships in `css/primitives.css`.** Load it after
+> `css/tokens.css` and use these exact classes — do **not** re-implement the rules in your
+> own stylesheet. One import gives every consumer the brand's buttons, slider/nav buttons
+> and toggle, wired to the tokens.
+>
+> ```html
+> <link rel="stylesheet" href="css/tokens.css">
+> <link rel="stylesheet" href="css/primitives.css">
+> ```
+
 ### P1. CTA buttons — `.btn .btn-primary` / `.btn-outline`
 
 The brand CTAs (Get started / Book a Call). Radius `--radius-btn` (12px), Open Sans 600.
@@ -594,9 +604,10 @@ Primary = `--primary` bg + white (hover `--primary-dark` + lift); outline = tran
 <a href="#" class="btn btn-outline book-demo-button">Book a Call</a>   <!-- opens the Book-a-Call modal -->
 ```
 
-Global CSS lives in `css/tokens.css` + `css/index.css`. The token-based partial variants
-(`.shs-btn*` in `section-hero`/`section-cta-dark`, `.ppc-btn`) follow the identical spec —
-prefer those inside their own blocks. **Never** create a pill or other-radius CTA.
+**CSS:** `css/primitives.css` (`.btn` + `.btn-primary` / `.btn-outline` / `.btn-light` /
+`.btn-ghost`). In the live theme the same rules also exist in `css/index.css`; the
+token-based partial variants (`.shs-btn*` in `section-hero`/`section-cta-dark`, `.ppc-btn`)
+follow the identical spec. **Never** create a pill or other-radius CTA.
 
 ### P2. Slider / nav (switch) buttons — `.slider-btn`
 
@@ -618,6 +629,7 @@ chevron, hover → `--primary-light`, centred. On a dark/brand background add `.
 </div>
 ```
 
+**CSS:** `css/primitives.css` (`.slider-controls`, `.slider-btn`, `.slider-btn.light`).
 Always `type="button"` + `aria-label` (icon-only). **Never** invent another nav-button style.
 
 ### P3. Toggle switch — `.ppc-toggle` / `.ppc-tg`
@@ -635,7 +647,8 @@ text**. An inline accent (e.g. a "15% OFF" tag) uses `--primary` (`--accent-on-d
 </div>
 ```
 
-CSS ships inside `section-pricing-cards.php`. **Never** build a bespoke switch/toggle.
+**CSS:** `css/primitives.css` (`.ppc-toggle`, `.ppc-tg`, `.ppc-off`); the block that uses it
+wires the `.active` toggle in JS (see `section-pricing-cards.php`). **Never** build a bespoke switch/toggle.
 
 ### P4. Brand-blue section background — `--gradient-brand`
 
