@@ -6,7 +6,7 @@ other stylesheet. Edit a value there and it cascades across the whole site.
 
 > **Rule #1 — use tokens, not literals.** When building or editing a page/section,
 > reference `var(--token)` for every colour, size, spacing, radius, weight and
-> width. Do **not** hardcode hex/px values — that's the "отсебятина" we're
+> width. Do **not** hardcode hex/px values — that's the ad-hoc, off-brand drift we're
 > avoiding. If a value you need doesn't exist as a token, add it to `tokens.css`
 > first, then use it.
 
@@ -108,7 +108,7 @@ class — never invent another nav-button style.
 + white text** (an inline accent like a "15% OFF" tag uses `--primary`). Reuse this markup — never
 build a bespoke switch/toggle.
 
-## Container widths ("длина") — MAX 1200, ALL SECTIONS SAME WIDTH (HARD RULE)
+## Container widths — MAX 1200, ALL SECTIONS SAME WIDTH (HARD RULE)
 **This is critical and non-negotiable:**
 1. **Content NEVER exceeds 1200px.** The outer bound is `--container-xl` (**1200**) — the
    header container width. Nothing on any page goes wider.

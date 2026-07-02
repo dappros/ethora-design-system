@@ -32,7 +32,7 @@ follow it, you cannot drift outside the brand. Two things govern every change:
 **Build only with `var(--token)`.** Never hardcode a hex colour or a px value for
 colour / font / spacing / radius / width. If a value you need doesn't exist as a
 token, **add it to `css/tokens.css` first**, then use it. This is the "no
-отсебятина" rule — it's what keeps every page on-brand.
+ad-hoc drift" rule — it's what keeps every page on-brand.
 
 ## Workflow — do this every time
 

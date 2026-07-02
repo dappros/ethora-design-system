@@ -1,99 +1,98 @@
 # CLAUDE.md
 
-## Frontend / вёрстка
+## Frontend / markup
 
-Для любых задач, затрагивающих вёрстку, стили или UI (HTML, CSS/SCSS, разметка
-страниц, компоненты, лендинги, шаблоны `page-*.php` с разметкой) — всегда
-применять skill `ethora-design` перед написанием кода.
+For any task that touches markup, styles or UI (HTML, CSS/SCSS, page markup,
+components, landing pages, `page-*.php` templates with markup) — always apply the
+`ethora-design` skill before writing any code.
 
-`ethora-design` — объединённый скилл: методология и планка качества из
-Claude Design (`frontend-design`) + брендовая дизайн-система Ethora как источник
-правды по конкретным значениям. Приоритет: процесс/композиция/иерархия — от
-методологии, но цвет/шрифт/отступы/радиусы/иконки — всегда токены Ethora
-(перекрывают любые «свободные» решения). Ключевое: бренд-синий `#0052CD`
-(`--primary`) на канвасе `--background`; **единственный шрифт — Open Sans** (все
-`--font-*` → Open Sans, иерархия только весом/размером); радиусы `--radius-btn`
-12px (кнопки) / `--radius-2xl` 18px (карточки) / `--radius-3xl` 24px (крупные).
-Полный гайд — в `readme.md` внутри скилла.
+`ethora-design` is a combined skill: the methodology and quality bar from
+Claude Design (`frontend-design`) + the Ethora brand design system as the source of
+truth for concrete values. Priority: process/composition/hierarchy come from the
+methodology, but colour/font/spacing/radius/icons are always Ethora tokens (they
+override any "free" choice). Key points: brand blue `#0052CD` (`--primary`) on the
+`--background` canvas; **the only font is Open Sans** (every `--font-*` → Open Sans,
+hierarchy by weight/size only); radii `--radius-btn` 12px (buttons) / `--radius-2xl`
+18px (cards) / `--radius-3xl` 24px (large). Full guide — in `readme.md` inside the skill.
 
-> Внутрипроектный скилл **`.claude/skills/ethora-theme/`** (едет вместе с темой,
-> можно передать другому разработчику) дублирует эти жёсткие правила и содержит
-> **каталог готовых блоков со скриншотами и пропсами** (`references/BLOCKS.md`).
-> Он — основной источник для редизайна и новых страниц; применять его для любой
-> вёрстки в этой теме.
+> The in-project skill **`.claude/skills/ethora-theme/`** (ships with the theme, can be
+> handed to another developer) restates these hard rules and contains a **catalog of
+> ready-made blocks with screenshots and props** (`references/BLOCKS.md`). It is the
+> primary source for redesigns and new pages; apply it for any markup in this theme.
 
-После сборки/изменения заметного UI — прогонять ревью скиллами плагина
-`design` (Claude Cowork, `design@knowledge-work-plugins`): `design-critique`
-(дизайн-критика) и `accessibility-review` (a11y-аудит). Для дизайн-системных
-решений — `design-system`, для микрокопирайтинга — `ux-copy`. Это дополняет
-генеративный `ethora-design`: тот строит, а `design` — проверяет.
+After building/changing noticeable UI — run a review with the `design` plugin skills
+(Claude Cowork, `design@knowledge-work-plugins`): `design-critique` (design critique)
+and `accessibility-review` (a11y audit). For design-system decisions — `design-system`,
+for microcopy — `ux-copy`. This complements the generative `ethora-design`: that one
+builds, `design` checks.
 
-Это не относится к чисто backend-задачам: PHP-логика, хуки, конфиги, багфиксы
-без изменения разметки/стилей.
+This does not apply to pure backend tasks: PHP logic, hooks, configs, bugfixes that
+don't change markup/styles.
 
-## Дизайн-токены (источник правды в репозитории)
+## Design tokens (source of truth in the repository)
 
-Все значения дизайна (цвет, размеры текста, вес, межстрочный, трекинг, отступы,
-радиусы, ширины-контейнеры, тени, z-index) заданы один раз в
-[`css/tokens.css`](css/tokens.css) (один `:root`, грузится глобально первым).
-**Строить и править вёрстку только через `var(--token)` — без хардкода hex/px.**
-Нужного значения нет — сначала добавить токен в `tokens.css`, потом использовать.
+All design values (colour, text sizes, weight, line-height, tracking, spacing, radii,
+container widths, shadows, z-index) are defined once in
+[`css/tokens.css`](css/tokens.css) (one `:root`, loaded globally first).
+**Build and edit markup only through `var(--token)` — no hardcoded hex/px.**
+If a value you need doesn't exist — first add the token to `tokens.css`, then use it.
 
-Человекочитаемый гайд по системе — [`DESIGN.md`](DESIGN.md) (палитра, типошкала,
-отступы, радиусы, контейнеры + quality-floor a11y/perf). Эталонная страница,
-полностью на токенах, — `page-self-hosted-server.php`.
+The human-readable guide to the system is [`DESIGN.md`](DESIGN.md) (palette, type scale,
+spacing, radii, containers + a11y/perf quality floor). The reference page, fully on
+tokens, is `page-self-hosted-server.php`.
 
-### Жёсткие правила вёрстки (НЕ нарушать)
+### Hard markup rules (DO NOT break)
 
-1. **Ширина контента — максимум 1200px.** Никогда не выходим за `--container-xl` (1200px,
-   ширина контейнера хедера). Без хардкода ширин (никаких `max-width: 1240/1140px`).
-2. **Все секции одной длины и на одном уровне.** Каждая полноширинная секция использует
-   обёртку `max-width: var(--content-max)` (1152) + `margin: 0 auto`, а секция даёт боковой
-   отступ `--section-x` (24px). Края всех секций совпадают друг с другом И с хедером на любой
-   ширине экрана. Не задавать секциям разный max-width/гаттер — это одна сплошная колонка.
-3. **Отступы — строго 16px-шкала** (`--space-16/32/48/64/80/96`; `--space-8` — только микро),
-   боковой гаттер 24px (`--section-x`). Без ручных px.
-4. **Только Open Sans** (все `--font-*` → Open Sans; без Newsreader/IBM Plex/Varela/Inter).
-5. **Кнопки (CTA)** Get started / Book a Call — бренд-стандарт: радиус `--radius-btn` (12px),
-   primary = `var(--primary)` + белый, outline = `2px var(--primary)` + синий текст. Переиспользовать
-   канонические классы, НЕ перестилизовывать: `.btn .btn-primary` / `.btn-outline` /
-   `.btn-light` / `.btn-outline-light` (на тёмном), либо токен-варианты партиалов
-   (`.shs-btn*`, `.ppc-btn`) с тем же спеком. Без pill/другого радиуса.
-6. **Хедер** один на всех страницах — голубой градиент (не белый).
-7. **Кнопки переключения (slider/nav) — ТОЛЬКО стандарт `.slider-btn`** (как в «Our Case Studies»):
-   квадрат 40px (2.5rem), радиус `--radius-btn` (12px), рамка `1px solid var(--primary)`, фон
-   прозрачный, шеврон `var(--primary)`, hover → `var(--primary-light)`. По центру. Любые prev/next
-   в каруселях/слайдерах — только такие, не изобретать другие.
-8. **Тумблер/свитч — ТОЛЬКО стандарт `.ppc-toggle` / `.ppc-tg`** (как в pricing): pill-контейнер
-   `--radius-pill` на `--white` с рамкой `--border`, активный сегмент — заливка `--ink` + белый
-   текст (акцент-тег вроде «15% OFF» — `--primary`). Любой бинарный/сегментный переключатель —
-   только такой, не изобретать свой.
-9. **Синий фон секции — ТОЛЬКО токен `--gradient-brand`** (`brand-500 → brand-800`, 135deg): полоса-
-   заявление, cards-carousel, stats, flagship. Не писать этот `linear-gradient` инлайн — только токен.
-   (Это синяя заливка; near-black запрещён, тёмные/CTA-панели — отдельный `.shs-dark` поверх картинки.)
+1. **Content width — max 1200px.** Never exceed `--container-xl` (1200px, the header
+   container width). No hardcoded widths (no `max-width: 1240/1140px`).
+2. **All sections the same width and aligned.** Every full-width section uses a wrapper
+   `max-width: var(--content-max)` (1152) + `margin: 0 auto`, and the section provides the
+   side padding `--section-x` (24px). The edges of all sections match each other AND the
+   header at any screen width. Don't give sections a different max-width/gutter — it's one
+   continuous column.
+3. **Spacing — strictly the 16px scale** (`--space-16/32/48/64/80/96`; `--space-8` is micro
+   only), side gutter 24px (`--section-x`). No manual px.
+4. **Open Sans only** (every `--font-*` → Open Sans; no Newsreader/IBM Plex/Varela/Inter).
+5. **Buttons (CTA)** Get started / Book a Call — brand standard: radius `--radius-btn` (12px),
+   primary = `var(--primary)` + white, outline = `2px var(--primary)` + blue text. Reuse the
+   canonical classes, do NOT restyle: `.btn .btn-primary` / `.btn-outline` /
+   `.btn-light` / `.btn-outline-light` (on dark), or the token-based partial variants
+   (`.shs-btn*`, `.ppc-btn`) with the same spec. No pill/other radius.
+6. **Header** — one across all pages — the light-blue gradient (not white).
+7. **Slider/nav (switch) buttons — ONLY the `.slider-btn` standard** (as in "Our Case Studies"):
+   40px (2.5rem) square, radius `--radius-btn` (12px), `1px solid var(--primary)` border,
+   transparent background, `var(--primary)` chevron, hover → `var(--primary-light)`. Centred. Any
+   prev/next in carousels/sliders — only these, don't invent others.
+8. **Toggle/switch — ONLY the `.ppc-toggle` / `.ppc-tg` standard** (as in pricing): a pill container
+   `--radius-pill` on `--white` with a `--border`, the active segment filled `--ink` + white
+   text (an accent tag like "15% OFF" — `--primary`). Any binary/segmented toggle —
+   only this one, don't invent your own.
+9. **Blue section background — ONLY the `--gradient-brand` token** (`brand-500 → brand-800`, 135deg):
+   statement band, cards-carousel, stats, flagship. Don't write that `linear-gradient` inline — only the token.
+   (This is the blue fill; near-black is forbidden, dark/CTA panels use the separate `.shs-dark` over an image.)
 
-## Переиспользуемые блоки (`template-parts/`)
+## Reusable blocks (`template-parts/`)
 
-Перед тем как верстать новую секцию — **проверить каталог и переиспользовать
-готовый блок** вместо изобретения своей разметки. Каталог со скриншотами, пропсами
-и готовыми сниппетами: `.claude/skills/ethora-theme/references/BLOCKS.md`.
+Before building a new section — **check the catalog and reuse a ready-made block**
+instead of inventing your own markup. Catalog with screenshots, props and ready-made
+snippets: `.claude/skills/ethora-theme/references/BLOCKS.md`.
 
-Готовые партиалы (подключать через `get_template_part`):
-- `section-hero.php` — hero страницы: градиент, eyebrow/h1/lead + кнопки + trust, визуал, compliance-строка.
-- `section-split-card.php` — градиентная карточка «текст + изображение» (`reverse`); `dark: true` — синяя полоса во всю ширину.
-- `section-key-features.php` — авто-аккордеон с прогресс-лоадером + изображение.
-- `section-feature-cards.php` — сетка карточек «цветная иконка-кружок + заголовок + текст».
-- `section-why.php` — scroll-telling: закреплённый заголовок + меняющаяся картинка слева, скользящий текст по шагам справа; на мобиле аккордеон.
-- `section-cards-carousel.php` — горизонтальный слайдер тёмных карточек (следующая выглядывает), prev/next + drag/swipe; карточка = заголовок + блоки с лейблами.
-- `section-comparison.php` — сравнение: capability + «плохая» колонка (красный ✕) + выделенная рекомендованная (зелёный ✓, бейдж RECOMMENDED); адаптив (на мобиле карточки).
-- `section-feature-spotlight.php` — flagship синяя карточка (чат-мокап + чипы) + нумерованные белые карточки; адаптив.
-- `section-link-cards.php` — сетка карточек-ссылок (иконка + заголовок + текст + «Read more →»), на hover заливается синим. Для related-ссылок / SDK / индустрий.
-- `section-cta-dark.php` — тёмная брендовая CTA-панель (для ЛЮБОГО тёмного CTA).
-- `section-deployment.php` — deployment/архитектура: хедер + чипы-платформы + пунктирный контейнер «ваш VPC» со схемой из карточек (слои со стрелками, brand-tinted core-группа, ряд data/optional) + легенда; всё через пропсы, дефолты = стек Ethora.
-- `section-compliance-cards.php` — сетка белых карточек (по умолчанию 4 в ряд): голубая иконка-плитка + зелёный тег «✓ STATUS», заголовок, текст. Для compliance/trust-строк (GDPR/HIPAA/SOC 2) или любых «capability + статус».
-- `section-stats.php` — полоса во всю ширину на бренд-синем градиенте (как у `.cc-section`) с хедером и плоскими метриками через тонкие разделители: иконка-плитка + крупное число + подпись. Для блоков «в цифрах».
-- `section-pricing-cards.php` · `section-testimonials-carousel.php` · `section-case-studies.php` и др.
+Ready-made partials (include via `get_template_part`):
+- `section-hero.php` — page hero: gradient, eyebrow/h1/lead + buttons + trust, visual, compliance strip.
+- `section-split-card.php` — gradient "text + image" card (`reverse`); `dark: true` — full-width blue band.
+- `section-key-features.php` — auto-accordion with a progress loader + image.
+- `section-feature-cards.php` — grid of "coloured circle icon + heading + text" cards.
+- `section-why.php` — scroll-telling: pinned heading + changing image on the left, sliding per-step text on the right; accordion on mobile.
+- `section-cards-carousel.php` — horizontal slider of dark cards (the next one peeks), prev/next + drag/swipe; card = heading + labelled blocks.
+- `section-comparison.php` — comparison: capability + "bad" column (red ✕) + highlighted recommended (green ✓, RECOMMENDED badge); responsive (cards on mobile).
+- `section-feature-spotlight.php` — flagship blue card (chat mockup + chips) + numbered white cards; responsive.
+- `section-link-cards.php` — grid of link cards (icon + heading + text + "Read more →"), fills blue on hover. For related links / SDKs / industries.
+- `section-cta-dark.php` — dark brand CTA panel (for ANY dark CTA).
+- `section-deployment.php` — deployment/architecture: header + platform chips + dashed "your VPC" container with a card diagram (layers with arrows, brand-tinted core group, data/optional row) + legend; all via props, defaults = the Ethora stack.
+- `section-compliance-cards.php` — grid of white cards (4 per row by default): light-blue icon tile + green "✓ STATUS" tag, heading, text. For compliance/trust strips (GDPR/HIPAA/SOC 2) or any "capability + status".
+- `section-stats.php` — full-width band on the brand-blue gradient (like `.cc-section`) with a header and flat metrics separated by thin dividers: icon tile + big number + caption. For "by the numbers" blocks.
+- `section-pricing-cards.php` · `section-testimonials-carousel.php` · `section-case-studies.php` and others.
 
-Новый блок, который стоит переиспользовать: делать на токенах, самодостаточным
-(CSS один раз за запрос через флаг в `$GLOBALS`), затем добавить скриншот и запись
-в `references/BLOCKS.md`. Эталон — `page-self-hosted-server.php`.
+A new block worth reusing: build it on tokens, self-contained (CSS once per request via
+a flag in `$GLOBALS`), then add a screenshot and an entry in `references/BLOCKS.md`.
+Reference — `page-self-hosted-server.php`.
