@@ -41,6 +41,8 @@
      for edge-to-edge sections (statement band, cards carousel, stats band). Never
      hand-write this linear-gradient inline — always reference this token. */
   --gradient-brand: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-800) 100%);
+  /* Bright brand-blue gradient for full-screen hero v2 (white text over it). */
+  --gradient-hero-v2: linear-gradient(135deg, #4188f3 0%, #0640c3 100%);
 
   /* ---- Ink / text ---- */
   --ink:             #0e1a33;   /* headings, strongest text */
