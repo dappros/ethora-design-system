@@ -52,6 +52,7 @@ $hero = wp_parse_args(
 		'rhombus'      => true,
 		'compliance'   => array(),
 		'full_height'  => true,
+		'variant'      => '',   // '' = default; 'v2' = full-screen bright-blue hero, white text
 	)
 );
 
@@ -102,14 +103,18 @@ if ( $hero_assets ) {
   .ehero-btn { display: inline-block; font-family: var(--font-body); font-size: var(--fs-md); font-weight: var(--fw-semibold);
     padding: 14px 28px; border-radius: var(--radius-btn); text-decoration: none; cursor: pointer; border: 2px solid transparent;
     transition: background .2s ease, color .2s ease, border-color .2s ease, transform .2s ease, box-shadow .2s ease; line-height: 1.1; }
-  .ehero-btn--primary { background: var(--primary); color: #fff; }
-  .ehero-btn--primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,82,205,.2); }
-  .ehero-btn--outline { background: transparent; color: var(--primary); border-color: var(--primary); }
-  .ehero-btn--outline:hover { background: var(--primary-light); transform: translateY(-2px); }
-  .ehero-btn--light { background: #fff; color: var(--ink); }
-  .ehero-btn--light:hover { background: var(--tint); }
-  .ehero-btn--ghost { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.3); }
-  .ehero-btn--ghost:hover { background: rgba(255,255,255,.2); }
+  /* scoped under .ehero so a page-level `a { color }` rule can't override the button colours */
+  .ehero .ehero-btn--primary { background: var(--primary); color: #fff; }
+  .ehero .ehero-btn--primary:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,82,205,.2); }
+  .ehero .ehero-btn--outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+  .ehero .ehero-btn--outline:hover { background: var(--primary-light); transform: translateY(-2px); }
+  .ehero .ehero-btn--light { background: #fff; color: var(--primary); }
+  .ehero .ehero-btn--light:hover { background: var(--tint); }
+  .ehero .ehero-btn--ghost { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.3); }
+  .ehero .ehero-btn--ghost:hover { background: rgba(255,255,255,.2); }
+  /* white outline — for use ON a dark/brand hero (fills white, text → blue on hover) */
+  .ehero .ehero-btn--outlinelight { background: transparent; color: var(--white); border-color: var(--white); }
+  .ehero .ehero-btn--outlinelight:hover { background: var(--white); color: var(--primary); transform: translateY(-2px); }
   /* trust-inline (green check items) */
   .ehero-trust { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-16) var(--space-32); margin-top: var(--space-16); }
   .ehero-trust .ti { display: inline-flex; align-items: center; gap: var(--space-8); font-size: var(--fs-sm); font-weight: var(--fw-semibold); color: var(--text-body); }
@@ -126,13 +131,45 @@ if ( $hero_assets ) {
     .ehero-grid { grid-template-columns: 1fr; gap: var(--space-32); }
     .ehero-media { order: 2; }
   }
+
+  /* ===== HERO v2 — full-screen bright-blue gradient, white text ===== */
+  .ehero.is-v2 { background: var(--gradient-hero-v2); }
+  .ehero.is-v2 .ehero-rh.is-top { opacity: 0.1; }
+  .ehero.is-v2 .ehero-rh.is-bottom { opacity: 0.1; }
+  .ehero.is-v2 .ehero-eyebrow { color: var(--white); opacity: .9; }
+  .ehero.is-v2 .ehero-text h1 { color: var(--white); }
+  .ehero.is-v2 .ehero-lead { color: rgba(255,255,255,.92); }
+  .ehero.is-v2 .ehero-trust .ti { color: var(--white); }
+  .ehero.is-v2 .ehero-trust .ti svg { color: var(--white); }
+  .ehero.is-v2 .ehero-compliance { border-top-color: rgba(255,255,255,.25); }
+  .ehero.is-v2 .ehero-compliance-label { color: var(--white); }
+  .ehero.is-v2 .ehero-compliance-items { color: rgba(255,255,255,.85); }
+  /* v2 media = a figure pinned to the bottom-right corner, sized by viewport HEIGHT.
+     clamp(min, min(90vh,52vw), max): ~90% of the screen height on 16:9 monitors, but the
+     52vw term shrinks it on shorter / narrower screens (MacBook) so it never dominates. */
+  .ehero.is-v2 { padding-bottom: 0; }
+  .ehero.is-v2 .ehero-grid { grid-template-columns: 1fr; }
+  .ehero.is-v2 .ehero-text { max-width: 560px; position: relative; z-index: 1; }
+  .ehero.is-v2 .ehero-media--pinned { position: absolute; right: 0; bottom: 0; z-index: 0;
+    margin: 0; height: clamp(360px, min(90vh, 52vw), 1000px); pointer-events: none; line-height: 0; }
+  .ehero.is-v2 .ehero-media--pinned img, .ehero.is-v2 .ehero-media--pinned svg {
+    height: 100%; width: auto; max-width: none; border-radius: 0; display: block; }
+  @media (max-width: 900px) {
+    /* on narrow screens the pinned portrait would overlap the copy — hide it, keep the text hero */
+    .ehero.is-v2 { padding-bottom: clamp(48px,5vw,72px); }
+    .ehero.is-v2 .ehero-media--pinned { display: none; }
+    .ehero.is-v2 .ehero-text { max-width: none; }
+  }
 </style>
 <?php endif; ?>
 
-<section class="ehero<?php echo $hero['full_height'] ? ' is-full' : ''; ?>">
+<section class="ehero<?php echo $hero['full_height'] ? ' is-full' : ''; ?><?php echo ( 'v2' === $hero['variant'] ) ? ' is-v2' : ''; ?>">
   <?php if ( $hero['rhombus'] ) : ?>
   <img src="<?php echo esc_url( $hero_uri . '/images/rhombus.svg' ); ?>" alt="" aria-hidden="true" class="ehero-rh is-top" width="910" height="810" />
   <img src="<?php echo esc_url( $hero_uri . '/images/rhombus-2.svg' ); ?>" alt="" aria-hidden="true" class="ehero-rh is-bottom" width="910" height="810" />
+  <?php endif; ?>
+  <?php if ( 'v2' === $hero['variant'] && $hero_media ) : ?>
+  <div class="ehero-media ehero-media--pinned"><?php echo $hero_media; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img markup ?></div>
   <?php endif; ?>
   <div class="ehero-wrap">
     <div class="ehero-grid">
@@ -168,7 +205,7 @@ if ( $hero_assets ) {
         <?php endif; ?>
       </div>
 
-      <?php if ( $hero_media ) : ?>
+      <?php if ( $hero_media && 'v2' !== $hero['variant'] ) : ?>
       <div class="ehero-media"><?php echo $hero_media; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img markup ?></div>
       <?php endif; ?>
     </div>

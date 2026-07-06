@@ -80,6 +80,19 @@
   transform: translateY(-2px);
 }
 
+/* Outline-light — white outline for use ON dark/brand (hero v2) panels; fills white on hover */
+.btn-outline-light {
+  background-color: transparent;
+  color: var(--white);
+  border-color: var(--white);
+}
+.btn-outline-light:hover,
+.btn-outline-light:focus-visible {
+  background-color: var(--white);
+  color: var(--primary);
+  transform: translateY(-2px);
+}
+
 /* Ghost — translucent outline for use ON dark/brand panels */
 .btn-ghost {
   background-color: rgba(255, 255, 255, .12);

@@ -28,13 +28,14 @@ fixed header via `--hero-pt`.
 | Prop | Type | Notes |
 |---|---|---|
 | `eyebrow` / `title` / `lead` | string | `title` → `<h1>`; all inline-HTML-friendly |
-| `buttons` | array | each: `label`, `style` (`primary`/`outline`/`light`/`ghost`), `url`, `new_tab`, `id`, or `modal: true` (renders a `.book-demo-button` that opens the Book-a-Call modal) |
+| `buttons` | array | each: `label`, `style` (`primary`/`outline`/`light`/`ghost`/`outline-light`), `url`, `new_tab`, `id`, or `modal: true` (renders a `.book-demo-button` that opens the Book-a-Call modal). On a dark/v2 hero use the white styles: `light` (white fill) / `outline-light` (white outline) / `ghost` (translucent) |
 | `trust` | array | green-check items (strings) |
 | `media` | string | theme-relative path or URL — `.svg` is **inlined** (smooth GPU compositing), raster → `<img>` |
 | `media_alt` / `media_width` / `media_height` / `media_html` | | raster alt+dims, or raw markup override |
 | `rhombus` | bool | decorative corner shapes (default `true`) |
 | `compliance` | array | `{ label, items[] }` — bottom strip (optional) |
 | `full_height` | bool | `min-height: 100vh`, content vertically centred below the fixed header (default `true`; set `false` for a compact hero) |
+| `variant` | string | `''` = default (light gradient, dark text). **`'v2'`** = full-screen **bright brand-blue** hero (`--gradient-hero-v2`, `#4188f3 → #0640c3`) with **white** text, rhombus at `opacity .1`, and the **media pinned to the bottom-right corner, sized by viewport height** (`clamp(360px, min(90vh,52vw), 1000px)` — ~90% of the screen height on 16:9, auto-shrinks on MacBook/narrow; hidden ≤900px). Pair with white buttons (`light` + `outline-light`) and set `full_height => true`. Use a person/product cut-out that reads well anchored to the corner |
 
 ```php
 get_template_part( 'template-parts/section-hero', null, array(
@@ -594,8 +595,9 @@ hand-roll a new one. All are tokenised.
 
 The brand CTAs (Get started / Book a Call). Radius `--radius-btn` (12px), Open Sans 600.
 Primary = `--primary` bg + white (hover `--primary-dark` + lift); outline = transparent +
-`2px solid --primary` + primary text (hover `--primary-light`). On dark panels use
-`.btn-light` (white bg) / `.btn-outline-light`.
+`2px solid --primary` + primary text (hover `--primary-light`). On dark / bright-blue (hero
+v2) panels use the **white** variants: `.btn-light` (white fill, blue text) / `.btn-outline-light`
+(transparent, 2px white border, white text → fills white on hover) / `.btn-ghost` (translucent).
 
 ![CTA buttons](screenshots/primitive-buttons.png)
 
@@ -605,7 +607,7 @@ Primary = `--primary` bg + white (hover `--primary-dark` + lift); outline = tran
 ```
 
 **CSS:** `css/primitives.css` (`.btn` + `.btn-primary` / `.btn-outline` / `.btn-light` /
-`.btn-ghost`). In the live theme the same rules also exist in `css/index.css`; the
+`.btn-outline-light` / `.btn-ghost`). In the live theme the same rules also exist in `css/index.css`; the
 token-based partial variants (`.shs-btn*` in `section-hero`/`section-cta-dark`, `.ppc-btn`)
 follow the identical spec. **Never** create a pill or other-radius CTA.
 
