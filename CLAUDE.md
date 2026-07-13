@@ -74,6 +74,16 @@ switch — get their canonical, token-based CSS from **`css/primitives.css`** (l
 9. **Blue section background — ONLY the `--gradient-brand` token** (`brand-500 → brand-800`, 135deg):
    statement band, cards-carousel, stats, flagship. Don't write that `linear-gradient` inline — only the token.
    (This is the blue fill; near-black is forbidden, dark/CTA panels use the separate `.shs-dark` over an image.)
+10. **Section vertical rhythm — never double the y-padding between two non-blue sections.**
+    Two consecutive *light* sections (white / `--surface-alt` / soft-gradient-on-white — anything
+    that is NOT a blue full-bleed band) share a **single `var(--section-y-sm)`** seam, not two
+    stacked paddings. A light section directly above another light section drops its
+    `padding-bottom` to 0; the lower one owns the gap with `padding-top: var(--section-y-sm)`. A
+    light section keeps its bottom padding when the section **below is a blue band** (blue bands
+    always keep their own symmetric padding — the colour must breathe). Do it declaratively: wrap
+    only the light sections in `<div class="shs-sec">` (leave blue bands unwrapped) and add the two
+    `:has()`/adjacent-sibling rules to the page `<style>` (see `page-self-hosted-server.php` and the
+    `ethora-theme` skill's "Section vertical rhythm" rule). Never hand-tune per-section padding to fake it.
 
 ## Reusable blocks (`template-parts/`)
 

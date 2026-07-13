@@ -59,6 +59,23 @@ Full detail and the token table are in [`DESIGN.md`](DESIGN.md). The hard ones:
 - **Spacing:** strict **16px scale** — `--space-16/32/48/64/80/96`. `--space-8` is the
   ONLY sub-16 value (inline icon↔label/chip gaps). Never hand-type `12/22/30px`.
   Horizontal gutter is fixed **24px** (`--section-x`).
+- **Section vertical rhythm — collapse the seam between two non-blue sections (HARD).**
+  When two consecutive full-width sections are both *light* (i.e. NOT a blue / full-bleed
+  brand band — white, `--surface-alt`, or a soft gradient card on white), their y-padding
+  must NOT stack. The seam between them is a **single `var(--section-y-sm)` gap**, never
+  two paddings. Rule: a light section directly followed by another light section drops its
+  `padding-bottom` to `0`; the lower light section owns the gap via `padding-top:
+  var(--section-y-sm)`. **A light section keeps its full `padding-bottom` when the section
+  below is a blue band** (blue full-bleed bands always keep their own symmetric padding on
+  both sides — the colour must breathe), and a light section directly after a blue band
+  keeps its normal top padding. Implement it declaratively, not by hand-tuning each
+  section: wrap ONLY the light sections in `<div class="shs-sec">` (leave blue bands
+  unwrapped so a run never collapses across one), then in the page `<style>`:
+  ```css
+  .shs .shs-sec:has(+ .shs-sec) > * { padding-bottom: 0 !important; }
+  .shs .shs-sec + .shs-sec > *      { padding-top: var(--section-y-sm) !important; }
+  ```
+  (scope the two selectors to the page's `<main>` class). Reference: `page-self-hosted-server.php`.
 - **Width (HARD):** content **never exceeds 1200px** (`--container-xl`). Every
   full-width section wraps at **`--content-max` (1152)** centred, with the section
   providing `--section-x` padding — so all sections share the same edges and line up
