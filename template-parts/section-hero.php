@@ -23,6 +23,10 @@
  *     'media_html' => '',                            // raw markup, overrides 'media' (optional)
  *     'rhombus'     => true,                         // decorative corner shapes (optional, default true)
  *     'full_height' => true,                         // min-height 100vh, content vertically centred (optional, default true)
+ *     'badges'      => array(                          // floating chip cards over the media (optional), bob up/down
+ *       array( 'title' => 'Your infrastructure', 'text' => 'AWS · Azure · GCP · on-premises' ),   // 1st → bottom-left
+ *       array( 'title' => '100% data ownership', 'text' => '…', 'icon' => '<svg…>', 'pos' => 'tr' ), // 2nd → top-right
+ *     ),
  *     'compliance' => array(                          // bottom strip (optional)
  *       'label' => 'Compliance, built in at every layer.',
  *       'items' => array( 'HIPAA', 'SOC 2', 'GDPR' ),
@@ -53,6 +57,7 @@ $hero = wp_parse_args(
 		'compliance'   => array(),
 		'full_height'  => true,
 		'variant'      => '',   // '' = default; 'v2' = full-screen bright-blue hero, white text
+		'badges'       => array(),  // floating chip cards over the media: array of { title, text, icon?, pos? ('bl'|'tr') }
 	)
 );
 
@@ -75,6 +80,22 @@ if ( $hero['media_html'] ) {
 	}
 }
 
+// Floating badge chips overlaid on the media (built once, reused in the media container).
+$hero_badges_html = '';
+if ( ! empty( $hero['badges'] ) && is_array( $hero['badges'] ) ) {
+	$hero_shield = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>';
+	foreach ( $hero['badges'] as $hb_i => $hbg ) {
+		$hbg  = wp_parse_args( (array) $hbg, array( 'title' => '', 'text' => '', 'icon' => '', 'pos' => '' ) );
+		$hpos = $hbg['pos'] ? $hbg['pos'] : ( 0 === $hb_i ? 'bl' : 'tr' );
+		$hero_badges_html .= '<div class="ehero-badge ehero-badge--' . esc_attr( $hpos ) . '">'
+			. '<span class="ehero-badge-ico">' . ( $hbg['icon'] ? $hbg['icon'] : $hero_shield ) . '</span>'
+			. '<span class="ehero-badge-tx">'
+			. ( $hbg['title'] ? '<span class="ehero-badge-title">' . esc_html( $hbg['title'] ) . '</span>' : '' )
+			. ( $hbg['text'] ? '<span class="ehero-badge-sub">' . wp_kses_post( $hbg['text'] ) . '</span>' : '' )
+			. '</span></div>';
+	}
+}
+
 $hero_assets = empty( $GLOBALS['shs_hero_assets'] );
 if ( $hero_assets ) {
 	$GLOBALS['shs_hero_assets'] = true;
@@ -84,7 +105,8 @@ if ( $hero_assets ) {
 <style>
   /* HERO — brand diagonal gradient, 2-column (text + visual), decorative rhombus. Tokens only. */
   .ehero { position: relative; overflow: hidden; padding: var(--hero-pt) var(--section-x) clamp(48px,5vw,72px);
-    background: linear-gradient(-124deg, rgba(255,255,255,1) 0%, rgba(0,82,205,.156) 71%, rgba(255,255,255,1) 100%); }
+    background: linear-gradient(-124deg, rgba(255,255,255,1) 0%, rgba(0,82,205,.156) 71%, rgba(255,255,255,1) 100%); 
+    height: 100vh; display: flex; align-items: center;}
   .ehero, .ehero *, .ehero *::before, .ehero *::after { box-sizing: border-box; }
   /* full-viewport hero — content vertically centred below the fixed header */
   .ehero.is-full { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }
@@ -123,6 +145,22 @@ if ( $hero_assets ) {
   .ehero-media svg, .ehero-media img { display: block; width: 100%; height: auto; }
   .ehero-media svg { overflow: visible; }   /* let inline-SVG shadows/decorations bleed out */
   .ehero-media img { border-radius: var(--radius-2xl); overflow: hidden; }   /* clip raster corners to the radius */
+  /* floating badge chips over the media — gently bob up/down (staggered), can bleed past the corners */
+  .ehero-media { position: relative; }
+  .ehero-badge { position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: var(--space-8);
+    max-width: min(86%, 21rem); background: var(--white); border: 1px solid var(--border);
+    border-radius: var(--radius-btn); padding: var(--space-8) var(--space-16) var(--space-8) var(--space-8);
+    box-shadow: var(--shadow-card); animation: ehero-badge-float 4.5s ease-in-out infinite; }
+  .ehero-badge--bl { left: clamp(-1rem, -1.5vw, -.375rem); bottom: 9%; }
+  .ehero-badge--tr { right: clamp(-.75rem, -1vw, -.25rem); top: 9%; animation-duration: 5.3s; animation-delay: -2.4s; }
+  .ehero-badge-ico { flex: none; width: 2.125rem; height: 2.125rem; border-radius: var(--radius-btn);
+    background: var(--green-tint); border: 1px solid var(--green-border); color: var(--green-text);
+    display: flex; align-items: center; justify-content: center; }
+  .ehero-badge-tx { min-width: 0; }
+  .ehero-badge-title { display: block; font-weight: var(--fw-bold); font-size: var(--fs-sm); line-height: 1.15; color: var(--ink); }
+  .ehero-badge-sub { display: block; font-size: var(--fs-xs); line-height: 1.25; color: var(--text-caption); }
+  @keyframes ehero-badge-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-.5625rem); } }
+  @media (prefers-reduced-motion: reduce) { .ehero-badge { animation: none !important; } }
   /* compliance strip */
   .ehero-compliance { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-16) var(--space-32); margin-top: clamp(40px,5vw,56px); padding-top: var(--space-32); border-top: 1px solid var(--hairline); }
   .ehero-compliance-label { font-family: var(--font-serif); font-style: italic; font-size: var(--fs-lg); color: var(--ink); }
@@ -206,7 +244,7 @@ if ( $hero_assets ) {
       </div>
 
       <?php if ( $hero_media && 'v2' !== $hero['variant'] ) : ?>
-      <div class="ehero-media"><?php echo $hero_media; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img markup ?></div>
+      <div class="ehero-media"><?php echo $hero_media . $hero_badges_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img + badge markup ?></div>
       <?php endif; ?>
     </div>
 

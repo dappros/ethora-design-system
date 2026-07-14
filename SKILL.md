@@ -155,6 +155,12 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Deployment stack** | `section-deployment.php` | Header + platform chips + dashed "your VPC" container laying an architecture diagram out as native cards (stacked layer groups + arrows, tinted core group, data/optional row) + legend. |
 | **Compliance cards** | `section-compliance-cards.php` | Grid of white cards (default 4-up): soft-blue icon tile + green "✓ STATUS" tag, heading, text. For trust/compliance strips or "capability + status" grids. |
 | **Stats band** | `section-stats.php` | Full-bleed brand-blue gradient band (same as `.cc-section`) with a header + flat divided stats: icon tile + big number + label. For "by the numbers" strips. |
+| **Pricing / feature matrix** | `section-pricing-matrix.php` | Features × plans comparison in a white card: plan columns (one "Most popular" → blue header + highlighted column), rows grouped under mono labels, cells = green check / em-dash / text, optional legend. |
+| **Vendor comparison** | `section-vendor-comparison.php` | "Us vs competitors": capability rows across a featured vendor (raised brand-blue card, checks + wins footer) + N competitor columns (red ✕ on weak rows). CSS grid; the featured column floats. |
+| **Feature rows** | `section-feature-rows.php` | Vertical stack of row cards: soft-blue icon tile + heading/description + status pills on the right (green "✓ Available" / blue "⚙ Customizable"). |
+| **Code + config covers** | `section-code-config.php` | Syntax-highlighted code editor mockup (dots + filename + Copy) on the left + labelled "what config covers" cards (icon + mono chip + text) on the right, with a footnote. |
+| **Feature list + media** | `section-feature-list-media.php` | Two-column split: icon + heading + description rows (hairline dividers) on one side, a framed product image (or a dashed "drop an image" placeholder) on the other. |
+| **Trust band** | `section-trust-band.php` | Full-bleed dark brand band (`.shs-dark`): mono label + row of white customer logos + a grid of headline stats (big number + caption). For a "trusted by" strip under a hero. |
 
 Other partials exist (`section-choose-app`, `section-use-kit`, `section-quick-start`,
 `section-book-call-modal`, `section-pricing`, …) — list them with

@@ -3,7 +3,8 @@
  * Reusable "Key Features" section.
  *
  * Interactive accordion (one block open at a time, auto-cycling with a progress
- * loader that drives the switch) + a product image on the side. Self-contained:
+ * loader that drives the switch; hovering the card — or focusing a header — pauses the
+ * loader and resumes it on leave) + a product image on the side. Self-contained:
  * ships its own CSS/JS once per request, works with ANY number of blocks, and
  * supports multiple instances on one page.
  *
@@ -117,6 +118,8 @@ if ( $kf_assets ) {
   .shs-kf-item.is-open .shs-kf-bar { opacity: 1; }
   .shs-kf-bar-fill { display: block; height: 100%; width: 0; background: var(--primary); }
   .shs-kf-item.is-open .shs-kf-bar-fill { animation: kfLoad var(--kf-dur, 4.2s) linear forwards; }   /* duration = the cycle length */
+  /* hover/focus pauses the loader (and therefore the auto-advance) mid-fill; it resumes on leave */
+  .shs-kf-section.is-paused .shs-kf-item.is-open .shs-kf-bar-fill { animation-play-state: paused; }
   @keyframes kfLoad { from { width: 0; } to { width: 100%; } }
   .shs-kf-media img { width: 100%; height: auto; display: block; border-radius: var(--radius-2xl); box-shadow: var(--shadow-card); }
   @media (max-width: 900px) {
@@ -220,6 +223,18 @@ if ( $kf_assets ) {
       heads.forEach(function (h, i) {
         h.addEventListener('click', function () { open(i); });   // open clicked, loader restarts here
       });
+      // pause the auto-advance while the mouse is over the card (or a header is focused); resume on leave.
+      // animation-play-state freezes the loader mid-fill, so animationend can't fire → the cycle halts and
+      // continues from the same spot afterwards.
+      if (!reduce) {
+        var hoverZone = sec.querySelector('.shs-kf-grid') || sec;
+        var pause  = function () { sec.classList.add('is-paused'); };
+        var resume = function () { sec.classList.remove('is-paused'); };
+        hoverZone.addEventListener('mouseenter', pause);
+        hoverZone.addEventListener('mouseleave', resume);
+        hoverZone.addEventListener('focusin', pause);
+        hoverZone.addEventListener('focusout', resume);
+      }
     }
     function run() {
       var secs = document.querySelectorAll('[data-shs-kf]');

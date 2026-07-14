@@ -159,7 +159,9 @@ steps where each has a supporting visual.
 Interactive accordion: one item open at a time, auto-cycles with a progress
 loader at the bottom of the open card (the loader drives the switch), product
 image on the side. Click selects an item; height is fixed to the tallest item so
-it never jumps. `reverse` flips sides. Supports multiple instances per page.
+it never jumps. **Hovering the card (or focusing a header) pauses the loader — and
+therefore the auto-advance — and it resumes from the same spot on leave.** `reverse`
+flips sides. Supports multiple instances per page.
 
 ![Key features](screenshots/key-features.png)
 
@@ -286,8 +288,13 @@ self-contained and ready to parametrise.
 Brand `.shs-dark` panel (deep `--primary-dark` over `start-free.png`) with eyebrow /
 heading / text / buttons. **Use this for EVERY dark CTA / Book-a-Call block** — never
 hand-roll a near-black panel. Params: `eyebrow`, `heading`, `text`, `id`, `buttons`
-(`label` / `url` / `style` `light`|`ghost` / `modal`), and **`wide`** (`true` = full-bleed
-panel spanning the section width, only the 24px gutter — not capped at `--content-max`).
+(`label` / `url` / `style` `light`|`ghost` / `modal`), **`wide`** (`true` = full-bleed
+panel spanning the section width, only the 24px gutter — not capped at `--content-max`),
+**`image`** (override the background image, theme-relative/URL), **`fade`** (`true` =
+the self-hosted page's `.shs-dark` gradient `.85 → .5` so the image texture shows, e.g.
+`'image' => 'images/testimonials.png', 'fade' => true` to match `page-self-hosted-server.php`),
+and **`trust`** (array of strings → a centred green-check row under the buttons, e.g.
+`'trust' => array( 'No credit card', 'Free tier available', 'BAA on Enterprise' )`).
 
 ![Dark CTA](screenshots/cta-dark.png)
 
@@ -355,7 +362,17 @@ white cards instead of dark.
 |---|---|---|
 | `eyebrow` / `title` / `lead` | string | header (optional) |
 | `light` | bool | white cards instead of the default dark brand panel |
-| `cards` | array | **required**, any length — each: `title`, `blocks` (array of `{ label, text }`, stacked), `image` + `image_alt` (right side, optional → text spans full width without it), optional `link_url` + `link_label` (CTA pill) |
+| `invert` | bool | **inverted colours** — the SECTION fills brand-blue (`--gradient-brand`) and the cards turn WHITE with dark text (header text → light, nav buttons → white). White cards use tighter vertical padding (less bottom whitespace). See below. |
+| `collapsible` | bool | clamp each card's text to a fixed height so tall/uneven cards stay compact; when the text overflows, a **Read more** button appears and reveals the rest via an **inner scroll** — the card never grows. Only active ≥ 761px (mobile flows full text). Pair `collapse_max` (default `13rem`) to tune the clamp/scroll height. Live use: **Hosting Infrastructure** on `page-self-hosted-server.php`. |
+| `collapse_max` | string | CSS length for the clamped text region when `collapsible` is on (default `13rem`) |
+| `cards` | array | **required**, any length — each: `title`, `blocks` (array of `{ label, text }`, stacked), `image` + `image_alt` (right side, optional → text spans full width without it), optional `link_url` + `link_label` (CTA pill), optional `badges` (see below) |
+
+Per-card **floating badges** — small white chip cards overlaid on the card image that gently
+bob up and down (staggered, reduced-motion safe). Each card may set `badges` => array of
+`{ title, text, icon?, pos? }`: `icon` is raw SVG (defaults to a green shield tile), `pos` is
+`'bl'` (bottom-left, default for the 1st) or `'tr'` (top-right, default for the 2nd). Green
+tile uses `--green-tint`/`--green-border`/`--green-text`. Live use: **Hosting Infrastructure**
+on `page-self-hosted-server.php` ("Your infrastructure · AWS · Azure · GCP · on-premises").
 
 Nav buttons follow the **slider/nav button RULE** (`.slider-btn`: 40px, `--radius-btn`,
 `1px --primary` border, transparent, `--primary` chevron, hover `--primary-light`, centred).
@@ -372,6 +389,52 @@ get_template_part( 'template-parts/section-cards-carousel', null, array(
         array( 'label' => 'The challenge', 'text' => '…' ),
         array( 'label' => 'How Ethora helps', 'text' => '…' ),
       ),
+    ),
+    // …any number
+  ),
+) );
+```
+
+### 13a. Inverted variant — `'invert' => true`
+
+The colour-flipped version of the same carousel: the **section background becomes
+brand-blue** (`--gradient-brand`) and the **cards turn white** with dark text — the mirror
+of the default (light section + blue cards). Header text goes light (`#fff` heading,
+`--text-on-dark` lead, `--accent-on-dark` eyebrow), the white cards get a soft
+`--shadow-lift` to separate from the blue field, block labels use `--primary`, and the nav
+buttons become white.
+
+The white cards also switch to a **stacked layout**: title, mono label and text on top,
+then the card **image full width at the bottom**. The image sits in a **fixed
+aspect-ratio box** (`16/10`, `object-fit: cover`) pinned to the card bottom, so **every
+card is exactly the same height** regardless of each source image's own aspect ratio —
+switching cards never reflows or jumps (this also reserves space for lazy-loaded images).
+Cards are compact (`flex-basis` max ~500px). (The default / `light` carousel keeps its
+side-by-side text-left / image-right layout; the stacked treatment is specific to
+`invert`.)
+
+Compose it exactly like the carousel above — just add `'invert' => true`. Live use: the
+**Key Benefits** block on `page-chat-sdk-android.php`.
+
+**Blue section + BIG side-by-side cards** — combine `'invert' => true` **with**
+`'light' => true`. You keep the brand-blue section and light header, but the cards stay
+the **large default layout (text left, image right)** instead of the compact stacked one —
+white cards with `--shadow-lift`, no forced image crop. Use this when the cards carry a lot
+of copy or a full illustration that shouldn't be cover-cropped. Live use: the **Hosting
+Infrastructure (IaaS Provider) Options** block on `page-self-hosted-server.php`.
+
+![Cards carousel — inverted (blue section, white cards)](screenshots/cards-carousel-invert.png)
+
+```php
+get_template_part( 'template-parts/section-cards-carousel', null, array(
+  'invert' => true,                                   // blue section + white cards
+  'title'  => 'Key Benefits of Ethora Chat SDK for Android',
+  'lead'   => 'Everything you need to ship a native-feeling chat experience on Android.',
+  'cards'  => array(
+    array(
+      'title'  => 'Modular UI Components',
+      'image'  => 'images/foo.png', 'image_alt' => '…',
+      'blocks' => array( array( 'label' => 'Native UI', 'text' => '…' ) ),
     ),
     // …any number
   ),
@@ -556,6 +619,315 @@ get_template_part( 'template-parts/section-stats', null, array(
 Background is the brand-blue gradient shared with the cards carousel (`.cc-section`) —
 never a near-black fill. Icon tiles / dividers use translucent white
 (`rgba(255,255,255,.14/.16)`), the theme's established dark-panel pattern.
+
+---
+
+## 19. Pricing / feature matrix — `section-pricing-matrix.php`
+
+A features × plans comparison inside a white rounded card: plan columns across the top,
+with one flagged **"Most popular"** (filled brand-blue header + a light-blue **highlighted
+column** running the full height, rounded top/bottom, filled `--tint-blue`). Feature rows
+**zebra-stripe** (white / soft-grey, all the way down) and can be organised under mono
+**group labels** (`group_labels: false` drops them for a flat table). Each cell is a **green
+"included" check** in a soft-green tile, an **em-dash** "not available", or **free text**
+(numbers, `Unlimited`, `Community`, `99.9% SLA` …) — text in the popular column renders
+brand-blue. Note: the theme has aggressive global `<thead>` styling, so the block resets it
+(`.pm thead { background: transparent }`) — keep that when reusing. Closes with an
+optional **Included / Not-available legend**. Self-contained (CSS once per request), tokens
+only, horizontal-scroll on narrow screens. Use for the "Feature matrix" / plan-comparison
+section (distinct from `section-pricing-cards.php`, which is the 3-card pricing block).
+
+![Pricing / feature matrix](screenshots/pricing-matrix.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | optional centred header |
+| `shade` | bool | tint the section bg |
+| `plans` | array | **required** — the columns; each: `name`, `price`, `popular` (bool → the highlighted column), `badge` (popular column tag, default "Most popular") |
+| `groups` | array | **required** — each: `label` (mono group heading) + `rows[]`; each row: `feature` (inline HTML) + `values[]` **aligned to `plans` order** — a value of `true` → green check, `false` → em-dash, any string → text |
+| `group_labels` | bool | show the mono group-label separator rows (default `true`); set **`false`** for a flat table (no group headings) |
+| `legend` | bool | show the Included / Not-available legend (default `true`) |
+| `note` | string | small centred footnote under the table (HTML, optional) |
+
+```php
+get_template_part( 'template-parts/section-pricing-matrix', null, array(
+  'title'  => 'Android Chat SDK Feature Matrix',
+  'plans'  => array(
+    array( 'name' => 'Free',       'price' => '$0/mo' ),
+    array( 'name' => 'Business',   'price' => '$99/mo', 'popular' => true, 'badge' => 'Most popular' ),
+    array( 'name' => 'Enterprise', 'price' => 'Custom' ),
+  ),
+  'groups' => array(
+    array( 'label' => 'Messaging & core features', 'rows' => array(
+      array( 'feature' => '1:1 and group messaging', 'values' => array( true, true, true ) ),
+    ) ),
+    array( 'label' => 'Capacity', 'rows' => array(
+      array( 'feature' => 'Monthly active users', 'values' => array( '1,000', '5,000', 'Unlimited' ) ),
+    ) ),
+    array( 'label' => 'Support & deployment', 'rows' => array(
+      array( 'feature' => 'Self-hosted deployment', 'values' => array( false, false, true ) ),
+    ) ),
+  ),
+) );
+```
+
+Live use: the **Feature Matrix** section on `page-chat-sdk-android.php`.
+
+---
+
+## 20. Vendor comparison — `section-vendor-comparison.php`
+
+An "us vs the competitors" comparison: one capability per row across a **featured vendor** +
+N competitor columns. The featured vendor (e.g. Ethora) is a **raised brand-blue card**
+(logo + name + subtitle in the header, a white check — or a dot for a neutral row — plus the
+value per row, and a darker "wins" footer); each competitor is a plain column whose weak rows
+get a **red ✕ + muted text** (neutral rows are plain text, no mark). Closes with a "where we
+win" row (counts per column) and an optional footnote. Built on **CSS Grid** (not a table) so
+every row aligns across columns; the featured card is an absolutely-positioned overlay so it
+floats without consuming a grid track. Self-contained (CSS once per request), tokens only,
+horizontal-scroll on narrow screens.
+
+![Vendor comparison](screenshots/vendor-comparison.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | optional centred header |
+| `shade` | bool | tint the section bg |
+| `capabilities` | array | **required** — the row labels (strings, inline HTML ok), in order |
+| `featured` | array | **required** — the highlighted column: `name`, `subtitle`, `logo` (theme-relative/URL, default `images/Logo.svg`), `wins` (footer text), `values[]` **aligned to `capabilities`** — a plain string → check + text, or `array('text'=>…, 'neutral'=>true)` → dot instead of check |
+| `competitors` | array | **required** — each a column: `name`, `subtitle`, `wins`, `values[]` aligned to `capabilities` — a plain string → neutral text (no mark), or `array('text'=>…, 'bad'=>true)` → red ✕ + muted text |
+| `wins_label` | string | left-column label for the wins row (e.g. `Where Ethora wins`). The wins row is skipped entirely when neither `wins_label` nor the featured `wins` is set |
+| `marks` | bool | default `true`. Set `false` for **text-only cells** (no check / dot / ✕) — use when values are prose rather than Yes/No, so marks would clutter. Live use: the self-hosted-server comparison on `page-self-hosted-server.php` |
+| `note` | string | footnote under the grid (HTML, optional) — rendered as a centred soft-blue **"takeaway" callout** (lightbulb icon tile + kicker + text) |
+| `note_label` | string | kicker above the note callout (default `The bottom line`; set `''` to hide) |
+
+```php
+get_template_part( 'template-parts/section-vendor-comparison', null, array(
+  'title'        => 'How Ethora Compares to Other Android Chat SDKs',
+  'capabilities' => array( 'Android SDK language', 'Self-hosted option', 'AI chatbots built-in' ),
+  'featured'     => array(
+    'name' => 'Ethora', 'subtitle' => 'Open-source · self-hostable', 'logo' => 'images/Logo.svg',
+    'wins' => '7 of 9 categories',
+    'values' => array( array( 'text' => 'Kotlin (+ Java)', 'neutral' => true ), 'Yes', 'Yes (RAG, LLM)' ),
+  ),
+  'competitors'  => array(
+    array( 'name' => 'Stream', 'subtitle' => 'Cloud only', 'wins' => '2 / 9',
+           'values' => array( 'Kotlin', array( 'text' => 'No', 'bad' => true ), array( 'text' => 'No', 'bad' => true ) ) ),
+    // …more competitors
+  ),
+  'wins_label'   => 'Where Ethora wins',
+  'note'         => '…',
+) );
+```
+
+Live use: the **How Ethora Compares** section on `page-chat-sdk-android.php`. (Distinct from
+`section-comparison.php`, which is a 2-column build-vs-recommended comparison.)
+
+---
+
+## 21. Feature rows — `section-feature-rows.php`
+
+A vertical stack of white **row cards**: a soft-blue icon tile on the left, a heading +
+description in the middle, and one or more **status pills** on the right (e.g. a green
+"✓ Available" + a blue "⚙ Customizable"). Hover lifts the card. Good for a
+"feature × availability/customizable" list or any capability rundown with per-row badges.
+Self-contained (CSS once per request), tokens only; on ≤720px the pills wrap below the text.
+
+![Feature rows](screenshots/feature-rows.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | optional centred header |
+| `shade` | bool | tint the section bg |
+| `items` | array | **required** — each: `icon` (line SVG `stroke="currentColor"`, shown in the blue tile), `title`, `text` (inline HTML), `tags[]` (right-side pills) |
+| `items[].tags[]` | array | each pill: `label`, `variant` (`success` = green, `brand` = blue, `muted` = grey), `icon` (raw SVG, optional — e.g. a check or gear) |
+
+```php
+$ic  = 'width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+$tic = 'width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"';
+get_template_part( 'template-parts/section-feature-rows', null, array(
+  'shade' => true,
+  'title' => 'Feature Availability & Customization',
+  'items' => array(
+    array(
+      'title' => 'Chat / Messaging', 'text' => 'Real-time communication…',
+      'icon'  => '<svg '.$ic.'>…</svg>',
+      'tags'  => array(
+        array( 'label' => 'Available',    'variant' => 'success', 'icon' => '<svg '.$tic.'><path d="M20 6 9 17l-5-5"/></svg>' ),
+        array( 'label' => 'Customizable', 'variant' => 'brand',   'icon' => '<svg '.$tic.'>…gear…</svg>' ),
+      ),
+    ),
+    // …
+  ),
+) );
+```
+
+Live use: the **Feature Availability** section on `page-chat-sdk-android.php`.
+
+---
+
+## 22. Code + config covers — `section-code-config.php`
+
+A developer-facing "show the code" section: an eyebrow / title / lead, then a two-column
+grid — a **syntax-highlighted code editor mockup** on the left (dark `--ink` panel with
+traffic-light dots + a filename tab + a working **Copy** button) and a labelled **"what
+config covers"** stack of cards on the right (soft-blue icon tile + a mono **chip** label +
+a short description). Closes with a footnote (inline `<code>` chips + a link). Built for the
+"Customize the chat UI" style block. Self-contained (CSS + copy JS once), tokens for the UI;
+the code panel uses literal hex for syntax colours (same precedent as `section-quick-start`).
+Stacks to one column ≤960px.
+
+![Code + config covers](screenshots/code-config.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | header (title/lead inline-HTML-friendly) |
+| `shade` | bool | tint the section bg |
+| `file` | string | filename shown in the editor tab (default `App.tsx`) |
+| `code` | string | **trusted pre-highlighted HTML** — wrap tokens in spans: `t-kw` keyword, `t-str` string, `t-com` comment, `t-fn` function/name, `t-tag` JSX tag, `t-prop` property/accent, `t-punc` punctuation. Escape `<`/`>` as `&lt;`/`&gt;`. Pass via a nowdoc (`<<<'CODE'`). |
+| `covers_label` | string | right-column label (HTML ok — highlight a word with `<span class="ccf-hl">…</span>`) |
+| `items` | array | the config cards — each: `icon` (line SVG `stroke="currentColor"`), `label` (mono chip), `text` |
+| `footnote` | string | closing paragraph (HTML; `<code>` renders as a chip) |
+
+```php
+$code = <<<'CODE'
+<span class="t-kw">import</span> { <span class="t-fn">Chat</span> } <span class="t-kw">from</span> <span class="t-str">"@ethora/chat-component"</span>;
+CODE;
+get_template_part( 'template-parts/section-code-config', null, array(
+  'eyebrow'      => 'React chat component',
+  'title'        => 'Customize the chat UI to match your brand',
+  'lead'         => '…',
+  'file'         => 'App.tsx',
+  'code'         => $code,
+  'covers_label' => 'What <span class="ccf-hl">config</span> covers',
+  'items'        => array(
+    array( 'label' => 'colors & typography', 'text' => '…', 'icon' => '<svg …>…</svg>' ),
+    // …
+  ),
+  'footnote'     => 'The full <code>IConfig</code> exposes 60+ options…',
+) );
+```
+
+Live use: the **Customization** section on `page-chat-sdk-reactjs-web.php`.
+
+---
+
+## 23. Feature list + media — `section-feature-list-media.php`
+
+A two-column split: a vertical **list of icon + heading + description rows** (hairline
+dividers between them, in-text links allowed) on one side, and a **framed product image**
+on the other — or a tasteful dashed **"drop an image" placeholder** empty-state when no
+`media` is passed. Optional eyebrow + title header above the grid. `reverse` puts the media
+on the left. Self-contained (CSS once), tokens only; stacks to one column ≤900px.
+
+![Feature list + media](screenshots/feature-list-media.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `title` / `lead` | string | optional header (left-aligned, above the grid) |
+| `shade` | bool | tint the section bg |
+| `reverse` | bool | media on the LEFT |
+| `media` / `media_alt` | string | framed image (theme-relative/URL). Omit → dashed placeholder |
+| `placeholder` | string | placeholder caption (default "Drop a product screenshot or brand image") |
+| `items` | array | **required** — each: `icon` (line SVG `stroke="currentColor"`), `title`, `text` (inline HTML — links render brand-blue/underlined) |
+
+```php
+$ic = 'width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
+get_template_part( 'template-parts/section-feature-list-media', null, array(
+  'eyebrow' => 'Why Ethora',
+  'title'   => 'Why developers choose Ethora over alternatives',
+  'media'   => 'images/product-light.png',
+  'items'   => array(
+    array( 'title' => 'Open source with self-hosting', 'text' => '… <a href="/chat-sdk/self-hosted-chat-server-aws/">deploy on your own servers</a> …', 'icon' => '<svg '.$ic.'>…</svg>' ),
+    // …
+  ),
+) );
+```
+
+Live use: the **Why developers choose Ethora** section on `page-chat-sdk-reactjs-web.php`.
+
+---
+
+## 24. Trust band — `section-trust-band.php`
+
+A **full-bleed dark brand band** (the `.shs-dark` treatment: `--primary-dark` tinted over an
+image) with a small mono label, a centred row of **customer logos** (white-knocked-out) and a
+grid of **headline stats** (big serif number + caption). For a "trusted by / by the numbers"
+strip right under a hero. Self-contained (CSS once), tokens only, responsive (stats 4 → 2 → 1).
+
+![Trust band](screenshots/trust-band.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `label` | string | small uppercase mono caption (e.g. "Trusted by healthcare teams…") |
+| `logos` | array | each: `src` (theme-relative/URL — the `brightness(0) invert(1)` filter knocks it white) + `alt` |
+| `stats` | array | each: `num` (big number/word, inline HTML ok) + `cap` (caption) — the grid column count follows the stat count |
+| `image` | string | background image (default `images/testimonials.png`) |
+
+```php
+get_template_part( 'template-parts/section-trust-band', null, array(
+  'label' => 'Trusted by healthcare teams and clinical networks',
+  'logos' => array(
+    array( 'src' => 'images/DrTalks-logo.svg', 'alt' => 'DrTalks' ),
+    // …
+  ),
+  'stats' => array(
+    array( 'num' => '100%', 'cap' => 'HIPAA-compliant patient and provider messaging' ),
+    array( 'num' => 'HIPAA &middot; SOC&nbsp;2 &middot; GDPR', 'cap' => 'Compliance-ready, BAA/DPA available' ),
+    // …
+  ),
+) );
+```
+
+Live use: right under the hero on `page-self-hosted-server.php` and `page-healthcare.php`.
+(Distinct from the **Stats band** #18, which is the brand-blue gradient metrics band — this
+one is the darker `.shs-dark` logos-and-stats trust strip.)
+
+---
+
+## 25. FAQ accordion — `section-faq.php`
+
+The standard **FAQ accordion** (the healthcare-page design): bordered question cards; clicking
+a question expands its answer, one open at a time. Styling is the theme's **global `.faq*` CSS**
+(`css/index.css`) and the toggle is the **global handler in `main.js`** — the partial only emits
+markup, so it looks and behaves like every other FAQ on the site. Use it for ANY page FAQ instead
+of hand-writing `.faq-item` blocks.
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `items` | array | **required** — each: `q` (question), `a` (answer: a string, or an array of paragraph strings; inline HTML/links ok), optional `open` (force this item open/closed) |
+| `title` | string | heading (default `FAQ`) |
+| `subheader` | string | intro line under the heading (optional, HTML ok) |
+| `id` | string | section id for anchor links (e.g. `faq`) (optional) |
+| `open_first` | bool | expand the first item by default (default `true`) |
+| `schema` | bool | also emit `FAQPage` JSON-LD built from the items (default `false` — omit if the page already outputs its own FAQ schema) |
+
+```php
+get_template_part( 'template-parts/section-faq', null, array(
+  'title' => 'FAQ',
+  'items' => array(
+    array( 'q' => 'Can I deploy on my own infrastructure?', 'a' => 'Yes, you can use your own servers or cloud (for example, AWS).' ),
+    array( 'q' => 'Multi-paragraph answer?', 'a' => array( 'First paragraph.', 'Second, with a <a href="/contact/">link</a>.' ) ),
+  ),
+) );
+```
+
+Live use: `page-self-hosted-server.php`. (The page keeps its own hand-written `FAQPage`
+JSON-LD, so `schema` is left off there.)
 
 ---
 

@@ -1,27 +1,27 @@
 <?php
 /**
- * Reusable scroll-telling section (the ".shs-why" pattern).
+ * Reusable "why" section (the ".shs-why" pattern).
  *
- * A pinned pane on the left (eyebrow + title + lead + a changing image) and, on
- * the right, a text TRACK that slides up as you scroll — the image swaps and the
- * matching step highlights at each threshold. On mobile it collapses to an
- * accordion: tap a step to reveal its image below it. Self-contained (ships its
- * own CSS + JS once per request) and supports multiple instances per page.
+ * A full-width head (eyebrow + title + lead) on top, then a plain vertical stack
+ * of alternating image/text rows: the first row is image-left / text-right, the
+ * next flips (image-right / text-left), and so on. No scroll interaction — it is
+ * a simple top-to-bottom list. Self-contained (ships its own CSS once per
+ * request) and supports multiple instances per page. On mobile every row stacks
+ * with the image on top.
  *
  * Pass props via the 3rd arg of get_template_part():
  *
  *   get_template_part( 'template-parts/section-why', null, array(
- *     'eyebrow'  => 'Why self-host',           // optional mono kicker
- *     'title'    => 'Section heading',          // h2
- *     'lead'     => 'Intro paragraph.',          // (optional)
- *     'numbered' => true,                        // show 01/02/03 markers (default true)
- *     'rhombus'  => true,                        // decorative background shape (default true)
- *     'frame'    => true,                        // false → images are self-framed (own bg/shadow/rounded): show whole (contain), no card frame/shadow
- *     'steps'    => array(                        // REQUIRED — 2+ steps, each with its own image
+ *     'eyebrow'  => 'Why self-host',            // optional mono kicker
+ *     'title'    => 'Section heading',           // h2
+ *     'lead'     => 'Intro paragraph.',           // (optional)
+ *     'numbered' => true,                         // show 01/02/03 markers (default true)
+ *     'frame'    => true,                         // false → images show whole, no card frame/shadow
+ *     'steps'    => array(                         // REQUIRED — 1+ rows, each with its own image
  *       array(
  *         'title'     => 'Complete data ownership',
  *         'text'      => 'Full control over infrastructure…',
- *         'image'     => 'images/foo.png',        // theme-relative path or URL (used desktop + mobile)
+ *         'image'     => 'images/foo.png',         // theme-relative path or URL
  *         'image_alt' => 'Describe the image',
  *       ),
  *       // …
@@ -42,20 +42,16 @@ $wy = wp_parse_args(
 		'title'    => '',
 		'lead'     => '',
 		'numbered' => true,
-		'rhombus'  => true,
-		'frame'    => true, // false → images are self-framed (own bg/shadow): show whole (contain), no card frame/shadow
+		'frame'    => true, // false → images show whole (no card frame/shadow)
 		'steps'    => array(),
 	)
 );
 
-// Need at least two steps for the scroll interaction to make sense.
-if ( empty( $wy['steps'] ) || ! is_array( $wy['steps'] ) || count( $wy['steps'] ) < 2 ) {
+if ( empty( $wy['steps'] ) || ! is_array( $wy['steps'] ) ) {
 	return;
 }
 
-$wy_uri  = get_template_directory_uri();
-$wy_n    = count( $wy['steps'] );
-$wy_th   = ( $wy_n * 60 ) . 'vh';   // scroll length: ~60vh per step (3 steps = 180vh, like the original)
+$wy_uri = get_template_directory_uri();
 
 // Resolve a theme-relative path or pass an absolute URL through.
 $wy_src = function ( $img ) use ( $wy_uri ) {
@@ -72,140 +68,165 @@ if ( $wy_assets ) {
 ?>
 <?php if ( $wy_assets ) : ?>
 <style>
-  /* WHY / scroll-telling — pinned title + changing image (left), sliding text track (right);
-     mobile = accordion. Tokens only. Self-contained. */
-  .shs-why { padding: clamp(72px,9vw,132px) var(--section-x) var(--section-y); }
+  /* WHY — full-width head + a stack of alternating image/text rows. Tokens only. Self-contained. */
+  .shs-why { padding: var(--section-y) var(--section-x); }
   .shs-why, .shs-why *, .shs-why *::before, .shs-why *::after { box-sizing: border-box; }
   .shs-why .why-inner { max-width: var(--content-max); margin: 0 auto; }
-  .shs-why .why-track { position: relative; }
+
+  /* ---- Full-width head ---- */
+  .shs-why .why-head { width: 100%; }
   .shs-why .why-eyebrow { font-family: var(--font-mono); font-weight: var(--fw-medium); font-size: var(--fs-eyebrow); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--primary); margin: 0; }
-  /* 3fr/2fr = 60/40 ratio that ACCOUNTS for the column-gap (unlike 60%/40% which overflow by the gap) */
-  .shs-why .why-pin { position: sticky; top: calc(var(--header-h) + var(--space-32)); min-height: calc(100vh - var(--header-h) - var(--space-64)); display: grid; grid-template-columns: minmax(0,3fr) minmax(0,2fr); grid-template-rows: auto 1fr; column-gap: clamp(32px,5vw,72px); align-content: center; }
-  /* decorative rhombus — left vertex touches the viewport left edge (not beyond) */
-  .shs-why.has-rhombus .why-pin::before { content: ""; position: absolute; z-index: 0; pointer-events: none;
-    top: 0; bottom: 0; left: 50%; transform: translateX(-50%); width: 100vw;
-    background: url('<?php echo esc_url( $wy_uri . '/images/rhombus-features-demo.svg' ); ?>') no-repeat 0 34% / clamp(470px,51vw,800px) auto; }
-  .shs-why .why-head, .shs-why .why-visual, .shs-why .why-viewport { position: relative; z-index: 1; }
-  .shs-why .why-head { grid-column: 1; grid-row: 1; }
   .shs-why .why-head h2 { font-family: var(--font-serif); font-weight: 500; font-size: var(--fs-h2); line-height: var(--lh-tight); letter-spacing: var(--tracking-tight); color: var(--ink); margin: var(--space-16) 0 0; }
-  .shs-why .why-lead { font-size: var(--fs-lg); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; max-width: 480px; }
-  .shs-why .why-visual { grid-column: 1; grid-row: 2; align-self: center; display: grid; position: relative; height: clamp(300px, 40vh, 440px); margin-top: var(--space-32); }
-  .shs-why .wv { grid-area: 1 / 1; border-radius: var(--radius-3xl); overflow: hidden; box-shadow: var(--shadow-lift); opacity: 0; transform: scale(.985); transition: opacity .5s ease, transform .5s ease; pointer-events: none; }
-  .shs-why .wv.is-active { opacity: 1; transform: none; }
-  .shs-why .wv img { width: 100%; height: 100%; object-fit: cover; object-position: center top; display: block; }
-  /* self-framed images (own bg/shadow/rounded card): drop the card frame + show the whole image */
-  .shs-why.no-frame .wv { border-radius: 0; overflow: visible; box-shadow: none; }
-  .shs-why.no-frame .wv img { object-fit: contain; object-position: center; }
-  /* right: fixed window with a sliding text track (opposite the image) */
-  .shs-why .why-viewport { grid-column: 2; grid-row: 2; align-self: center; overflow: hidden; height: clamp(240px, 32vh, 320px); }
-  .shs-why .why-texttrack { display: block; will-change: transform; }
-  .shs-why .why-step { height: clamp(240px, 32vh, 320px); display: flex; flex-direction: column; justify-content: center; opacity: .28; transition: opacity .4s ease; }
-  .shs-why .why-step.is-active { opacity: 1; }
-  .shs-why .why-step .ws-num { font-family: var(--font-mono); font-size: var(--fs-sm); font-weight: 700; color: var(--primary); letter-spacing: .12em; }
-  .shs-why .why-step h3 { font-family: var(--font-serif); font-weight: 600; font-size: clamp(24px,3vw,34px); color: var(--ink); line-height: var(--lh-snug); margin: var(--space-16) 0 0; }
-  .shs-why .why-step p { font-size: var(--fs-lg); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; max-width: 460px; }
-  .shs-why .why-step-media { display: none; }   /* desktop uses the sticky image; this is the mobile per-step image */
-  .shs-why .why-step-media img { width: 100%; height: auto; display: block; border-radius: var(--radius-2xl); box-shadow: var(--shadow-card); }
-  /* MOBILE: accordion — tap a text to reveal its image below it (one open at a time) */
+  .shs-why .why-lead { font-size: var(--fs-lg); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; max-width: var(--measure); }
+
+  /* ---- Connected ribbon ----
+     The gradient wash is ONE SVG path (built from the panel geometry by the script
+     below), so the whole zigzag is a SINGLE shape: outer corners are convex, the
+     joins between blocks are concave fillets belonging to that same shape, and the
+     gradient is genuinely continuous with no bleed outside it. Text sits transparent
+     on top of the ribbon; images sit in the notches on the page canvas. */
+  .shs-why .why-rows { margin-top: var(--space-64); position: relative; display: flex; flex-direction: column; }
+  .shs-why .why-ribbon { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+  .shs-why .why-ribbon svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .shs-why .why-row { position: relative; z-index: 1; display: grid; grid-template-columns: 38% 62%; align-items: stretch; }
+  .shs-why .why-row.is-reverse { grid-template-columns: 62% 38%; }
+  /* default row: image left (col 1), text right (col 2) */
+  .shs-why .why-row-media { order: 1; }
+  .shs-why .why-row-text  { order: 2; }
+  /* odd rows flip: text left, image right */
+  .shs-why .why-row.is-reverse .why-row-media { order: 2; }
+  .shs-why .why-row.is-reverse .why-row-text  { order: 1; }
+
+  .shs-why .why-row-media { display: flex; align-items: center; justify-content: center; padding: var(--space-32); }
+  .shs-why .why-row-media img { width: 100%; height: auto; display: block; border-radius: var(--radius-3xl); box-shadow: var(--shadow-lift); }
+  .shs-why.no-frame .why-row-media img { border-radius: 0; box-shadow: none; }
+
+  /* text panel is transparent — the single SVG ribbon shows through behind it */
+  .shs-why .why-row-text { background: transparent; padding: clamp(var(--space-32), 4vw, var(--space-48)); display: flex; flex-direction: column; justify-content: center; }
+  .shs-why .ws-num { font-family: var(--font-mono); font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--primary); letter-spacing: .12em; }
+  .shs-why .why-row-text h3 { font-family: var(--font-serif); font-weight: 600; font-size: clamp(24px,3vw,34px); color: var(--ink); line-height: var(--lh-snug); margin: var(--space-16) 0 0; }
+  .shs-why .why-row-text p { font-size: var(--fs-lg); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; max-width: var(--measure); }
+
+  /* MOBILE: single column — hide the SVG ribbon; each panel becomes its own rounded card */
   @media (max-width: 900px) {
-    .shs-why .why-track { height: auto !important; }
-    .shs-why .why-pin { position: static; min-height: 0; grid-template-columns: 1fr; grid-template-rows: none; gap: 0; }
-    .shs-why .why-head, .shs-why .why-visual, .shs-why .why-viewport { grid-column: auto; grid-row: auto; }
-    .shs-why .why-head { margin-bottom: var(--space-16); }
-    .shs-why .why-visual { display: none; }
-    .shs-why .why-viewport { height: auto; overflow: visible; }
-    .shs-why .why-texttrack { transform: none !important; }
-    .shs-why .why-step { height: auto; opacity: 1; padding: var(--space-32) 0; border-top: 1px solid var(--hairline); cursor: pointer; }
-    .shs-why .why-step.is-active { border-top-color: var(--primary); }
-    .shs-why .why-step-media { display: block; max-height: 0; opacity: 0; overflow: hidden; margin-top: 0; transition: max-height .45s ease, opacity .35s ease, margin-top .35s ease; }
-    .shs-why .why-step.is-active .why-step-media { max-height: 80vh; opacity: 1; margin-top: var(--space-16); }
+    .shs-why .why-rows { gap: var(--space-32); }
+    .shs-why .why-ribbon { display: none; }
+    .shs-why .why-row, .shs-why .why-row.is-reverse { grid-template-columns: 1fr; }
+    .shs-why .why-row-media, .shs-why .why-row.is-reverse .why-row-media { order: 1; padding: 0; }
+    .shs-why .why-row-text,  .shs-why .why-row.is-reverse .why-row-text  { order: 2; background: var(--gradient-soft-brand); border-radius: var(--radius-2xl); }
   }
-  @media (prefers-reduced-motion: reduce) { .shs-why .wv { transition: opacity .2s ease; } }
 </style>
 <?php endif; ?>
 
-<section class="shs-why<?php echo $wy['rhombus'] ? ' has-rhombus' : ''; ?><?php echo $wy['frame'] ? '' : ' no-frame'; ?>">
+<section class="shs-why<?php echo $wy['frame'] ? '' : ' no-frame'; ?>">
   <div class="why-inner">
-    <div class="why-track" style="height:<?php echo esc_attr( $wy_th ); ?>;">
-      <div class="why-pin">
-        <div class="why-head">
-          <?php if ( $wy['eyebrow'] ) : ?><span class="why-eyebrow"><?php echo esc_html( $wy['eyebrow'] ); ?></span><?php endif; ?>
-          <?php if ( $wy['title'] ) : ?><h2><?php echo wp_kses_post( $wy['title'] ); ?></h2><?php endif; ?>
-          <?php if ( $wy['lead'] ) : ?><p class="why-lead"><?php echo wp_kses_post( $wy['lead'] ); ?></p><?php endif; ?>
+    <div class="why-head">
+      <?php if ( $wy['eyebrow'] ) : ?><span class="why-eyebrow"><?php echo esc_html( $wy['eyebrow'] ); ?></span><?php endif; ?>
+      <?php if ( $wy['title'] ) : ?><h2><?php echo wp_kses_post( $wy['title'] ); ?></h2><?php endif; ?>
+      <?php if ( $wy['lead'] ) : ?><p class="why-lead"><?php echo wp_kses_post( $wy['lead'] ); ?></p><?php endif; ?>
+    </div>
+
+    <div class="why-rows">
+      <div class="why-ribbon" aria-hidden="true"></div>
+      <?php foreach ( $wy['steps'] as $i => $st ) : $st = wp_parse_args( (array) $st, array( 'title' => '', 'text' => '', 'image' => '', 'image_alt' => '' ) ); ?>
+      <article class="why-row<?php echo ( $i % 2 ) ? ' is-reverse' : ''; ?>">
+        <div class="why-row-media">
+          <?php if ( $st['image'] ) : ?><img src="<?php echo esc_url( $wy_src( $st['image'] ) ); ?>" alt="<?php echo esc_attr( $st['image_alt'] ); ?>" loading="lazy" /><?php endif; ?>
         </div>
-        <!-- changing image (desktop) -->
-        <div class="why-visual">
-          <?php foreach ( $wy['steps'] as $i => $st ) : $st = wp_parse_args( (array) $st, array( 'title' => '', 'text' => '', 'image' => '', 'image_alt' => '' ) ); ?>
-          <div class="wv<?php echo 0 === $i ? ' is-active' : ''; ?>" data-i="<?php echo (int) $i; ?>">
-            <?php if ( $st['image'] ) : ?><img src="<?php echo esc_url( $wy_src( $st['image'] ) ); ?>" alt="<?php echo esc_attr( $st['image_alt'] ); ?>" loading="lazy" /><?php endif; ?>
-          </div>
-          <?php endforeach; ?>
+        <div class="why-row-text">
+          <?php if ( $st['title'] ) : ?><h3><?php echo wp_kses_post( $st['title'] ); ?></h3><?php endif; ?>
+          <?php if ( $st['text'] ) : ?><p><?php echo wp_kses_post( $st['text'] ); ?></p><?php endif; ?>
         </div>
-        <!-- sliding text (desktop) / accordion (mobile) -->
-        <div class="why-viewport">
-          <div class="why-texttrack">
-            <?php foreach ( $wy['steps'] as $i => $st ) : $st = wp_parse_args( (array) $st, array( 'title' => '', 'text' => '', 'image' => '', 'image_alt' => '' ) ); ?>
-            <article class="why-step<?php echo 0 === $i ? ' is-active' : ''; ?>" data-i="<?php echo (int) $i; ?>">
-              <?php if ( $wy['numbered'] ) : ?><span class="ws-num"><?php echo esc_html( sprintf( '%02d', $i + 1 ) ); ?></span><?php endif; ?>
-              <?php if ( $st['title'] ) : ?><h3><?php echo wp_kses_post( $st['title'] ); ?></h3><?php endif; ?>
-              <?php if ( $st['text'] ) : ?><p><?php echo wp_kses_post( $st['text'] ); ?></p><?php endif; ?>
-              <?php if ( $st['image'] ) : ?><div class="why-step-media"><img src="<?php echo esc_url( $wy_src( $st['image'] ) ); ?>" alt="<?php echo esc_attr( $st['image_alt'] ); ?>" loading="lazy" /></div><?php endif; ?>
-            </article>
-            <?php endforeach; ?>
-          </div>
-        </div>
-      </div>
+      </article>
+      <?php endforeach; ?>
     </div>
   </div>
 </section>
 
 <?php if ( $wy_assets ) : ?>
 <script>
-  (function () {
-    function initWhy(sec) {
-      var track = sec.querySelector('.why-track');
-      var pin = sec.querySelector('.why-pin');
-      var viewport = sec.querySelector('.why-viewport');
-      var texttrack = sec.querySelector('.why-texttrack');
-      var steps = [].slice.call(sec.querySelectorAll('.why-step'));
-      var cards = [].slice.call(sec.querySelectorAll('.wv'));
-      if (!track || !pin || !viewport || !texttrack || steps.length < 2) { return; }
-      var N = steps.length, lastActive = -1, ticking = false;
-      function frame() {
-        ticking = false;
-        if (window.innerWidth <= 900) { texttrack.style.transform = ''; return; }
-        var stickyTop = parseFloat(getComputedStyle(pin).top) || 0;
-        var range = track.offsetHeight - pin.offsetHeight;   // scroll distance while pinned
-        var top = track.getBoundingClientRect().top;
-        var progress = range > 0 ? Math.min(1, Math.max(0, (stickyTop - top) / range)) : 0;
-        var stepH = viewport.offsetHeight;
-        texttrack.style.transform = 'translateY(' + (-progress * (N - 1) * stepH) + 'px)';
-        var active = Math.round(progress * (N - 1));
-        if (active !== lastActive) {
-          lastActive = active;
-          steps.forEach(function (s, i) { s.classList.toggle('is-active', i === active); });
-          cards.forEach(function (c, i) { c.classList.toggle('is-active', i === active); });
-        }
-      }
-      function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(frame); } }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      window.addEventListener('resize', onScroll, { passive: true });
-      onScroll();
-      // MOBILE accordion: tap a step to open its image (one open at a time)
-      function setActive(i) {
-        steps.forEach(function (s, n) { s.classList.toggle('is-active', n === i); });
-        cards.forEach(function (c, n) { c.classList.toggle('is-active', n === i); });
-        lastActive = i;
-      }
-      steps.forEach(function (s, i) {
-        s.addEventListener('click', function () { if (window.innerWidth <= 900) { setActive(i); } });
-      });
+/* Build the WHY ribbon as one SVG path (convex outer corners + concave joins, single
+   gradient) from the live panel geometry. Rebuilds on resize / content reflow. */
+(function () {
+  function roundedPolygon(pts, r) {
+    var q = [];
+    for (var i = 0; i < pts.length; i++) {
+      var a = pts[i], b = q[q.length - 1];
+      if (!b || Math.abs(a[0] - b[0]) > 0.5 || Math.abs(a[1] - b[1]) > 0.5) q.push(a);
     }
-    function run() {
-      var secs = document.querySelectorAll('.shs-why');
-      for (var i = 0; i < secs.length; i++) { initWhy(secs[i]); }
+    if (q.length > 1) {
+      var f = q[0], l = q[q.length - 1];
+      if (Math.abs(f[0] - l[0]) < 0.5 && Math.abs(f[1] - l[1]) < 0.5) q.pop();
     }
-    if (document.readyState !== 'loading') { run(); } else { document.addEventListener('DOMContentLoaded', run); }
-  })();
+    var n = q.length; if (n < 3) return '';
+    var d = '';
+    for (var i = 0; i < n; i++) {
+      var prev = q[(i - 1 + n) % n], cur = q[i], next = q[(i + 1) % n];
+      var v1x = prev[0] - cur[0], v1y = prev[1] - cur[1];
+      var v2x = next[0] - cur[0], v2y = next[1] - cur[1];
+      var l1 = Math.hypot(v1x, v1y), l2 = Math.hypot(v2x, v2y);
+      if (l1 < 0.5 || l2 < 0.5) continue;
+      var rr = Math.min(r, l1 / 2, l2 / 2);
+      var t1x = cur[0] + v1x / l1 * rr, t1y = cur[1] + v1y / l1 * rr;
+      var t2x = cur[0] + v2x / l2 * rr, t2y = cur[1] + v2y / l2 * rr;
+      var cross = v1x * v2y - v1y * v2x;
+      var sweep = cross < 0 ? 1 : 0;
+      d += (i === 0 ? 'M' : 'L') + t1x.toFixed(1) + ' ' + t1y.toFixed(1)
+         + 'A' + rr.toFixed(1) + ' ' + rr.toFixed(1) + ' 0 0 ' + sweep + ' ' + t2x.toFixed(1) + ' ' + t2y.toFixed(1);
+    }
+    return d + 'Z';
+  }
+  function ribbonPath(panels, r) {
+    var n = panels.length, v = [];
+    v.push([panels[0].x0, panels[0].top]);
+    v.push([panels[0].x1, panels[0].top]);
+    for (var i = 0; i < n; i++) { v.push([panels[i].x1, panels[i].bottom]); if (i < n - 1) v.push([panels[i + 1].x1, panels[i].bottom]); }
+    v.push([panels[n - 1].x0, panels[n - 1].bottom]);
+    for (var i = n - 1; i >= 0; i--) { v.push([panels[i].x0, panels[i].top]); if (i > 0) v.push([panels[i - 1].x0, panels[i].top]); }
+    return roundedPolygon(v, r);
+  }
+  var uid = 0;
+  function build(sec) {
+    var rows = sec.querySelector('.why-rows'), ribbon = sec.querySelector('.why-ribbon');
+    if (!rows || !ribbon) return;
+    if (window.innerWidth <= 900) { ribbon.innerHTML = ''; return; }
+    var texts = [].slice.call(sec.querySelectorAll('.why-row-text'));
+    if (!texts.length) return;
+    var rb = rows.getBoundingClientRect();
+    var panels = texts.map(function (el) {
+      var b = el.getBoundingClientRect();
+      return { x0: b.left - rb.left, x1: b.right - rb.left, top: b.top - rb.top, bottom: b.bottom - rb.top };
+    }).sort(function (a, b) { return a.top - b.top; });
+    var W = Math.round(rb.width), H = Math.round(rb.height);
+    var d = ribbonPath(panels, 24);
+    var id = 'whyGrad' + (sec._whyId || (sec._whyId = ++uid));
+    // Match CSS linear-gradient(-124deg, …): gradient line endpoints for a W×H box.
+    var ang = -124 * Math.PI / 180, gx = Math.sin(ang), gy = -Math.cos(ang);
+    var gl = (Math.abs(W * gx) + Math.abs(H * gy)) / 2, cx = W / 2, cy = H / 2;
+    var x1 = (cx - gx * gl).toFixed(1), y1 = (cy - gy * gl).toFixed(1);
+    var x2 = (cx + gx * gl).toFixed(1), y2 = (cy + gy * gl).toFixed(1);
+    ribbon.innerHTML =
+      '<svg width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
+      + '<defs><linearGradient id="' + id + '" gradientUnits="userSpaceOnUse" x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '">'
+      + '<stop offset="0" style="stop-color:var(--white)"/>'
+      + '<stop offset="0.25" style="stop-color:var(--primary);stop-opacity:.03"/>'
+      + '<stop offset="0.5" style="stop-color:var(--primary);stop-opacity:.08"/>'
+      + '<stop offset="0.75" style="stop-color:var(--primary);stop-opacity:.03"/>'
+      + '<stop offset="1" style="stop-color:var(--white)"/>'
+      + '</linearGradient></defs>'
+      + '<path d="' + d + '" fill="url(#' + id + ')"/></svg>';
+  }
+  function init(sec) {
+    var rows = sec.querySelector('.why-rows'); if (!rows) return;
+    var raf;
+    function schedule() { if (raf) cancelAnimationFrame(raf); raf = requestAnimationFrame(function () { build(sec); }); }
+    schedule();
+    if ('ResizeObserver' in window) { new ResizeObserver(schedule).observe(rows); }
+    window.addEventListener('resize', schedule, { passive: true });
+    window.addEventListener('load', schedule);
+  }
+  function run() { var s = document.querySelectorAll('.shs-why'); for (var i = 0; i < s.length; i++) init(s[i]); }
+  if (document.readyState !== 'loading') run(); else document.addEventListener('DOMContentLoaded', run);
+})();
 </script>
 <?php endif; ?>

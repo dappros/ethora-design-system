@@ -13,6 +13,7 @@
  *     'eyebrow'      => '',                       // optional mono kicker
  *     'title'        => 'Heading',                // h2 (inline HTML allowed)
  *     'paragraphs'   => array( 'First.', 'Second.' ), // one <p> each (inline HTML allowed)
+ *     'checks'       => array( 'Item one', 'Item two' ), // optional green-check list (after the paragraphs)
  *     'image'        => 'images/foo.png',         // theme-relative path OR absolute URL (optional)
  *     'image_alt'    => 'Describe the image',
  *     'image_width'  => 929,                        // for CLS (optional)
@@ -37,6 +38,7 @@ $sc = wp_parse_args(
 		'eyebrow'      => '',
 		'title'        => '',
 		'paragraphs'   => array(),
+		'checks'       => array(),
 		'image'        => '',
 		'image_alt'    => '',
 		'image_width'  => '',
@@ -80,7 +82,7 @@ if ( $sc_assets ) {
     padding: clamp(var(--space-32),4vw,var(--space-48));
     display: flex; flex-wrap: wrap; gap: clamp(var(--space-32),5vw,var(--space-64)); align-items: center; }
   .shs-split-body { flex: 1 1 380px; min-width: 300px; }
-  .shs-split-media { flex: 1 1 360px; min-width: 300px; }
+  .shs-split-media { flex: 1 1 360px; min-width: 300px;  }
   .shs-split-card.is-reversed .shs-split-media { order: -1; }   /* image on the left */
   .shs-split-media img { display: block; width: 100%; height: auto; border-radius: var(--radius-2xl); }
   .shs-split-eyebrow { font-family: var(--font-mono); font-weight: var(--fw-medium); font-size: var(--fs-eyebrow);
@@ -89,6 +91,10 @@ if ( $sc_assets ) {
     line-height: 1.1; letter-spacing: -.01em; color: var(--ink); margin: 0; }
   .shs-split-body p { font-size: var(--fs-lg); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; }
   .shs-split-body p a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+  /* green-check list */
+  .shs-split-checks { list-style: none; margin: var(--space-32) 0 0; padding: 0; display: grid; gap: var(--space-16); }
+  .shs-split-checks li { display: flex; align-items: flex-start; gap: var(--space-8); font-size: var(--fs-lg); line-height: var(--lh-snug); color: var(--text-body); }
+  .shs-split-checks svg { flex: 0 0 auto; width: 20px; height: 20px; color: var(--green); margin-top: 3px; }
   /* dark variant — FULL-BLEED brand-blue gradient (same as .sb-section / .cc-section cards), white text */
   .shs-split-section.is-dark { padding: var(--section-y) var(--section-x);
     background: var(--gradient-brand); }
@@ -97,6 +103,7 @@ if ( $sc_assets ) {
   .shs-split-section.is-dark h2 { color: #fff; }
   .shs-split-section.is-dark p { color: var(--text-on-dark); }
   .shs-split-section.is-dark p a { color: #fff; }
+  .shs-split-section.is-dark .shs-split-checks li { color: var(--text-on-dark); }
 </style>
 <?php endif; ?>
 
@@ -108,6 +115,16 @@ if ( $sc_assets ) {
       <?php foreach ( (array) $sc['paragraphs'] as $sc_p ) : ?>
       <p><?php echo wp_kses_post( $sc_p ); ?></p>
       <?php endforeach; ?>
+      <?php if ( ! empty( $sc['checks'] ) ) : ?>
+      <ul class="shs-split-checks">
+        <?php foreach ( (array) $sc['checks'] as $sc_c ) : ?>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+          <span><?php echo wp_kses_post( $sc_c ); ?></span>
+        </li>
+        <?php endforeach; ?>
+      </ul>
+      <?php endif; ?>
     </div>
     <?php if ( $sc_img ) : ?>
     <div class="shs-split-media">
