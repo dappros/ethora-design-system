@@ -104,9 +104,14 @@ if ( $hero_assets ) {
 <?php if ( $hero_assets ) : ?>
 <style>
   /* HERO — brand diagonal gradient, 2-column (text + visual), decorative rhombus. Tokens only. */
-  .ehero { position: relative; overflow: hidden; padding: var(--hero-pt) var(--section-x) clamp(48px,5vw,72px);
-    background: linear-gradient(-124deg, rgba(255,255,255,1) 0%, rgba(0,82,205,.156) 71%, rgba(255,255,255,1) 100%); 
-    height: 100vh; display: flex; align-items: center;}
+  /* full-viewport hero: fills the screen and vertically centres its content in the
+     visible area BELOW the fixed header. Top padding = --header-h clears the header
+     (no --hero-pt offset); min-height (not fixed height) lets the hero grow instead
+     of hiding/clipping content when it is taller than the viewport. Side gutter only. */
+  .ehero { position: relative; overflow: hidden;
+    padding: var(--header-h) var(--section-x) var(--space-32);
+    background: linear-gradient(-124deg, rgba(255,255,255,1) 0%, rgba(0,82,205,.156) 71%, rgba(255,255,255,1) 100%);
+    min-height: 100vh; min-height: 100svh; display: flex; align-items: center;}
   .ehero, .ehero *, .ehero *::before, .ehero *::after { box-sizing: border-box; }
   /* full-viewport hero — content vertically centred below the fixed header */
   .ehero.is-full { min-height: 100vh; min-height: 100svh; display: flex; align-items: center; }

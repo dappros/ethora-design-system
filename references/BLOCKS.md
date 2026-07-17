@@ -18,8 +18,10 @@ guess from the markup.
 
 Page opener on the brand diagonal gradient: eyebrow + `<h1>` + lead + CTA buttons +
 a green-check trust row on the left, a product visual (inline SVG or image) on the
-right, decorative rhombus corners, and an optional compliance strip below. Clears the
-fixed header via `--hero-pt`.
+right, decorative rhombus corners, and an optional compliance strip below. Full-viewport
+(`min-height: 100vh`): content is vertically centred in the area below the fixed header
+(top padding `--header-h` clears it — no `--hero-pt`), and the hero grows instead of
+clipping when content is taller than the viewport.
 
 ![Hero](screenshots/hero.png)
 
@@ -34,7 +36,7 @@ fixed header via `--hero-pt`.
 | `media_alt` / `media_width` / `media_height` / `media_html` | | raster alt+dims, or raw markup override |
 | `rhombus` | bool | decorative corner shapes (default `true`) |
 | `compliance` | array | `{ label, items[] }` — bottom strip (optional) |
-| `full_height` | bool | `min-height: 100vh`, content vertically centred below the fixed header (default `true`; set `false` for a compact hero) |
+| `full_height` | bool | full-viewport hero: `min-height: 100vh`, content vertically centred in the area below the fixed header (top padding `--header-h`, no `--hero-pt`); grows instead of clipping tall content (default `true`; set `false` for a compact hero) |
 | `variant` | string | `''` = default (light gradient, dark text). **`'v2'`** = full-screen **bright brand-blue** hero (`--gradient-hero-v2`, `#4188f3 → #0640c3`) with **white** text, rhombus at `opacity .1`, and the **media pinned to the bottom-right corner, sized by viewport height** (`clamp(360px, min(90vh,52vw), 1000px)` — ~90% of the screen height on 16:9, auto-shrinks on MacBook/narrow; hidden ≤900px). Pair with white buttons (`light` + `outline-light`) and set `full_height => true`. Use a person/product cut-out that reads well anchored to the corner |
 
 ```php

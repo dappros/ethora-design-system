@@ -14,6 +14,7 @@ $tc = wp_parse_args(
 		'eyebrow'  => 'Customers',
 		'heading'  => 'Trusted by teams shipping regulated communication',
 		'interval' => 5000,
+		'eyebrow_label' => false, // true → render the eyebrow as the pill .section-label (star + text) instead of the mono kicker
 	)
 );
 $u = get_template_directory_uri();
@@ -45,8 +46,10 @@ if ( ! $tc_assets ) :
 	  .tcar-head .eb { font-family: var(--font-mono); font-weight: 500; font-size: var(--fs-eyebrow); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--primary); }
 	  .tcar-head h2 { font-family: var(--font-serif); font-weight: 500; font-size: var(--fs-h2); line-height: var(--lh-tight); letter-spacing: var(--tracking-tight); color: var(--ink); margin: var(--space-16) 0 0; max-width: 640px; }
 	  .tcar-ctrls { display: flex; gap: var(--space-8); flex: none; }
-	  .tcar-btn { width: 44px; height: 44px; border-radius: var(--radius-pill); border: 1px solid var(--border-strong); background: var(--white); color: var(--ink); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
-	  .tcar-btn:hover { background: var(--primary); color: var(--white); border-color: var(--primary); }
+	  /* prev/next follow the brand .slider-btn standard: 2.5rem square, --radius-btn,
+	     1px solid --primary, transparent bg, --primary chevron, hover → --primary-light */
+	  .tcar-btn { width: 2.5rem; height: 2.5rem; border-radius: var(--radius-btn); border: 1px solid var(--primary); background: transparent; color: var(--primary); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+	  .tcar-btn:hover { background: var(--primary-light); }
 	  .tcar-viewport { overflow: hidden; }
 	  .tcar-track { display: flex; gap: var(--space-32); will-change: transform; }
 	  .tcar-card { flex: 0 0 calc((100% - 2 * var(--space-32)) / 3); box-sizing: border-box; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: var(--space-32); box-shadow: var(--shadow-card); display: flex; flex-direction: column; }
@@ -66,7 +69,11 @@ endif;
   <div class="tcar-inner">
     <div class="tcar-head">
       <div>
-        <span class="eb"><?php echo esc_html( $tc['eyebrow'] ); ?></span>
+        <?php if ( $tc['eyebrow_label'] ) : ?>
+          <div class="section-label"><img src="<?php echo $u; ?>/images/vector/star.svg" alt="" /><span><?php echo esc_html( $tc['eyebrow'] ); ?></span></div>
+        <?php else : ?>
+          <span class="eb"><?php echo esc_html( $tc['eyebrow'] ); ?></span>
+        <?php endif; ?>
         <h2><?php echo esc_html( $tc['heading'] ); ?></h2>
       </div>
       <div class="tcar-ctrls">

@@ -136,9 +136,12 @@ One header across all pages: the brand **light-blue gradient** bar
 (`linear-gradient(90deg, #fff, #d7e4f7, #fff)`), sticky, with the Ethora logo + mega-menu.
 No plain-white header variant. Header CTAs: **Try Free** (borderless text, `.header-cta-text`)
 + **Book a Call** (primary button).
-- **First-section top offset (RULE):** the header is fixed (~`--header-h` = 92px). A page's
-  first/hero section must clear it — use `padding-top: var(--hero-pt)`
-  (= `--header-h` + a 24–64px gap). Never let hero content sit tight under the header.
+- **First-section top offset (RULE):** the header is fixed (~`--header-h` = 92px) and must
+  never overlap content. A **hero** (`section-hero`) is full-viewport (`min-height: 100vh`) and
+  centres its content in the area **below** the header via `padding-top: var(--header-h)` (no
+  `--hero-pt`, no other vertical padding); it grows rather than clipping tall content. A
+  **non-hero first section** clears the header with `padding-top: var(--hero-pt)`
+  (= `--header-h` + a 24–64px gap). Never let content sit tight under the header.
 
 ## Shadows & z-index
 `--shadow` · `--shadow-lg` · `--shadow-card` (floating card) · `--shadow-hover`
@@ -182,7 +185,8 @@ Target **Accessibility ≥ 95, SEO 100, CLS 0**. Full detail in the skill's
 - **Tokens:** `css/tokens.css` (this system).
 - **Hero:** `template-parts/section-hero.php` — page opener on the brand gradient: eyebrow +
   h1 + lead + CTA buttons + trust row, product visual (inline SVG or image), optional
-  compliance strip; clears the fixed header via `--hero-pt`.
+  compliance strip; full-viewport (`min-height: 100vh`), content centred below the fixed
+  header (top padding `--header-h`, no `--hero-pt`), grows instead of clipping tall content.
 - **Split card:** `template-parts/section-split-card.php` — brand-gradient card with a
   heading + paragraphs beside an image (`reverse` flips sides). Optional image.
   `'dark' => true` → **full-bleed brand dark-blue band** (edge-to-edge `.shs-dark`, white text).

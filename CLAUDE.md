@@ -62,7 +62,10 @@ switch — get their canonical, token-based CSS from **`css/primitives.css`** (l
    canonical classes, do NOT restyle: `.btn .btn-primary` / `.btn-outline` /
    `.btn-light` / `.btn-outline-light` (on dark), or the token-based partial variants
    (`.shs-btn*`, `.ppc-btn`) with the same spec. No pill/other radius.
-6. **Header** — one across all pages — the light-blue gradient (not white).
+6. **Header & hero** — one header across all pages — the light-blue gradient (not white). The
+   hero (`section-hero`) is full-viewport (`min-height: 100vh`) with content centred **below**
+   the header via `padding-top: var(--header-h)` (no `--hero-pt`, no other vertical padding); it
+   grows, never clips. Non-hero first sections clear the header with `padding-top: var(--hero-pt)`.
 7. **Slider/nav (switch) buttons — ONLY the `.slider-btn` standard** (as in "Our Case Studies"):
    40px (2.5rem) square, radius `--radius-btn` (12px), `1px solid var(--primary)` border,
    transparent background, `var(--primary)` chevron, hover → `var(--primary-light)`. Centred. Any
@@ -84,6 +87,19 @@ switch — get their canonical, token-based CSS from **`css/primitives.css`** (l
     only the light sections in `<div class="shs-sec">` (leave blue bands unwrapped) and add the two
     `:has()`/adjacent-sibling rules to the page `<style>` (see `page-self-hosted-server.php` and the
     `ethora-theme` skill's "Section vertical rhythm" rule). Never hand-tune per-section padding to fake it.
+    **Exception:** two adjacent split cards (`shs-split-section`) sit tighter — a single
+    `var(--space-32)` seam (mark those wrappers `.shs-sec.is-split` and add
+    `.<main> .shs-sec.is-split + .shs-sec.is-split > * { padding-top: var(--space-32) !important; }`).
+    See `page-healthcare.php`.
+11. **Never two blue/dark full-bleed bands back-to-back (HARD).** A blue/dark full-bleed section
+    (`--gradient-brand` band, `section-stats`, `section-split-card` with `dark: true`, `.shs-dark`
+    CTA / `section-cta-dark`, `section-trust-band`) must ALWAYS be separated from the next one by a
+    **light** section — the colour has to breathe against white. Consecutive *light* sections are
+    fine (that's rule 10); consecutive *blue/dark* ones are not. In particular the closing
+    `section-cta-dark` must be preceded by a light section, so don't put a blue statement band
+    (`split-card dark:true`) directly above it — make that statement a light centred section instead
+    (see the case-study pages `page-case-study-*.php`, `.cs-outcome`). The page hero gradient is the
+    opener and doesn't count as a band for this rule.
 
 ## Reusable blocks (`template-parts/`)
 

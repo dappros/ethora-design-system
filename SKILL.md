@@ -76,6 +76,18 @@ Full detail and the token table are in [`DESIGN.md`](DESIGN.md). The hard ones:
   .shs .shs-sec + .shs-sec > *      { padding-top: var(--section-y-sm) !important; }
   ```
   (scope the two selectors to the page's `<main>` class). Reference: `page-self-hosted-server.php`.
+  **Exception — consecutive split cards sit tighter.** When two neighbouring light
+  sections are both `shs-split-section` (the split-card block), the seam between them
+  is a **single `var(--space-32)`**, not `var(--section-y-sm)` — they read as one
+  connected series. Mark those wrappers `.shs-sec.is-split` and add a higher-specificity
+  override after the two rules above:
+  ```css
+  .shs .shs-sec.is-split + .shs-sec.is-split > * { padding-top: var(--space-32) !important; }
+  ```
+  Don't hand-tune the split cards' `pad_top`/`pad_bottom` args to fake this — let the rule
+  own it. Reference: `page-healthcare.php`. (If a section ships no native padding of its own
+  — e.g. `.faq` — give the last light section before a blue band an explicit
+  `padding-bottom: var(--section-y-sm)` so it doesn't butt against the band.)
 - **Width (HARD):** content **never exceeds 1200px** (`--container-xl`). Every
   full-width section wraps at **`--content-max` (1152)** centred, with the section
   providing `--section-x` padding — so all sections share the same edges and line up
@@ -103,9 +115,21 @@ Full detail and the token table are in [`DESIGN.md`](DESIGN.md). The hard ones:
   the token **`--gradient-brand`** (`brand-500 → brand-800`, 135deg) — the statement band, cards
   carousel and stats band all use it. Never hand-write that `linear-gradient` inline; reference
   the token. (Dark/CTA panels are different — those use the `.shs-dark` image treatment below.)
-- **Header:** one header on every page — the light-blue gradient bar (never plain
-  white). A page's first section clears the fixed header with `padding-top:
-  var(--hero-pt)`.
+- **Never two blue/dark full-bleed bands back-to-back (HARD).** Any blue/dark full-bleed section
+  (`--gradient-brand` band, `section-stats`, `section-split-card` with `dark: true`, `.shs-dark` /
+  `section-cta-dark`, `section-trust-band`) must ALWAYS be separated from the next one by a **light**
+  section — the colour must breathe against white. Consecutive *light* sections are allowed (that's
+  the vertical-rhythm rule above); consecutive *blue/dark* ones are NOT. In particular the closing
+  `section-cta-dark` must be preceded by a light section — don't stack a blue statement band
+  (`split-card dark:true`) directly on top of it; make that statement a light centred section instead
+  (reference: `page-case-study-drtalks.php` / `page-case-study-atom-advantage.php`, the `.cs-outcome`
+  block). The page hero gradient is the opener and doesn't count as a band for this rule.
+- **Header & hero clearance:** one header on every page — the light-blue gradient bar
+  (never plain white). The **hero block** (`section-hero`) is full-viewport — `min-height:
+  100vh`, content vertically centred in the visible area **below** the fixed header (top
+  padding `var(--header-h)` clears it — NOT `--hero-pt`, and no other vertical padding), and
+  it grows instead of clipping when content is taller than the viewport. Any **non-hero
+  first section** still clears the header with `padding-top: var(--hero-pt)`.
 - **Dark panels:** ALWAYS the brand `.shs-dark` treatment (`--primary-dark` ~85% over
   `images/start-free.png`) — **never near-black**. For Book-a-Call / dark CTA blocks
   reuse [`template-parts/section-cta-dark.php`](template-parts/section-cta-dark.php).
