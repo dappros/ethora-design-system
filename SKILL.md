@@ -40,7 +40,8 @@ ad-hoc drift" rule — it's what keeps every page on-brand.
 2. **Before building a section, check the catalog** ([`references/BLOCKS.md`](references/BLOCKS.md)).
    If a block fits, reuse it via `get_template_part()` — don't rebuild it.
 3. **Build with tokens only.** Match the surrounding code's idiom.
-4. **Hit the quality floor** (a11y / performance / responsive — below).
+4. **Hit the quality floor** (a11y / performance / responsive — below) and **add the default
+   reveal-on-scroll animation** (see *Motion* — every new page/redesign ships it).
 5. **New reusable block?** Make it self-contained and add it to the catalog (see
    *Adding a new block*).
 
@@ -144,6 +145,64 @@ Target **Accessibility ≥ 95, SEO 100, CLS 0**.
   `width`/`height`; `loading="lazy"` for below-the-fold media.
 - **Responsive:** no horizontal scroll on mobile; stack 2-col rows ≤ 900px. Don't put
   `overflow` on `<html>`/`<body>` (breaks `position: sticky`).
+
+---
+
+## Card grids — never leave an orphan last row (HARD)
+
+Any grid of cards (feature-cards, compliance-cards, feature-spotlight items, link-cards…)
+must **account for how many cards there are** and fill the whole row — never render a partial
+last row with empty slots on the right. Match the layout to the count:
+
+- **Count divides the column count evenly** (e.g. 4 in a 2-up, 6 in a 3-up) → leave it.
+- **Even but not a clean multiple** (e.g. 4 in a 3-up) → **change the column count** so it
+  divides: 4 → `2×2`, 8 → `4×2`. Don't force a 3-up that orphans one card.
+- **Odd with a multi-card orphan row** (e.g. 7 in a 4-up, 5 in a 3-up) → keep the base
+  columns but **stretch the last row's cards** to span the full width equally, using a
+  fine-grained track grid:
+  ```css
+  /* 7 cards, 4-up: 12-track → 4 per row (span 3), last 3 stretch (span 4) */
+  .grid { grid-template-columns: repeat(12, minmax(0,1fr)); }
+  .grid > .card { grid-column: span 3; }
+  .grid > .card:nth-last-child(-n+3):nth-child(n+5) { grid-column: span 4; }
+  ```
+- **Single orphan** (e.g. 5 in a 3-up leaves 1) → don't stretch one card to full width (it
+  reads half-empty). Re-balance instead: 5 → top row 3 + bottom row 2 stretched (6-track:
+  cards `span 2`, last two `span 3`), or `2 + 3`.
+
+**Scope it, don't edit the shared partial.** Wrap the specific section in a page-local class
+(e.g. `.shl-models`, `.shl-benefits`) and put the override in the page `<style>`, so other
+pages using the same block are unaffected. Apply it desktop-only (`@media (min-width: 901px)`)
+and let the block's own responsive rules take over below. Comment the rule with the card
+count it's tuned for — if the count changes, the spans must be retuned. Reference:
+`page-self-hosted-llm-ai-agent.php` (Supported Models, Take Control, Train AI).
+
+---
+
+## Motion — reveal-on-scroll blocks in by default (HARD)
+
+**Every marketing page — a new build or a redesign — ships the reveal-on-scroll animation.**
+Content blocks **fade + slide in** as they enter the viewport (headers rise, side blocks slide
+from their side, card grids/lists cascade), exactly like the home page. It's not optional polish;
+it's part of the house style, so add it as a matter of course — don't wait to be asked.
+
+It's a self-contained `<style>` + inline `<script>` per page (kept off `main.js`), driven by an
+IntersectionObserver that tags blocks with `data-reveal` + a direction and flips them to
+`.reveal-in`. Full copy-paste snippet, how to build the per-page `SELECTORS` list, and the
+non-negotiable gotchas are in **[`references/reveal-on-scroll.md`](references/reveal-on-scroll.md)**.
+The short version of the gotchas (get these wrong and blocks "pop" instead of easing in):
+
+- Animate **`translate`**, never `transform` (it would fight the cards' hover `transform`).
+- Use **`[data-reveal][data-reveal]`** so the reveal `transition` out-specifies a card's own
+  `transition` (otherwise `opacity` isn't animated).
+- **`overflow-x: clip`** on the `<main>` wrapper contains the horizontal slide without a
+  scrollbar and (unlike `overflow: hidden`) keeps `position: sticky` working.
+- **Never tag** a `position: sticky` element or the **hero**; scope selectors to the page's
+  `<main>` class so header/footer menus are untouched.
+- Wrap the hidden state in `@media (prefers-reduced-motion: no-preference)`; JS-off / reduced
+  motion ⇒ everything visible, no animation.
+
+Reference: `page-self-hosted-llm-ai-agent.php` (and `index.php` for the home original).
 
 ---
 

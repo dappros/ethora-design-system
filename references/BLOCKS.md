@@ -342,7 +342,33 @@ buttons.
 
 ## 12. Case studies — `section-case-studies.php`
 
-Row of case-study cards.
+The home-page **"Our Case Studies"** carousel, as a self-contained block. This is the
+**canonical** look — whenever a page needs "Our Case Studies", render exactly this block; do
+not hand-roll the old `.case-study-*` markup. What it must always include:
+
+- **Cards** — full-bleed sliding track, the active card centred with its neighbour peeking +
+  scaling. On desktop (≥768px) each card is **two columns** (screenshot left, content right);
+  it stacks on mobile. Content = customer logo + short description + a green-check **success
+  highlights** list + a **Read more** link.
+- **Nav (switch) buttons** — the brand `.slider-btn` prev/next, **blue-outlined**
+  (`1px solid var(--primary)` + primary chevron), **pinned top-right of the header** on
+  desktop (centred under the heading on mobile). These are **bundled inside the block** (own
+  `.csx-head` / `.csx-controls` CSS), NOT the legacy `.case-studies` globals — so they render
+  correctly on any page. They are part of the design: never ship the section without them.
+- **Dots** under the track, and **drag / swipe** (mouse + touch).
+
+Self-contained — ships its **own CSS + JS once per request**, scoped to `.csx-*` classes so
+it works on any template (page templates load `css/index.css`, the home page loads
+`style-index.css`) and never collides with the legacy `.case-study-*` sliders in
+`js/index.js` / `main.js`. Tokens only. **No args** — the two flagship case studies (DrTalks,
+Atom Advantage) are baked in; pass `'title'` to override the heading.
+
+```php
+get_template_part( 'template-parts/section-case-studies' );
+```
+
+Live use: the home page (`index.php`), `page-self-hosted-llm-ai-agent.php`, `page-healthcare.php`
+— all render the same block, so an edit here updates every page.
 
 ![Case studies](screenshots/case-studies.png)
 
@@ -647,7 +673,7 @@ section (distinct from `section-pricing-cards.php`, which is the 3-card pricing 
 |---|---|---|
 | `eyebrow` / `title` / `lead` | string | optional centred header |
 | `shade` | bool | tint the section bg |
-| `plans` | array | **required** — the columns; each: `name`, `price`, `popular` (bool → the highlighted column), `badge` (popular column tag, default "Most popular") |
+| `plans` | array | **required** — the columns; each: `name`, `price`, `popular` (bool → the highlighted column), `badge` (popular column tag, default "Most popular"), optional `cta` (`array('label','url')` link, or `array('label','modal'=>true)` to open the book-call modal — renders a button under the price; outline on white columns, white-fill on the blue popular column) |
 | `groups` | array | **required** — each: `label` (mono group heading) + `rows[]`; each row: `feature` (inline HTML) + `values[]` **aligned to `plans` order** — a value of `true` → green check, `false` → em-dash, any string → text |
 | `group_labels` | bool | show the mono group-label separator rows (default `true`); set **`false`** for a flat table (no group headings) |
 | `legend` | bool | show the Included / Not-available legend (default `true`) |
