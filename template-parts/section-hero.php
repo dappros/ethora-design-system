@@ -7,6 +7,12 @@
  * rhombus shapes in the corners, and an optional compliance strip below.
  * Clears the fixed header via --hero-pt. Self-contained (ships its own CSS once).
  *
+ * LAYOUT INVARIANT — the block positions (text column, media column, compliance
+ * strip) are the SAME for every `variant`. A variant may only recolour (background,
+ * text, border, opacity); it must NEVER change the layout, media sizing/position, or
+ * the compliance strip. So a hero looks structurally identical whether light or `v2`,
+ * and a page NEVER needs its own CSS to "fix" the hero — just pass the props.
+ *
  * Pass props via the 3rd arg of get_template_part():
  *
  *   get_template_part( 'template-parts/section-hero', null, array(
@@ -56,7 +62,9 @@ $hero = wp_parse_args(
 		'rhombus'      => true,
 		'compliance'   => array(),
 		'full_height'  => true,
-		'variant'      => '',   // '' = default; 'v2' = full-screen bright-blue hero, white text
+		'variant'      => '',   // '' = default (light gradient, dark text); 'v2' = bright-blue gradient + white text.
+		                        // The variant ONLY changes colour/background — the block LAYOUT is identical
+		                        // in every variant (same grid, media column, compliance strip). Never fork the layout.
 		'badges'       => array(),  // floating chip cards over the media: array of { title, text, icon?, pos? ('bl'|'tr') }
 	)
 );
@@ -149,7 +157,7 @@ if ( $hero_assets ) {
   /* product visual — inline SVG carries its own shadows; or a raster image */
   .ehero-media svg, .ehero-media img { display: block; width: 100%; height: auto; }
   .ehero-media svg { overflow: visible; }   /* let inline-SVG shadows/decorations bleed out */
-  .ehero-media img { border-radius: var(--radius-2xl); overflow: hidden; }   /* clip raster corners to the radius */
+  .ehero-media img { border-radius: var(--radius-2xl); overflow: hidden; box-shadow: var(--shadow-lift); }   /* framed raster visual — identical in every variant */
   /* floating badge chips over the media — gently bob up/down (staggered), can bleed past the corners */
   .ehero-media { position: relative; }
   .ehero-badge { position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: var(--space-8);
@@ -175,9 +183,12 @@ if ( $hero_assets ) {
     .ehero-media { order: 2; }
   }
 
-  /* ===== HERO v2 — full-screen bright-blue gradient, white text ===== */
+  /* ===== HERO v2 — the bright-blue variant. IMPORTANT: it uses the EXACT SAME layout as
+     the default hero (same grid, same media column, same compliance strip, same block
+     positions). ONLY colour/background/opacity/border change here — never the layout, so
+     every hero reads identically whatever the variant. ===== */
   .ehero.is-v2 { background: var(--gradient-hero-v2); }
-  .ehero.is-v2 .ehero-rh.is-top { opacity: 0.1; }
+  .ehero.is-v2 .ehero-rh.is-top,
   .ehero.is-v2 .ehero-rh.is-bottom { opacity: 0.1; }
   .ehero.is-v2 .ehero-eyebrow { color: var(--white); opacity: .9; }
   .ehero.is-v2 .ehero-text h1 { color: var(--white); }
@@ -187,22 +198,6 @@ if ( $hero_assets ) {
   .ehero.is-v2 .ehero-compliance { border-top-color: rgba(255,255,255,.25); }
   .ehero.is-v2 .ehero-compliance-label { color: var(--white); }
   .ehero.is-v2 .ehero-compliance-items { color: rgba(255,255,255,.85); }
-  /* v2 media = a figure pinned to the bottom-right corner, sized by viewport HEIGHT.
-     clamp(min, min(90vh,52vw), max): ~90% of the screen height on 16:9 monitors, but the
-     52vw term shrinks it on shorter / narrower screens (MacBook) so it never dominates. */
-  .ehero.is-v2 { padding-bottom: 0; }
-  .ehero.is-v2 .ehero-grid { grid-template-columns: 1fr; }
-  .ehero.is-v2 .ehero-text { max-width: 560px; position: relative; z-index: 1; }
-  .ehero.is-v2 .ehero-media--pinned { position: absolute; right: 0; bottom: 0; z-index: 0;
-    margin: 0; height: clamp(360px, min(90vh, 52vw), 1000px); pointer-events: none; line-height: 0; }
-  .ehero.is-v2 .ehero-media--pinned img, .ehero.is-v2 .ehero-media--pinned svg {
-    height: 100%; width: auto; max-width: none; border-radius: 0; display: block; }
-  @media (max-width: 900px) {
-    /* on narrow screens the pinned portrait would overlap the copy — hide it, keep the text hero */
-    .ehero.is-v2 { padding-bottom: clamp(48px,5vw,72px); }
-    .ehero.is-v2 .ehero-media--pinned { display: none; }
-    .ehero.is-v2 .ehero-text { max-width: none; }
-  }
 </style>
 <?php endif; ?>
 
@@ -210,9 +205,6 @@ if ( $hero_assets ) {
   <?php if ( $hero['rhombus'] ) : ?>
   <img src="<?php echo esc_url( $hero_uri . '/images/rhombus.svg' ); ?>" alt="" aria-hidden="true" class="ehero-rh is-top" width="910" height="810" />
   <img src="<?php echo esc_url( $hero_uri . '/images/rhombus-2.svg' ); ?>" alt="" aria-hidden="true" class="ehero-rh is-bottom" width="910" height="810" />
-  <?php endif; ?>
-  <?php if ( 'v2' === $hero['variant'] && $hero_media ) : ?>
-  <div class="ehero-media ehero-media--pinned"><?php echo $hero_media; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img markup ?></div>
   <?php endif; ?>
   <div class="ehero-wrap">
     <div class="ehero-grid">
@@ -248,7 +240,7 @@ if ( $hero_assets ) {
         <?php endif; ?>
       </div>
 
-      <?php if ( $hero_media && 'v2' !== $hero['variant'] ) : ?>
+      <?php if ( $hero_media ) : ?>
       <div class="ehero-media"><?php echo $hero_media . $hero_badges_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img + badge markup ?></div>
       <?php endif; ?>
     </div>

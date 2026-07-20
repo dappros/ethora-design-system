@@ -66,6 +66,13 @@ switch — get their canonical, token-based CSS from **`css/primitives.css`** (l
    hero (`section-hero`) is full-viewport (`min-height: 100vh`) with content centred **below**
    the header via `padding-top: var(--header-h)` (no `--hero-pt`, no other vertical padding); it
    grows, never clips. Non-hero first sections clear the header with `padding-top: var(--hero-pt)`.
+   **Hero layout is a HARD invariant across variants:** light and the blue `variant => 'v2'` share
+   the *identical* block layout — text column (eyebrow/h1/lead/buttons/trust) left, media **framed
+   in the right column, vertically centred**, compliance strip full-width below (label left, items
+   right). A variant may only recolour (bg/text/border/opacity); it must NEVER change the layout,
+   pin or viewport-size the media (which makes it cover the screen / go off-centre), or restyle the
+   compliance strip. **Never add page-level CSS to "fix" the hero** — fix `template-parts/section-hero.php`
+   so every page benefits; pages only pass props.
 7. **Slider/nav (switch) buttons — ONLY the `.slider-btn` standard** (as in "Our Case Studies"):
    40px (2.5rem) square, radius `--radius-btn` (12px), `1px solid var(--primary)` border,
    transparent background, `var(--primary)` chevron, hover → `var(--primary-light)`. Centred. Any

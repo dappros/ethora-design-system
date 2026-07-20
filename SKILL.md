@@ -131,6 +131,15 @@ Full detail and the token table are in [`DESIGN.md`](DESIGN.md). The hard ones:
   padding `var(--header-h)` clears it — NOT `--hero-pt`, and no other vertical padding), and
   it grows instead of clipping when content is taller than the viewport. Any **non-hero
   first section** still clears the header with `padding-top: var(--hero-pt)`.
+- **Hero layout invariant (HARD):** every hero — light or the blue **`variant => 'v2'`** — has
+  the **identical block layout**: text column (eyebrow → h1 → lead → buttons → trust) left,
+  media **framed in the right column and vertically centred**, compliance strip full-width
+  below (label left, items right). A **variant only recolours** (background / text / border /
+  opacity) — it must **never** change the layout, pin or viewport-size the media (which makes it
+  cover the screen / go off-centre), or restyle the compliance strip. **Never add page-level CSS
+  to "fix" the hero.** If a hero looks wrong, fix `template-parts/section-hero.php` so every page
+  benefits; a page only ever passes props. Reference: `page-self-hosted-server.php` (light) and
+  `page-npm-chat-component.php` (`v2`) render the same layout.
 - **Dark panels:** ALWAYS the brand `.shs-dark` treatment (`--primary-dark` ~85% over
   `images/start-free.png`) — **never near-black**. For Book-a-Call / dark CTA blocks
   reuse [`template-parts/section-cta-dark.php`](template-parts/section-cta-dark.php).
