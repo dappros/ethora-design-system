@@ -42,10 +42,11 @@ $fc = wp_parse_args(
 		'eyebrow' => '',
 		'title'   => '',
 		'lead'    => '',
-		'shade'      => false,
-		'expandable' => false,
-		'clamp'      => '8.5em',
-		'cards'      => array(),
+		'shade'         => false,
+		'shade_borders' => true,   // when shaded, the tint band gets top/bottom hairline borders by default; pass false to drop them (keep the tint)
+		'expandable'    => false,
+		'clamp'         => '8.5em',
+		'cards'         => array(),
 	)
 );
 
@@ -65,6 +66,7 @@ if ( $fc_assets ) {
   .shs-fc-section { padding: var(--section-y) var(--section-x); }
   .shs-fc-section, .shs-fc-section *, .shs-fc-section *::before, .shs-fc-section *::after { box-sizing: border-box; }
   .shs-fc-section.is-shaded { background: var(--surface-alt); border-top: 1px solid var(--hairline); border-bottom: 1px solid var(--hairline); }
+  .shs-fc-section.is-shaded.no-shade-borders { border-top: none; border-bottom: none; }   /* opt-out via 'shade_borders' => false */
   .shs-fc-wrap { max-width: var(--content-max); margin: 0 auto; }
   .shs-fc-eyebrow { font-family: var(--font-mono); font-weight: var(--fw-medium); font-size: var(--fs-eyebrow); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--primary); margin: 0 0 var(--space-8); }
   .shs-fc-h2 { font-family: var(--font-serif); font-weight: var(--fw-medium); font-size: var(--fs-h2); line-height: 1.08; letter-spacing: -.01em; color: var(--ink); margin: 0; max-width: 640px; }
@@ -73,7 +75,10 @@ if ( $fc_assets ) {
   /* expandable: flex layout so an opened card can take the FULL container width and
      move to the top, while the remaining collapsed cards reflow below and fill their
      row. Opening therefore expands sideways, not just downward. */
-  .shs-fc-section.is-expandable .shs-fc-grid { display: flex; flex-wrap: wrap; align-items: flex-start; }
+  /* align-items: stretch → every card in a flex row is the height of its tallest sibling
+     (uneven heading/text lengths never leave ragged, different-height cards in a row). The
+     .shs-fc-more / toggle uses margin-top:auto, so the "Read more" line stays bottom-aligned. */
+  .shs-fc-section.is-expandable .shs-fc-grid { display: flex; flex-wrap: wrap; align-items: stretch; }
   .shs-fc-section.is-expandable .shs-fc-card { flex: 1 1 280px; }
   .shs-fc-section.is-expandable .shs-fc-card.is-open { flex-basis: 100%; order: -1; }
   /* full-width open card: flow the long text into readable columns so the width is used well */
@@ -98,13 +103,18 @@ if ( $fc_assets ) {
   /* ---- Expandable text (Read more) ---- */
   .shs-fc-clip { margin-top: var(--space-16); }
   .shs-fc-clip .shs-fc-text { margin: 0; }
+  /* Fixed-height preview clamp — the JS measures scrollHeight against this clientHeight to
+     decide whether a "Read more" is needed, so it must stay a definite height (not flex-grow). */
   .shs-fc-clip.is-collapsible { position: relative; overflow: hidden; max-height: var(--fc-clamp, 8.5em);
     transition: max-height .55s cubic-bezier(.4, 0, .2, 1);
     -webkit-mask-image: linear-gradient(to bottom, #000 58%, transparent 100%);
             mask-image: linear-gradient(to bottom, #000 58%, transparent 100%); }
   .shs-fc-clip.is-collapsible.is-open { max-height: none; -webkit-mask-image: none; mask-image: none; }
-  .shs-fc-toggle { align-self: flex-start; margin: var(--space-16) 0 0; display: inline-flex; align-items: center; gap: var(--space-8);
-    padding: 0; background: none; border: 0; border-radius: 0;
+  /* margin-top:auto pins the toggle to the card's bottom edge so every "Read more" in a row
+     sits on the same line (cards are equal-height); padding-top keeps a min gap above it even
+     on the tallest card where auto collapses to 0. */
+  .shs-fc-toggle { align-self: flex-start; margin: auto 0 0; padding-top: var(--space-16); display: inline-flex; align-items: center; gap: var(--space-8);
+    background: none; border: 0; border-radius: 0;
     font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--fs-xs); letter-spacing: var(--tracking-wide);
     text-transform: uppercase; color: var(--primary); cursor: pointer; transition: color .2s ease, gap .2s ease; }
   .shs-fc-toggle:hover { color: var(--primary-dark); gap: var(--space-16); }
@@ -116,7 +126,7 @@ if ( $fc_assets ) {
 </style>
 <?php endif; ?>
 
-<section class="shs-fc-section<?php echo $fc['shade'] ? ' is-shaded' : ''; ?><?php echo $fc['expandable'] ? ' is-expandable' : ''; ?>">
+<section class="shs-fc-section<?php echo $fc['shade'] ? ' is-shaded' : ''; ?><?php echo ( $fc['shade'] && ! $fc['shade_borders'] ) ? ' no-shade-borders' : ''; ?><?php echo $fc['expandable'] ? ' is-expandable' : ''; ?>">
   <div class="shs-fc-wrap">
     <?php if ( $fc['eyebrow'] || $fc['title'] || $fc['lead'] ) : ?>
     <div>

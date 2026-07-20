@@ -63,6 +63,9 @@ if ( ! $cta_dark_assets ) :
 	  .cta-dark .cta-dark-eyebrow { font-family: var(--font-mono); font-weight: var(--fw-medium); font-size: var(--fs-eyebrow); letter-spacing: var(--tracking-wider); text-transform: uppercase; color: var(--accent-on-dark); }
 	  .cta-dark h2 { font-family: var(--font-serif); font-weight: var(--fw-medium); font-size: var(--fs-cta); line-height: var(--lh-tight); letter-spacing: var(--tracking-tight); color: var(--white); }
 	  .cta-dark p { font-size: var(--fs-md); line-height: var(--lh-relaxed); color: var(--text-on-dark); margin: var(--space-16) auto 0; max-width: var(--measure); }
+	  /* in-text links on the dark panel: white + underlined (readable on the blue fill, not the global blue) */
+	  .cta-dark p a { color: var(--white); text-decoration: underline; text-underline-offset: 2px; }
+	  .cta-dark p a:hover { color: var(--white); opacity: .85; }
 	  .cta-dark-btns { display: flex; gap: var(--space-16); justify-content: center; flex-wrap: wrap; margin-top: var(--space-32); }
 	  .cta-dark-btn { display: inline-flex; font-family: var(--font-body); font-size: var(--fs-md); font-weight: var(--fw-semibold); padding: var(--space-16) var(--space-32); border-radius: var(--radius-btn); text-decoration: none; border: 2px solid transparent; cursor: pointer; transition: background .2s ease, transform .2s ease; }
 	  .cta-dark-btn:hover { transform: translateY(-2px); }

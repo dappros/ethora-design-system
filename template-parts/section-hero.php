@@ -59,6 +59,7 @@ $hero = wp_parse_args(
 		'media_width'  => '',
 		'media_height' => '',
 		'media_html'   => '',
+		'media_shadow' => true,   // framed raster media casts a soft drop shadow by default; pass false for a flat, shadowless visual
 		'rhombus'      => true,
 		'compliance'   => array(),
 		'full_height'  => true,
@@ -158,6 +159,7 @@ if ( $hero_assets ) {
   .ehero-media svg, .ehero-media img { display: block; width: 100%; height: auto; }
   .ehero-media svg { overflow: visible; }   /* let inline-SVG shadows/decorations bleed out */
   .ehero-media img { border-radius: var(--radius-2xl); overflow: hidden; box-shadow: var(--shadow-lift); }   /* framed raster visual — identical in every variant */
+  .ehero-media.is-flat img { box-shadow: none; }   /* opt-out via 'media_shadow' => false */
   /* floating badge chips over the media — gently bob up/down (staggered), can bleed past the corners */
   .ehero-media { position: relative; }
   .ehero-badge { position: absolute; z-index: 3; display: inline-flex; align-items: center; gap: var(--space-8);
@@ -241,7 +243,7 @@ if ( $hero_assets ) {
       </div>
 
       <?php if ( $hero_media ) : ?>
-      <div class="ehero-media"><?php echo $hero_media . $hero_badges_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img + badge markup ?></div>
+      <div class="ehero-media<?php echo $hero['media_shadow'] ? '' : ' is-flat'; ?>"><?php echo $hero_media . $hero_badges_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img + badge markup ?></div>
       <?php endif; ?>
     </div>
 

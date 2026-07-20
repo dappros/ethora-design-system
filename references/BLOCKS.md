@@ -34,6 +34,7 @@ clipping when content is taller than the viewport.
 | `trust` | array | green-check items (strings) |
 | `media` | string | theme-relative path or URL — `.svg` is **inlined** (smooth GPU compositing), raster → `<img>` |
 | `media_alt` / `media_width` / `media_height` / `media_html` | | raster alt+dims, or raw markup override |
+| `media_shadow` | bool | framed raster media casts a soft drop shadow (`--shadow-lift`) by default; pass `false` for a flat, shadowless visual |
 | `rhombus` | bool | decorative corner shapes (default `true`) |
 | `compliance` | array | `{ label, items[] }` — bottom strip (optional) |
 | `full_height` | bool | full-viewport hero: `min-height: 100vh`, content vertically centred in the area below the fixed header (top padding `--header-h`, no `--hero-pt`); grows instead of clipping tall content (default `true`; set `false` for a compact hero) |
@@ -212,7 +213,8 @@ of cards.
 | Prop | Type | Notes |
 |---|---|---|
 | `eyebrow` / `title` / `lead` | string | header (optional) |
-| `shade` | bool | tint section bg |
+| `shade` | bool | tint section bg (adds top/bottom hairline borders) |
+| `shade_borders` | bool | when `shade` is on, the tint band gets top/bottom hairline borders by default; pass `false` to drop them (keep the tint) |
 | `cards` | array | **required** — each: `title`, `text` (inline HTML), `icon` (white line SVG, `stroke="currentColor"`), `color` (icon-circle colour token, default `var(--primary)`), `link_url` + `link_label` (optional → renders the button) |
 
 ```php
@@ -868,6 +870,7 @@ on the left. Self-contained (CSS once), tokens only; stacks to one column ≤900
 | `shade` | bool | tint the section bg |
 | `reverse` | bool | media on the LEFT |
 | `media` / `media_alt` | string | framed image (theme-relative/URL). Omit → dashed placeholder |
+| `media_shadow` | bool | framed image casts a soft drop shadow (`--shadow-lift`) by default; pass `false` for a flat, shadowless visual |
 | `placeholder` | string | placeholder caption (default "Drop a product screenshot or brand image") |
 | `items` | array | **required** — each: `icon` (line SVG `stroke="currentColor"`), `title`, `text` (inline HTML — links render brand-blue/underlined) |
 

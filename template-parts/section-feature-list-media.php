@@ -34,8 +34,9 @@ $flm = wp_parse_args(
 		'lead'        => '',
 		'shade'       => false,
 		'reverse'     => false,
-		'media'       => '',
-		'media_alt'   => '',
+		'media'        => '',
+		'media_alt'    => '',
+		'media_shadow' => true,   // framed image casts a soft drop shadow by default; pass false for a flat, shadowless visual
 		'placeholder' => 'Drop a product screenshot or brand image',
 		'items'       => array(),
 	)
@@ -82,6 +83,7 @@ if ( $flm_assets ) {
   .flm-item-text a { color: var(--primary); font-weight: var(--fw-semibold); text-decoration: underline; text-underline-offset: 2px; }
   /* media */
   .flm-media img { width: 100%; height: auto; display: block; border-radius: var(--radius-2xl); box-shadow: var(--shadow-lift); }
+  .flm-media.is-flat img { box-shadow: none; }   /* opt-out via 'media_shadow' => false */
   .flm-ph { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; min-height: 380px; padding: var(--space-32);
     border: 2px dashed var(--border-strong); border-radius: var(--radius-2xl); background: var(--surface-alt); }
   .flm-ph svg { width: 40px; height: 40px; color: var(--text-muted); margin-bottom: var(--space-16); }
@@ -114,7 +116,7 @@ if ( $flm_assets ) {
         <?php endforeach; ?>
       </div>
 
-      <div class="flm-media">
+      <div class="flm-media<?php echo $flm['media_shadow'] ? '' : ' is-flat'; ?>">
         <?php if ( $flm_src ) : ?>
         <img src="<?php echo esc_url( $flm_src ); ?>" alt="<?php echo esc_attr( $flm['media_alt'] ); ?>" loading="lazy" />
         <?php else : ?>

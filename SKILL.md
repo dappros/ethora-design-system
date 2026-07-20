@@ -68,6 +68,8 @@ out. Don't assume — ask:
 3. **Build with tokens only.** Match the surrounding code's idiom.
 4. **Hit the quality floor** (a11y / performance / responsive — below) and **add the default
    reveal-on-scroll animation** (see *Motion* — every new page/redesign ships it).
+   **Then count the cards in every grid** (including the item-grids inside reusable blocks) and
+   confirm no orphan last row — see *Card grids* below; it's the most-missed rule.
 5. **New reusable block?** Make it self-contained and add it to the catalog (see
    *Adding a new block*).
 
@@ -185,13 +187,30 @@ Target **Accessibility ≥ 95, SEO 100, CLS 0**.
 
 ## Card grids — never leave an orphan last row (HARD)
 
-Any grid of cards (feature-cards, compliance-cards, feature-spotlight items, link-cards…)
-must **account for how many cards there are** and fill the whole row — never render a partial
-last row with empty slots on the right. Match the layout to the count:
+**A card must never sit alone in a row, and a last row must never have empty slots on the
+right.** This is one of the most-often-missed rules — treat it as a blocking defect, not
+polish. It applies to **every** grid on the page, including the **item grids _inside_
+reusable blocks** — `section-feature-spotlight` items, `section-feature-cards`,
+`section-compliance-cards`, `section-link-cards`, `section-feature-rows` — not just grids you
+hand-build.
 
-- **Count divides the column count evenly** (e.g. 4 in a 2-up, 6 in a 3-up) → leave it.
-- **Even but not a clean multiple** (e.g. 4 in a 3-up) → **change the column count** so it
-  divides: 4 → `2×2`, 8 → `4×2`. Don't force a 3-up that orphans one card.
+> **Why it keeps slipping through:** most blocks default their grid to
+> `grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))`. That *looks* fine while you
+> author it, but at the 1152px content width `auto-fit` silently lands on **3 columns** — so
+> **4 items render 3 + 1, 5 items render 3 + 2 (one short), 7 render 3 + 3 + 1**. The block
+> will not fix this for you; you must override the column count **per instance** to match the
+> item count.
+
+**Mandatory post-build check (do this every time):** after the page renders, **count the
+cards in every grid** (including block item-grids) and confirm the last row is full. If any
+row is short, apply the matching fix below. Verify it in a real render, not by eyeballing the
+PHP.
+
+Match the layout to the count:
+
+- **Count divides the column count evenly** (e.g. 4 in a 2-up, 6 in a 3-up, 8 in a 4-up) → leave it.
+- **Even but not a clean multiple** (e.g. **4 in a 3-up**, **8 in a 3-up**) → **change the
+  column count** so it divides: **4 → `2×2`**, **8 → `4×2`**. Never ship a 3-up that orphans a card.
 - **Odd with a multi-card orphan row** (e.g. 7 in a 4-up, 5 in a 3-up) → keep the base
   columns but **stretch the last row's cards** to span the full width equally, using a
   fine-grained track grid:
@@ -205,12 +224,42 @@ last row with empty slots on the right. Match the layout to the count:
   reads half-empty). Re-balance instead: 5 → top row 3 + bottom row 2 stretched (6-track:
   cards `span 2`, last two `span 3`), or `2 + 3`.
 
-**Scope it, don't edit the shared partial.** Wrap the specific section in a page-local class
-(e.g. `.shl-models`, `.shl-benefits`) and put the override in the page `<style>`, so other
-pages using the same block are unaffected. Apply it desktop-only (`@media (min-width: 901px)`)
-and let the block's own responsive rules take over below. Comment the rule with the card
-count it's tuned for — if the count changes, the spans must be retuned. Reference:
+**Scope it, don't edit the shared partial.** Put the override in the page `<style>`, scoped to
+the page's `<main>` class + the block's grid class (e.g. `.lvs .fs-grid`, `.lvs .shs-lc-grid`),
+so other pages using the same block are unaffected. Comment it with the card count it's tuned
+for — if the count changes, retune. **Breakpoint:** cover the *whole* multi-column range, not
+just `≥901px`: a `≥901px`-only override still leaves the ~872–900px band on the block's
+`auto-fit` 3-up (→ orphan again). Force the fixed column count from where that count first
+comfortably fits (`@media (min-width: 601px)` for a 2-up, `@media (min-width: 901px)` for a
+4-up) and let the block's own responsive rules take over below.
+
+```css
+/* Live example — page-live-streaming.php: match each block grid to its item count */
+@media (min-width: 901px) { .lvs .shs-lc-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } } /* 8 link cards → 4×2 */
+@media (min-width: 601px) { .lvs .fs-grid     { grid-template-columns: repeat(2, minmax(0,1fr)); } } /* 4 spotlight items → 2×2 */
+```
+
+References: `page-live-streaming.php` (Related Solutions 8→4×2, AI Features 4→2×2) and
 `page-self-hosted-llm-ai-agent.php` (Supported Models, Take Control, Train AI).
+
+### Cards in the same row must be equal height (HARD)
+
+Cards sitting side by side in one row must be **the same height** — never a ragged row where
+one card is taller because its heading or text is longer. Uneven card heights read as broken.
+
+- **CSS Grid** does this by default (`align-items: stretch`), so plain grids are usually fine —
+  but confirm it in a real render; a stray `align-items: start`/`flex-start` breaks it.
+- **Flex-wrap rows** must set **`align-items: stretch`** (NOT `flex-start`) so every card in a
+  flex line takes the tallest sibling's height. Put the card's footer action (a "Read more",
+  a link, a button) on **`margin-top: auto`** so it stays bottom-aligned when a shorter card
+  stretches — the extra space falls between the body and the footer, and all footers line up.
+- This is a **block-level quality rule**: if a shared partial ships ragged rows, fix it **in
+  the partial** (so every page benefits), not with a page override. Example fix:
+  `section-feature-cards.php` expandable grid was `align-items: flex-start` → changed to
+  `stretch` so its cards are equal-height per row everywhere.
+
+The same expectation holds for any side-by-side pair (split cards, two-column feature rows):
+matched heights, aligned baselines. Verify it in the render, per row, at desktop width.
 
 ---
 
