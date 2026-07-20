@@ -34,6 +34,32 @@ colour / font / spacing / radius / width. If a value you need doesn't exist as a
 token, **add it to `css/tokens.css` first**, then use it. This is the "no
 ad-hoc drift" rule — it's what keeps every page on-brand.
 
+## Building a whole page? Ask the intake questions first (HARD)
+
+When the task is **creating a new page or redesigning an existing one** (a *whole page*, not a
+single section), confirm its frame with the user via **`AskUserQuestion`** BEFORE laying anything
+out. Don't assume — ask:
+
+1. **Default layout, or custom?** — In **both** cases the page ALWAYS uses our own header and
+   footer: `get_header('v2')` at the very top and `get_footer('v2')` at the very bottom. Never
+   drop, replace or restyle the header/footer, whatever the answer.
+2. **If DEFAULT layout** → the page opens with the reusable **hero** block
+   ([`template-parts/section-hero.php`](template-parts/section-hero.php)). Ask which **hero
+   variant** to use:
+   - **Light** — `variant => ''` (the default light-gradient hero, dark text), or
+   - **Blue** — `variant => 'v2'` (bright brand-blue gradient, white text; pair with white buttons
+     `light` + `outline-light`).
+
+   Both variants share the **identical hero layout** — only the colour changes (see the hero
+   layout invariant in the rules). Then build the rest of the page with the usual defaults.
+3. **If CUSTOM (not default)** → ask the user **which section should be the first one**, then build
+   from there.
+4. Everything else keeps the **current defaults** (reuse the ready-made blocks, section vertical
+   rhythm, reveal-on-scroll, the quality floor) — only these choices are gathered up front.
+
+> This intake is intentionally minimal for now and **will be expanded later**. Whatever the
+> answers, **every rule in this skill still applies** — the intake never overrides the hard rules.
+
 ## Workflow — do this every time
 
 1. **Read** [`css/tokens.css`](css/tokens.css) and skim [`DESIGN.md`](DESIGN.md).
