@@ -107,6 +107,13 @@ switch — get their canonical, token-based CSS from **`css/primitives.css`** (l
     (`split-card dark:true`) directly above it — make that statement a light centred section instead
     (see the case-study pages `page-case-study-*.php`, `.cs-outcome`). The page hero gradient is the
     opener and doesn't count as a band for this rule.
+12. **Copy is untouchable (GOLDEN RULE).** A redesign restyles a page — it NEVER rewrites it.
+    All existing user-facing text (headings, leads, paragraphs, list items, button labels, FAQ
+    Q&As, table cells) is carried over **verbatim**. A block prop the page has no text for
+    (a `lead`, a blurb, a trust row) stays **empty/omitted** — never invent copy. Any new or
+    changed wording ships only with the user's **explicit prior approval**; broken/duplicated
+    copy is flagged and asked about, never silently "fixed". Existing wording carries SEO
+    intent — rewording a heading can lose rankings even when it "reads better".
 
 ## Reusable blocks (`template-parts/`)
 

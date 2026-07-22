@@ -34,6 +34,24 @@ colour / font / spacing / radius / width. If a value you need doesn't exist as a
 token, **add it to `css/tokens.css` first**, then use it. This is the "no
 ad-hoc drift" rule — it's what keeps every page on-brand.
 
+## Copy is untouchable (GOLDEN RULE — HARD)
+
+**A redesign restyles the page — it NEVER rewrites it.** Every piece of user-facing
+text on the existing page is carried over **verbatim**: headings, leads, body
+paragraphs, list items, button labels, FAQ questions and answers, table cells,
+image-adjacent captions. You may style text (weight, size, colour, layout, which
+block it lives in) — you may **not** edit, rephrase, "improve", shorten, expand or
+translate it.
+
+- A block needs a text prop the original page doesn't have (a `lead`, a card blurb,
+  a trust row)? **Leave it empty / omit the prop** — do NOT invent marketing copy.
+- Any **new or replacement copy requires the user's explicit approval BEFORE** it
+  ships — propose it, don't write it in.
+- Found broken copy (duplicated lines, paste errors, typos, lorem)? **Flag it and
+  ask** — never silently "fix" the wording.
+- The existing wording carries SEO intent — silently rewording a heading can lose
+  rankings even when it "reads better".
+
 ## Building a whole page? Ask the intake questions first (HARD)
 
 When the task is **creating a new page or redesigning an existing one** (a *whole page*, not a
@@ -80,6 +98,10 @@ out. Don't assume — ask:
 Full detail and the token table are in [`DESIGN.md`](DESIGN.md). The hard ones:
 
 - **Tokens only.** No literal hex/px for colour, type, spacing, radius, width.
+- **Copy is untouchable (GOLDEN RULE).** Restyle, never rewrite: all existing
+  user-facing text is carried over verbatim; empty props over invented copy; any
+  new/changed wording needs the user's explicit approval first (see *Copy is
+  untouchable* above).
 - **Colour:** brand blue `--primary` `#0052CD` + grey does ~90%. Dark/CTA panels use
   `--primary-dark` `#002398`. Semantic `--green`/`--orange`/`--red`/`--purple` only
   for meaning, sparingly. One bold accent per screen; keep the rest quiet.
