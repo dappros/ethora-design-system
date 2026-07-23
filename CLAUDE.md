@@ -107,7 +107,16 @@ switch — get their canonical, token-based CSS from **`css/primitives.css`** (l
     (`split-card dark:true`) directly above it — make that statement a light centred section instead
     (see the case-study pages `page-case-study-*.php`, `.cs-outcome`). The page hero gradient is the
     opener and doesn't count as a band for this rule.
-12. **Copy is untouchable (GOLDEN RULE).** A redesign restyles a page — it NEVER rewrites it.
+12. **Closing "Get started" CTA — trust row + Book a Call right (HARD).** The dark
+    `section-cta-dark` above the footer ALWAYS has (a) a green-check `trust` row under the
+    buttons (3 short items; reuse the page's own claims verbatim when they fit, else the house
+    default `Free tier available` / `Enterprise SLA` / `No vendor lock-in`) and (b) two buttons:
+    the page's own primary CTA (`ghost`) on the LEFT, **`Book a Call`** (`light`, `modal => true`)
+    on the RIGHT — Book a Call is always present and always rightmost (extra original buttons may
+    stay, but never to its right). Pages with a modal button include
+    `template-parts/section-book-call-modal`. This rule is standing user approval for adding the
+    Book a Call label + trust row; rule 13 still governs all other wording.
+13. **Copy is untouchable (GOLDEN RULE).** A redesign restyles a page — it NEVER rewrites it.
     All existing user-facing text (headings, leads, paragraphs, list items, button labels, FAQ
     Q&As, table cells) is carried over **verbatim**. A block prop the page has no text for
     (a `lead`, a blurb, a trust row) stays **empty/omitted** — never invent copy. Any new or

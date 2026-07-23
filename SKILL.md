@@ -193,6 +193,20 @@ Full detail and the token table are in [`DESIGN.md`](DESIGN.md). The hard ones:
 - **Dark panels:** ALWAYS the brand `.shs-dark` treatment (`--primary-dark` ~85% over
   `images/start-free.png`) — **never near-black**. For Book-a-Call / dark CTA blocks
   reuse [`template-parts/section-cta-dark.php`](template-parts/section-cta-dark.php).
+- **Closing "Get started" CTA — trust row + Book a Call on the right (HARD).** The dark
+  `section-cta-dark` that closes every page (right above the footer) ALWAYS ships:
+  1. a **green-check trust row under the buttons** (`trust` prop, 3 short items — reuse
+     claims already on the page verbatim when they fit; otherwise the house default trio
+     `Free tier available` / `Enterprise SLA` / `No vendor lock-in`), and
+  2. **two buttons** — the page's own primary CTA (style `ghost`) on the LEFT and
+     **`Book a Call`** (style `light`, `modal => true`) on the RIGHT. Book a Call is
+     **always present and always the rightmost button**; if the page's original CTA
+     legitimately carries extra buttons, keep them, but Book a Call stays rightmost.
+     Every page with a modal button must also include
+     `template-parts/section-book-call-modal` (default copy is fine).
+  This rule is the user's standing, explicit approval for adding the `Book a Call` label
+  and the trust row on redesigns — the *Copy is untouchable* rule still governs every
+  other word (the left button keeps the page's original label/URL verbatim).
 
 ## Quality floor (every page/section)
 
