@@ -217,6 +217,8 @@ of cards.
 | `eyebrow` / `title` / `lead` | string | header (optional) |
 | `shade` | bool | tint section bg (adds top/bottom hairline borders) |
 | `shade_borders` | bool | when `shade` is on, the tint band gets top/bottom hairline borders by default; pass `false` to drop them (keep the tint) |
+| `expandable` / `clamp` | bool / string | clamp long card text (default `8.5em`) + animated "Read more" toggle; an opened card expands to the full container width |
+| `lead_wide` | bool | lead spans the full container width instead of the default 560px column |
 | `cards` | array | **required** — each: `title`, `text` (inline HTML), `icon` (white line SVG, `stroke="currentColor"`), `color` (icon-circle colour token, default `var(--primary)`), `link_url` + `link_label` (optional → renders the button) |
 
 ```php

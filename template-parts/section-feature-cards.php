@@ -16,6 +16,7 @@
  *     'shade'   => false,                     // tint the section bg + hairline borders (optional)
  *     'expandable' => false,                  // clamp long card text + animated "Read more" toggle (optional)
  *     'clamp'      => '8.5em',                // collapsed text height when expandable (optional)
+ *     'lead_wide'  => false,                  // lead spans the full container width instead of the 560px column (optional)
  *     'cards'   => array(                     // REQUIRED — any length
  *       array(
  *         'title'      => 'Selling',
@@ -46,6 +47,7 @@ $fc = wp_parse_args(
 		'shade_borders' => true,   // when shaded, the tint band gets top/bottom hairline borders by default; pass false to drop them (keep the tint)
 		'expandable'    => false,
 		'clamp'         => '8.5em',
+		'lead_wide'     => false,  // lead spans the full container width instead of the default 560px column
 		'cards'         => array(),
 	)
 );
@@ -71,6 +73,7 @@ if ( $fc_assets ) {
   .shs-fc-eyebrow { font-family: var(--font-mono); font-weight: var(--fw-medium); font-size: var(--fs-eyebrow); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--primary); margin: 0 0 var(--space-8); }
   .shs-fc-h2 { font-family: var(--font-serif); font-weight: var(--fw-medium); font-size: var(--fs-h2); line-height: 1.08; letter-spacing: -.01em; color: var(--ink); margin: 0; max-width: 640px; }
   .shs-fc-lead { font-size: var(--fs-lg); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; max-width: 560px; }
+  .shs-fc-section.is-lead-wide .shs-fc-lead { max-width: none; }   /* lead_wide => true */
   .shs-fc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-16); margin-top: var(--space-48); }
   /* expandable: flex layout so an opened card can take the FULL container width and
      move to the top, while the remaining collapsed cards reflow below and fill their
@@ -126,7 +129,7 @@ if ( $fc_assets ) {
 </style>
 <?php endif; ?>
 
-<section class="shs-fc-section<?php echo $fc['shade'] ? ' is-shaded' : ''; ?><?php echo ( $fc['shade'] && ! $fc['shade_borders'] ) ? ' no-shade-borders' : ''; ?><?php echo $fc['expandable'] ? ' is-expandable' : ''; ?>">
+<section class="shs-fc-section<?php echo $fc['shade'] ? ' is-shaded' : ''; ?><?php echo ( $fc['shade'] && ! $fc['shade_borders'] ) ? ' no-shade-borders' : ''; ?><?php echo $fc['expandable'] ? ' is-expandable' : ''; ?><?php echo $fc['lead_wide'] ? ' is-lead-wide' : ''; ?>">
   <div class="shs-fc-wrap">
     <?php if ( $fc['eyebrow'] || $fc['title'] || $fc['lead'] ) : ?>
     <div>
