@@ -21,6 +21,9 @@
  *     'interval'     => 4.2,                          // seconds per block (optional, default 4.2)
  *     'shade'        => false,                        // tint the section bg + hairline borders (optional)
  *     'reverse'      => false,                        // image on the LEFT, accordion on the right (optional)
+ *     'media_shadow' => true,                         // side image casts --shadow-card; false = flat image (optional)
+ *     'pad_top'      => '',                           // vertical-padding overrides, e.g. 'var(--space-32)' (optional,
+ *     'pad_bottom'   => '',                           //   default = the section rhythm padding)
  *     'footnote'     => 'Closing note …',             // small bordered paragraph under the grid (optional)
  *     'features'     => array(                        // REQUIRED — any length
  *       array(
@@ -52,10 +55,22 @@ $kf = wp_parse_args(
 		'interval'     => 4.2,
 		'shade'        => false,
 		'reverse'      => false,
+		'media_shadow' => true,
+		'pad_top'      => '',
+		'pad_bottom'   => '',
 		'footnote'     => '',
 		'features'     => array(),
 	)
 );
+
+// Optional per-instance vertical-padding overrides (tokens, e.g. 'var(--space-32)').
+$kf_pad_style = '';
+if ( $kf['pad_top'] !== '' ) {
+	$kf_pad_style .= 'padding-top:' . $kf['pad_top'] . ';';
+}
+if ( $kf['pad_bottom'] !== '' ) {
+	$kf_pad_style .= 'padding-bottom:' . $kf['pad_bottom'] . ';';
+}
 
 // Nothing to show without blocks.
 if ( empty( $kf['features'] ) || ! is_array( $kf['features'] ) ) {
@@ -122,9 +137,17 @@ if ( $kf_assets ) {
   .shs-kf-section.is-paused .shs-kf-item.is-open .shs-kf-bar-fill { animation-play-state: paused; }
   @keyframes kfLoad { from { width: 0; } to { width: 100%; } }
   .shs-kf-media img { width: 100%; height: auto; display: block; border-radius: var(--radius-2xl); box-shadow: var(--shadow-card); }
+  .shs-kf-section.is-flat .shs-kf-media img { box-shadow: none; }   /* media_shadow => false */
   @media (max-width: 900px) {
-    .shs-kf-grid { grid-template-columns: 1fr; gap: var(--space-32); }
+    /* collapse to one column — the .is-reversed selector must be matched here too, or its
+       higher specificity keeps the two-column grid below the breakpoint (text stays clipped) */
+    .shs-kf-grid,
+    .shs-kf-section.is-reversed .shs-kf-grid { grid-template-columns: 1fr; gap: var(--space-32); }
     .shs-kf-media { order: -1; }
+  }
+  @media (max-width: 560px) {
+    /* tighten the card padding on small phones so the accordion text keeps its width */
+    .shs-kf-grid { padding: var(--space-16); border-radius: var(--radius-2xl); gap: var(--space-16); }
   }
   @media (prefers-reduced-motion: reduce) {
     .shs-kf-item, .shs-kf-panel { transition: none; }
@@ -134,7 +157,7 @@ if ( $kf_assets ) {
 </style>
 <?php endif; ?>
 
-<section class="shs-kf-section<?php echo $kf['shade'] ? ' is-shaded' : ''; ?><?php echo $kf['reverse'] ? ' is-reversed' : ''; ?>" data-shs-kf data-interval="<?php echo esc_attr( $kf['interval'] ); ?>">
+<section class="shs-kf-section<?php echo $kf['shade'] ? ' is-shaded' : ''; ?><?php echo $kf['reverse'] ? ' is-reversed' : ''; ?><?php echo $kf['media_shadow'] ? '' : ' is-flat'; ?>"<?php echo $kf_pad_style ? ' style="' . esc_attr( $kf_pad_style ) . '"' : ''; ?> data-shs-kf data-interval="<?php echo esc_attr( $kf['interval'] ); ?>">
   <div class="shs-kf-wrap">
     <?php if ( $kf['eyebrow'] || $kf['title'] || $kf['lead'] ) : ?>
     <div>

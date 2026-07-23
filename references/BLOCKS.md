@@ -183,6 +183,8 @@ Reversed + text-only rows (no icons):
 | `interval` | number | seconds per item (default `4.2`) |
 | `reverse` | bool | image on the LEFT |
 | `shade` | bool | tint section bg + hairline borders |
+| `media_shadow` | bool | side image casts `--shadow-card` by default; pass `false` for a flat, shadowless image |
+| `pad_top` / `pad_bottom` | string | optional vertical-padding overrides, e.g. `'var(--space-32)'` (default = section rhythm) |
 | `features` | array | **required**, any length — each: `title`, `text`, `icon` (raw SVG, optional) |
 
 ```php
