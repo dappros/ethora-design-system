@@ -36,21 +36,32 @@ clipping when content is taller than the viewport.
 | `media_alt` / `media_width` / `media_height` / `media_html` | | raster alt+dims, or raw markup override |
 | `media_shadow` | bool | framed raster media casts a soft drop shadow (`--shadow-lift`) by default; pass `false` for a flat, shadowless visual |
 | `rhombus` | bool | decorative corner shapes (default `true`) |
+| `badges` | array | floating chip cards over the media (gently bob up/down) — each `{ title, text, icon?, pos? }`; the 1st defaults to bottom-left, `'pos' => 'tr'` = top-right; `icon` is a 17px line SVG (`stroke="currentColor"`, defaults to a green shield). **Every hero ships two**, with `title`/`text` matching the page's content — see the *Hero composition* rule in SKILL.md |
 | `compliance` | array | `{ label, items[] }` — bottom strip (optional) |
 | `full_height` | bool | full-viewport hero: `min-height: 100vh`, content vertically centred in the area below the fixed header (top padding `--header-h`, no `--hero-pt`); grows instead of clipping tall content (default `true`; set `false` for a compact hero) |
 | `variant` | string | `''` = default (light gradient, dark text). **`'v2'`** = **bright brand-blue** hero (`--gradient-hero-v2`, `#4188f3 → #0640c3`) with **white** text and rhombus at `opacity .1`. **`v2` changes ONLY the colour — the layout is byte-for-byte the default hero** (same two-column grid, media framed in the right column and vertically centred, same compliance strip). It does NOT pin/enlarge the media or move any block, so it never covers the copy and needs zero per-page CSS. Pair with white buttons (`light` + `outline-light`); `full_height => true` optional. Any framed raster media works — no special cut-out needed |
 
 > **Hero layout is a hard invariant (do NOT break).** Every hero — light or `v2` — has the **identical block layout**: text column (eyebrow → h1 → lead → buttons → trust) on the left, media framed in the right column and **vertically centred**, compliance strip full-width below (label left, items right). A variant may only recolour (background / text / border / opacity). **Never** fork the layout per variant, pin/viewport-size the media, or restyle the compliance strip, and **never** add page-level CSS to "fix" the hero — if a hero looks wrong, fix `section-hero.php`, not the page. Just pass props.
 
+> **Hero composition (HARD, see SKILL.md).** Every hero ships: the page's own CTA on the LEFT +
+> **Book a Call** (`'modal' => true`) as the ALWAYS-rightmost button (light hero: `outline` +
+> `primary`; `v2`: `outline-light` + `light`), a 3-item green-check `trust` row of short
+> context-matching claims, and **two floating `badges`** over the media (bottom-left +
+> `'pos' => 'tr'` top-right) with page-context `title`/`text`.
+
 ```php
 get_template_part( 'template-parts/section-hero', null, array(
   'title'   => 'Self-Hosted Chat Server: Deploy on AWS or On-Premises',
   'lead'    => 'Build your own secure and private chat platform…',
   'buttons' => array(
-    array( 'label' => 'Book a Call', 'style' => 'primary', 'modal' => true ),
     array( 'label' => 'Get started', 'style' => 'outline', 'url' => 'https://app.chat.ethora.com/register', 'new_tab' => true, 'id' => 'accregred' ),
+    array( 'label' => 'Book a Call', 'style' => 'primary', 'modal' => true ),   // ALWAYS present, ALWAYS rightmost
   ),
-  'trust'      => array( '100% data ownership', 'Enterprise SLA', 'No vendor lock-in' ),
+  'trust'  => array( '100% data ownership', 'Enterprise SLA', 'No vendor lock-in' ),
+  'badges' => array(
+    array( 'title' => 'Your infrastructure', 'text' => 'AWS &middot; Azure &middot; GCP &middot; on-premises' ),               // bottom-left
+    array( 'title' => '100% data ownership', 'text' => 'Inside your security perimeter', 'pos' => 'tr' /*, 'icon' => '<svg…>'*/ ), // top-right
+  ),
   'media'      => 'images/hero-chat.svg',
   'compliance' => array( 'label' => 'Compliance, built in at every layer.', 'items' => array( 'HIPAA', 'SOC 2', 'GDPR' ) ),
 ) );

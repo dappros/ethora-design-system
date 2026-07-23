@@ -190,6 +190,20 @@ Full detail and the token table are in [`DESIGN.md`](DESIGN.md). The hard ones:
   to "fix" the hero.** If a hero looks wrong, fix `template-parts/section-hero.php` so every page
   benefits; a page only ever passes props. Reference: `page-self-hosted-server.php` (light) and
   `page-npm-chat-component.php` (`v2`) render the same layout.
+- **Hero composition — Book a Call, trust row, floating badges (HARD).** Every hero ships all three:
+  1. **Two buttons, Book a Call rightmost.** The page's own CTA (its original label/URL verbatim)
+     sits on the LEFT; **`Book a Call`** (`'modal' => true`) is ALWAYS present and ALWAYS the
+     rightmost button. Default pairing on the light hero: page CTA `outline` + Book a Call
+     `primary`; on the blue `v2` hero use the white pair (`outline-light` + `light`). Every page
+     with a modal button also includes `template-parts/section-book-call-modal`.
+  2. **A green-check `trust` row under the buttons** — 3 items, minimal wording (2&ndash;4 words
+     each), matching the page's context; reuse claims already on the page verbatim when they fit.
+  3. **Two floating `badges` over the hero media** (`badges` prop → the `.ehero-badge` chips: 1st
+     bottom-left, 2nd `'pos' => 'tr'` top-right) — each a short `title` + one-line `text` that
+     reflect the page's content, plus a thematic line icon (17px, `stroke="currentColor"`).
+  This rule is the user's standing, explicit approval for adding the Book a Call label, the trust
+  items and the badge text on redesigns — the *Copy is untouchable* rule still governs every other
+  word. Reference: `page-self-hosted-server.php`.
 - **Dark panels:** ALWAYS the brand `.shs-dark` treatment (`--primary-dark` ~85% over
   `images/start-free.png`) — **never near-black**. For Book-a-Call / dark CTA blocks
   reuse [`template-parts/section-cta-dark.php`](template-parts/section-cta-dark.php).

@@ -123,6 +123,18 @@ switch — get their canonical, token-based CSS from **`css/primitives.css`** (l
     changed wording ships only with the user's **explicit prior approval**; broken/duplicated
     copy is flagged and asked about, never silently "fixed". Existing wording carries SEO
     intent — rewording a heading can lose rankings even when it "reads better".
+14. **Hero composition — Book a Call + trust + badges (HARD).** Every hero ships all three:
+    (a) **two buttons with Book a Call rightmost** — the page's own CTA (original label/URL
+    verbatim) on the LEFT, **`Book a Call`** (`'modal' => true`) ALWAYS present and ALWAYS the
+    rightmost button (light hero: CTA `outline` + Book a Call `primary`; `v2` hero: the white
+    pair `outline-light` + `light`); (b) a **green-check `trust` row under the buttons** — 3
+    short, minimal items (2–4 words) matching the page's context, reusing on-page claims
+    verbatim when they fit; (c) **two floating `badges` over the hero media** (`badges` prop →
+    `.ehero-badge`, 1st bottom-left, 2nd `'pos' => 'tr'` top-right) — short `title` + one-line
+    `text` reflecting the page content + a thematic 17px line icon. Pages with a modal button
+    include `template-parts/section-book-call-modal`. Standing user approval for adding the Book
+    a Call label, trust items and badge text; rule 13 governs all other wording. Reference:
+    `page-self-hosted-server.php`.
 
 ## Reusable blocks (`template-parts/`)
 
