@@ -120,7 +120,8 @@ if ( $cc_assets ) {
   .cc-section.is-invert .cc-lead { color: var(--text-on-dark); }
   .cc-section.is-invert .cc-card { background: #fff; background-image: none; border: 1px solid transparent; color: var(--text-body); box-shadow: var(--shadow-lift); }
   .cc-section.is-invert:not(.is-light) .cc-card { flex-basis: clamp(280px, 72vw, 500px);   /* compact card */
-    padding: clamp(20px, 2.2vw, 26px) clamp(20px, 2.4vw, 28px) clamp(18px, 2vw, 24px); }
+    padding: clamp(20px, 2.2vw, 26px) clamp(20px, 2.4vw, 28px) clamp(18px, 2vw, 24px);
+    transform: none; }   /* left-aligned multi-card row (see JS): no single-card scale focus */
   .cc-section.is-invert .cc-card h3 { color: var(--ink); }
   .cc-section.is-invert .cc-block-label { color: var(--primary); }
   .cc-section.is-invert .cc-card-more { background: var(--primary); color: #fff; }
@@ -141,14 +142,19 @@ if ( $cc_assets ) {
   .cc-collapse { position: relative; }
   .cc-more { display: none; margin-top: var(--space-16); background: none; border: 0; padding: 0; cursor: pointer;
     font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--fs-xs); letter-spacing: var(--tracking-wide);
-    text-transform: uppercase; color: var(--primary); align-items: center; gap: var(--space-8); }
-  .cc-more:hover { color: var(--primary-dark); }
+    text-transform: uppercase; color: var(--accent-on-dark); align-items: center; gap: var(--space-8); }
+  .cc-more:hover { color: #fff; }
+  /* light / inverted variants put the toggle on WHITE cards → brand-blue label */
+  .cc-section.is-light .cc-more, .cc-section.is-invert .cc-more { color: var(--primary); }
+  .cc-section.is-light .cc-more:hover, .cc-section.is-invert .cc-more:hover { color: var(--primary-dark); }
   @media (min-width: 761px) {
     .cc-collapse.is-clampable { max-height: var(--cc-collapse-h, 13rem); overflow: hidden; }
     .cc-collapse.is-clampable.is-open { overflow-y: auto; }
-    /* fade only while the text is actually clipped (JS toggles .is-clipped) — not when it fits or is open */
-    .cc-collapse.is-clipped::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--space-48);
-      background: linear-gradient(to bottom, rgba(255,255,255,0), #fff); pointer-events: none; }
+    /* fade only while the text is actually clipped (JS toggles .is-clipped) — not when it fits or is
+       open. A MASK fades the text itself out, so it works on any card background (dark gradient,
+       white, inverted) — no colour overlay to mismatch. */
+    .cc-collapse.is-clipped { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--space-48)), transparent);
+      mask-image: linear-gradient(to bottom, #000 calc(100% - var(--space-48)), transparent); }
     .cc-more.is-shown { display: inline-flex; }
     .cc-more svg { transition: transform .25s ease; }
     .cc-more.is-open svg { transform: rotate(180deg); }
@@ -260,14 +266,29 @@ if ( $cc_assets ) {
       var next = sec.querySelector('[data-cc-next]');
       if (!track || cards.length < 1) { return; }
       var index = 0;
-      // translateX needed to CENTRE card i in the viewport (offsetLeft/Width ignore the scale transform)
-      function centerShift(i) {
+      // The invert-compact variant is a LEFT-ALIGNED multi-card row (cards align to the header's
+      // content edge, next cards peek right); every other variant CENTRES the active card.
+      var leftAlign = sec.classList.contains('is-invert') && !sec.classList.contains('is-light');
+      // left inset of the header's content box, so card 0 lines up with the heading/text column
+      function gutter() {
+        var head = sec.querySelector('.cc-head');
+        if (!head) { return 0; }
+        return head.offsetLeft + (parseFloat(getComputedStyle(head).paddingLeft) || 0);
+      }
+      // translateX needed to position card i (offsetLeft/Width ignore any scale transform)
+      function offsetFor(i) {
         var c = cards[i];
-        return c.offsetLeft + c.offsetWidth / 2 - viewport.clientWidth / 2;
+        if (!leftAlign) { return c.offsetLeft + c.offsetWidth / 2 - viewport.clientWidth / 2; }
+        var g = gutter();
+        var raw = c.offsetLeft - g;                                  // align card i's left edge to the content edge
+        var min = -g;                                                // start: card 0's left sits at the content edge (track pushed right by g)
+        var max = track.scrollWidth - (viewport.clientWidth - g);    // end: last card's right edge sits at the right content edge
+        if (max < min) { max = min; }                               // everything fits → nothing to scroll
+        return Math.min(Math.max(raw, min), max);
       }
       function render(animate) {
         track.style.transition = animate ? 'transform .5s cubic-bezier(.4,0,.2,1)' : 'none';
-        track.style.transform = 'translateX(' + (-centerShift(index)) + 'px)';
+        track.style.transform = 'translateX(' + (-offsetFor(index)) + 'px)';
         cards.forEach(function (c, n) { c.classList.toggle('is-active', n === index); });
         if (prev) { prev.disabled = index <= 0; }
         if (next) { next.disabled = index >= cards.length - 1; }
@@ -281,7 +302,7 @@ if ( $cc_assets ) {
       function down(e) {
         dragging = true; moved = 0;
         startX = e.touches ? e.touches[0].clientX : e.clientX;
-        base = -centerShift(index);
+        base = -offsetFor(index);
         track.style.transition = 'none';
         viewport.classList.add('is-dragging');
       }
