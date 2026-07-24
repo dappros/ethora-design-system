@@ -87,6 +87,8 @@ Reversed (`'reverse' => true`):
 | `eyebrow` | string | optional mono kicker |
 | `title` | string | h2 (inline HTML allowed) |
 | `paragraphs` | array | one `<p>` per item (inline HTML allowed) |
+| `checks` | array | optional green-check list rendered after the paragraphs (inline HTML per item) |
+| `outro` | string | optional closing `<p>` rendered AFTER the checks (inline HTML) — for "intro → list → outro" copy |
 | `image` | string | theme-relative path (`images/foo.png`) or absolute URL — optional |
 | `image_alt` / `image_width` / `image_height` | string/int | alt + CLS dimensions |
 | `reverse` | bool | `true` = image on the LEFT |

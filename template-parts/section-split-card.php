@@ -14,6 +14,7 @@
  *     'title'        => 'Heading',                // h2 (inline HTML allowed)
  *     'paragraphs'   => array( 'First.', 'Second.' ), // one <p> each (inline HTML allowed)
  *     'checks'       => array( 'Item one', 'Item two' ), // optional green-check list (after the paragraphs)
+ *     'outro'        => 'Closing paragraph.',      // optional <p> rendered AFTER the checks (inline HTML allowed)
  *     'image'        => 'images/foo.png',         // theme-relative path OR absolute URL (optional)
  *     'image_alt'    => 'Describe the image',
  *     'image_width'  => 929,                        // for CLS (optional)
@@ -39,6 +40,7 @@ $sc = wp_parse_args(
 		'title'        => '',
 		'paragraphs'   => array(),
 		'checks'       => array(),
+		'outro'        => '',
 		'image'        => '',
 		'image_alt'    => '',
 		'image_width'  => '',
@@ -124,6 +126,9 @@ if ( $sc_assets ) {
         </li>
         <?php endforeach; ?>
       </ul>
+      <?php endif; ?>
+      <?php if ( ! empty( $sc['outro'] ) ) : ?>
+      <p><?php echo wp_kses_post( $sc['outro'] ); ?></p>
       <?php endif; ?>
     </div>
     <?php if ( $sc_img ) : ?>
