@@ -92,7 +92,8 @@ if ( $sc_assets ) {
   .shs-split-body h2 { font-family: var(--font-serif); font-weight: var(--fw-medium); font-size: var(--fs-h2);
     line-height: 1.1; letter-spacing: -.01em; color: var(--ink); margin: 0; }
   .shs-split-body p { font-size: var(--fs-lg); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; }
-  .shs-split-body p a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+  /* in-text links only — canonical .btn* CTAs inside an outro keep their own colours */
+  .shs-split-body p a:not(.btn) { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
   /* green-check list */
   .shs-split-checks { list-style: none; margin: var(--space-32) 0 0; padding: 0; display: grid; gap: var(--space-16); }
   .shs-split-checks li { display: flex; align-items: flex-start; gap: var(--space-8); font-size: var(--fs-lg); line-height: var(--lh-snug); color: var(--text-body); }
@@ -104,7 +105,7 @@ if ( $sc_assets ) {
   .shs-split-section.is-dark .shs-split-eyebrow { color: var(--accent-on-dark); }
   .shs-split-section.is-dark h2 { color: #fff; }
   .shs-split-section.is-dark p { color: var(--text-on-dark); }
-  .shs-split-section.is-dark p a { color: #fff; }
+  .shs-split-section.is-dark p a:not(.btn) { color: #fff; }
   .shs-split-section.is-dark .shs-split-checks li { color: var(--text-on-dark); }
 </style>
 <?php endif; ?>
