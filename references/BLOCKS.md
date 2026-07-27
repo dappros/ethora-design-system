@@ -981,6 +981,40 @@ JSON-LD, so `schema` is left off there.)
 
 ---
 
+## 26. Sticky timeline nav — `section-timeline-nav.php`
+
+A horizontal strip of year (or step) labels that **sticks below the fixed header** once
+scrolled to. The label whose target section is in view is highlighted (bigger, ink-coloured);
+clicking a label **smooth-scrolls** to its section with the offset accounting for the header +
+the strip. The strip scrolls horizontally when labels overflow and auto-centres the active one.
+Scrollspy is rAF-throttled scroll math; JS-off ⇒ a plain anchor strip (targets get
+`scroll-margin-top`). Never tag the strip with reveal-on-scroll (`position: sticky`).
+
+![Sticky timeline nav](screenshots/timeline-nav.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `items` | array | **required**, 2+ — each `{ label, target }`; `target` is the `id` of the section to scroll to |
+| `aria_label` | string | nav `aria-label` (default `Timeline`) |
+
+```php
+get_template_part( 'template-parts/section-timeline-nav', null, array(
+  'aria_label' => 'History timeline',
+  'items'      => array(
+    array( 'label' => '2004-2007', 'target' => 'era-2004' ),
+    array( 'label' => '2008-2010', 'target' => 'era-2008' ),
+    // …
+  ),
+) );
+// …then give each era section the matching id: <section id="era-2004">…
+```
+
+Live use: the history timeline on `page-about-us.php`.
+
+---
+
 ## Other partials
 
 List everything with `ls template-parts/` and read each file's top docblock for its

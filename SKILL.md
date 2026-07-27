@@ -378,6 +378,7 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Code + config covers** | `section-code-config.php` | Syntax-highlighted code editor mockup (dots + filename + Copy) on the left + labelled "what config covers" cards (icon + mono chip + text) on the right, with a footnote. |
 | **Feature list + media** | `section-feature-list-media.php` | Two-column split: icon + heading + description rows (hairline dividers) on one side, a framed product image (or a dashed "drop an image" placeholder) on the other. |
 | **Trust band** | `section-trust-band.php` | Full-bleed dark brand band (`.shs-dark`): mono label + row of white customer logos + a grid of headline stats (big number + caption). For a "trusted by" strip under a hero. |
+| **Sticky timeline nav** | `section-timeline-nav.php` | Sticky horizontal strip of year/step labels below the fixed header: active label enlarges, click smooth-scrolls to the target section, scrollspy + auto-centring. For history / step-by-step pages. |
 
 Other partials exist (`section-choose-app`, `section-use-kit`, `section-quick-start`,
 `section-book-call-modal`, `section-pricing`, …) — list them with
