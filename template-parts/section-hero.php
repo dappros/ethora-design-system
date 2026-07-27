@@ -29,7 +29,7 @@
  *     'media_html' => '',                            // raw markup, overrides 'media' (optional)
  *     'rhombus'     => true,                         // decorative corner shapes (optional, default true)
  *     'full_height' => true,                         // min-height 100vh, content vertically centred (optional, default true)
- *     'badges'      => array(                          // floating chip cards over the media (optional), bob up/down
+ *     'badges'      => array(                          // floating chip cards over the media (optional), bob up/down; per-badge 'icon' => false hides the icon tile
  *       array( 'title' => 'Your infrastructure', 'text' => 'AWS · Azure · GCP · on-premises' ),   // 1st → bottom-left
  *       array( 'title' => '100% data ownership', 'text' => '…', 'icon' => '<svg…>', 'pos' => 'tr' ), // 2nd → top-right
  *     ),
@@ -96,8 +96,9 @@ if ( ! empty( $hero['badges'] ) && is_array( $hero['badges'] ) ) {
 	foreach ( $hero['badges'] as $hb_i => $hbg ) {
 		$hbg  = wp_parse_args( (array) $hbg, array( 'title' => '', 'text' => '', 'icon' => '', 'pos' => '' ) );
 		$hpos = $hbg['pos'] ? $hbg['pos'] : ( 0 === $hb_i ? 'bl' : 'tr' );
+		// 'icon' => false hides the icon tile entirely (text-only chip); '' falls back to the shield.
 		$hero_badges_html .= '<div class="ehero-badge ehero-badge--' . esc_attr( $hpos ) . '">'
-			. '<span class="ehero-badge-ico">' . ( $hbg['icon'] ? $hbg['icon'] : $hero_shield ) . '</span>'
+			. ( false === $hbg['icon'] ? '' : '<span class="ehero-badge-ico">' . ( $hbg['icon'] ? $hbg['icon'] : $hero_shield ) . '</span>' )
 			. '<span class="ehero-badge-tx">'
 			. ( $hbg['title'] ? '<span class="ehero-badge-title">' . esc_html( $hbg['title'] ) . '</span>' : '' )
 			. ( $hbg['text'] ? '<span class="ehero-badge-sub">' . wp_kses_post( $hbg['text'] ) . '</span>' : '' )
