@@ -1,8 +1,9 @@
 <?php
 /**
- * Reusable sticky TIMELINE NAV — an editorial "Our history" strip: a centred title
- * above a horizontal row of year (or step) labels that sticks below the fixed
- * header once reached. The ACTIVE label is always kept in the CENTRE of the strip
+ * Reusable sticky TIMELINE NAV — an editorial "Our history" strip: a centred
+ * title above a horizontal row of year (or step) labels. Only the YEARS ROW
+ * sticks below the fixed header once reached — the title scrolls away with the
+ * page. The row fades out at both edges (CSS mask). The ACTIVE label is always kept in the CENTRE of the strip
  * (the row slides under it), enlarged and ink-coloured; the rest stay muted.
  * Clicking a label smooth-scrolls to its target section, with the scroll offset
  * accounting for the fixed header (its real bottom is measured, so the WP admin
@@ -62,12 +63,16 @@ if ( $tln_assets ) {
 <style>
   /* TIMELINE NAV — sticky "Our history" year strip. Tokens only; no chrome of its
      own: the strip carries the page canvas colour so it blends with the page. */
-  .tln { position: sticky; top: var(--header-h); z-index: calc(var(--z-header) - 10);
-    background: var(--background); padding: var(--space-32) 0 var(--space-16); }
+  .tln-head { padding: var(--space-32) var(--section-x) 0; }
   .tln-title { font-family: var(--font-serif); font-weight: var(--fw-semibold); font-size: var(--fs-h2);
     line-height: var(--lh-heading); letter-spacing: var(--tracking-snug); color: var(--ink);
-    text-align: center; margin: 0 0 var(--space-32); }
-  .tln-viewport { overflow-x: clip; }
+    text-align: center; margin: 0; }
+  .tln { position: sticky; top: var(--header-h); z-index: calc(var(--z-header) - 10);
+    background: var(--background); padding: var(--space-16) 0; }
+  /* years fade out toward both edges of the strip */
+  .tln-viewport { overflow-x: clip;
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0, #000 12%, #000 88%, transparent 100%); }
   .tln-track { display: flex; align-items: center; justify-content: center;
     gap: clamp(var(--space-32), 5vw, var(--space-80)); width: max-content; margin: 0 auto;
     padding: var(--space-16) var(--space-8); transition: transform .5s cubic-bezier(.22, 1, .36, 1); }
@@ -79,13 +84,15 @@ if ( $tln_assets ) {
   .tln-item:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; border-radius: var(--radius-xs); }
   .tln-item.is-active { color: var(--ink); font-weight: var(--fw-bold); transform: scale(1.6); }
   /* native anchor fallback + scrollspy targets land below the sticky strip */
-  [data-tln-target] { scroll-margin-top: calc(var(--header-h) + 240px); }
+  [data-tln-target] { scroll-margin-top: calc(var(--header-h) + 140px); }
   @media (prefers-reduced-motion: reduce) { .tln-item, .tln-track { transition: none; } }
 </style>
 <?php endif; ?>
 
+<?php if ( $tln['title'] ) : ?>
+<div class="tln-head"><h2 class="tln-title"><?php echo wp_kses_post( $tln['title'] ); ?></h2></div>
+<?php endif; ?>
 <nav class="tln" data-tln aria-label="<?php echo esc_attr( $tln['aria_label'] ); ?>">
-  <?php if ( $tln['title'] ) : ?><h2 class="tln-title"><?php echo wp_kses_post( $tln['title'] ); ?></h2><?php endif; ?>
   <div class="tln-viewport">
     <div class="tln-track" data-tln-track>
       <?php foreach ( $tln['items'] as $tln_i => $tln_it ) : $tln_it = wp_parse_args( (array) $tln_it, array( 'label' => '', 'target' => '' ) ); ?>

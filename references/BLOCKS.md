@@ -983,9 +983,10 @@ JSON-LD, so `schema` is left off there.)
 
 ## 26. Sticky timeline nav — `section-timeline-nav.php`
 
-An editorial "Our history" strip: a centred title above a row of year (or step) labels that
-**sticks below the fixed header** once scrolled to (the header's real bottom is measured, so
-the WP admin bar never overlaps it). The **active label is always kept in the centre** of the
+An editorial "Our history" strip: a centred title above a row of year (or step) labels.
+**Only the years row sticks** below the fixed header once scrolled to (the header's real
+bottom is measured, so the WP admin bar never overlaps it) — the title scrolls away with the
+page; the row **fades out at both edges** (CSS mask). The **active label is always kept in the centre** of the
 strip — the row slides under it — enlarged and ink-coloured; the rest stay muted. Clicking a
 label **smooth-scrolls** to its section with the offset accounting for the header + the strip;
 scrollspy follows and re-centres. No chrome of its own — the strip carries the page canvas
