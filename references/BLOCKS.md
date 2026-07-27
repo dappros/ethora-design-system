@@ -983,11 +983,13 @@ JSON-LD, so `schema` is left off there.)
 
 ## 26. Sticky timeline nav — `section-timeline-nav.php`
 
-A horizontal strip of year (or step) labels that **sticks below the fixed header** once
-scrolled to. The label whose target section is in view is highlighted (bigger, ink-coloured);
-clicking a label **smooth-scrolls** to its section with the offset accounting for the header +
-the strip. The strip scrolls horizontally when labels overflow and auto-centres the active one.
-Scrollspy is rAF-throttled scroll math; JS-off ⇒ a plain anchor strip (targets get
+An editorial "Our history" strip: a centred title above a row of year (or step) labels that
+**sticks below the fixed header** once scrolled to (the header's real bottom is measured, so
+the WP admin bar never overlaps it). The **active label is always kept in the centre** of the
+strip — the row slides under it — enlarged and ink-coloured; the rest stay muted. Clicking a
+label **smooth-scrolls** to its section with the offset accounting for the header + the strip;
+scrollspy follows and re-centres. No chrome of its own — the strip carries the page canvas
+colour (`--background`). JS-off ⇒ a plain centred anchor strip (targets get
 `scroll-margin-top`). Never tag the strip with reveal-on-scroll (`position: sticky`).
 
 ![Sticky timeline nav](screenshots/timeline-nav.png)
@@ -996,11 +998,13 @@ Scrollspy is rAF-throttled scroll math; JS-off ⇒ a plain anchor strip (targets
 
 | Prop | Type | Notes |
 |---|---|---|
+| `title` | string | centred heading above the years (optional, e.g. `Our history`) |
 | `items` | array | **required**, 2+ — each `{ label, target }`; `target` is the `id` of the section to scroll to |
 | `aria_label` | string | nav `aria-label` (default `Timeline`) |
 
 ```php
 get_template_part( 'template-parts/section-timeline-nav', null, array(
+  'title'      => 'Our history',
   'aria_label' => 'History timeline',
   'items'      => array(
     array( 'label' => '2004-2007', 'target' => 'era-2004' ),
