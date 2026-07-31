@@ -261,48 +261,85 @@ if ( $cc_assets ) {
     function initCC(sec) {
       var viewport = sec.querySelector('.cc-viewport');
       var track = sec.querySelector('.cc-track');
-      var cards = [].slice.call(sec.querySelectorAll('.cc-card'));
+      var originals = [].slice.call(sec.querySelectorAll('.cc-card'));
       var prev = sec.querySelector('[data-cc-prev]');
       var next = sec.querySelector('[data-cc-next]');
-      if (!track || cards.length < 1) { return; }
-      var index = 0;
+      var n = originals.length;
+      if (!track || n < 1) { return; }
       // The invert-compact variant is a LEFT-ALIGNED multi-card row (cards align to the header's
       // content edge, next cards peek right); every other variant CENTRES the active card.
       var leftAlign = sec.classList.contains('is-invert') && !sec.classList.contains('is-light');
+      // INFINITE LOOP: clone the full card set on BOTH sides of the track. Navigation is endless in
+      // either direction — past the last card the chain restarts at the first, and the first card
+      // always has the last one peeking on its left. After the slide animation lands in a clone
+      // zone, the track snaps (no animation) to the matching original, so the loop is seamless.
+      var loop = n > 1;
+      var all = originals;
+      if (loop) {
+        var before = document.createDocumentFragment(), after = document.createDocumentFragment();
+        originals.forEach(function (c) {
+          var a = c.cloneNode(true), b = c.cloneNode(true);
+          a.classList.remove('is-active'); b.classList.remove('is-active');
+          a.setAttribute('aria-hidden', 'true'); b.setAttribute('aria-hidden', 'true');
+          before.appendChild(a); after.appendChild(b);
+        });
+        track.insertBefore(before, track.firstChild);
+        track.appendChild(after);
+        all = [].slice.call(track.children);
+      }
+      var pos = loop ? n : 0;   // physical position on the track (originals start at n when looping)
+      var normTimer = null;
+      function logical(p) { return ((p - (loop ? n : 0)) % n + n) % n; }
       // left inset of the header's content box, so card 0 lines up with the heading/text column
       function gutter() {
         var head = sec.querySelector('.cc-head');
         if (!head) { return 0; }
         return head.offsetLeft + (parseFloat(getComputedStyle(head).paddingLeft) || 0);
       }
-      // translateX needed to position card i (offsetLeft/Width ignore any scale transform)
-      function offsetFor(i) {
-        var c = cards[i];
+      // translateX needed to position physical card p (offsetLeft/Width ignore any scale transform)
+      function offsetFor(p) {
+        var c = all[p];
         if (!leftAlign) { return c.offsetLeft + c.offsetWidth / 2 - viewport.clientWidth / 2; }
         var g = gutter();
-        var raw = c.offsetLeft - g;                                  // align card i's left edge to the content edge
+        var raw = c.offsetLeft - g;                                  // align card p's left edge to the content edge
+        if (loop) { return raw; }                                    // infinite chain: no ends to clamp against
         var min = -g;                                                // start: card 0's left sits at the content edge (track pushed right by g)
         var max = track.scrollWidth - (viewport.clientWidth - g);    // end: last card's right edge sits at the right content edge
         if (max < min) { max = min; }                               // everything fits → nothing to scroll
         return Math.min(Math.max(raw, min), max);
       }
+      function paint() {
+        var cur = logical(pos);
+        all.forEach(function (c, k) { c.classList.toggle('is-active', logical(k) === cur); });
+        if (prev) { prev.disabled = loop ? false : pos <= 0; }
+        if (next) { next.disabled = loop ? false : pos >= n - 1; }
+      }
       function render(animate) {
         track.style.transition = animate ? 'transform .5s cubic-bezier(.4,0,.2,1)' : 'none';
-        track.style.transform = 'translateX(' + (-offsetFor(index)) + 'px)';
-        cards.forEach(function (c, n) { c.classList.toggle('is-active', n === index); });
-        if (prev) { prev.disabled = index <= 0; }
-        if (next) { next.disabled = index >= cards.length - 1; }
+        track.style.transform = 'translateX(' + (-offsetFor(pos)) + 'px)';
+        paint();
       }
-      function go(i) { index = Math.max(0, Math.min(cards.length - 1, i)); render(true); }
-      if (prev) { prev.addEventListener('click', function () { go(index - 1); }); }
-      if (next) { next.addEventListener('click', function () { go(index + 1); }); }
+      // after sliding into a clone zone, jump (no animation) to the matching original position
+      function normalize() {
+        if (loop && (pos < n || pos >= 2 * n)) { pos = n + logical(pos); render(false); }
+      }
+      function go(p) {
+        if (!loop) { pos = Math.max(0, Math.min(n - 1, p)); render(true); return; }
+        pos = p;
+        render(true);
+        clearTimeout(normTimer);
+        normTimer = setTimeout(normalize, 520);   // matches the .5s slide transition
+      }
+      if (prev) { prev.addEventListener('click', function () { go(pos - 1); }); }
+      if (next) { next.addEventListener('click', function () { go(pos + 1); }); }
 
       // drag / swipe
       var dragging = false, startX = 0, base = 0, moved = 0;
       function down(e) {
         dragging = true; moved = 0;
         startX = e.touches ? e.touches[0].clientX : e.clientX;
-        base = -offsetFor(index);
+        clearTimeout(normTimer); normalize();                        // settle any pending wrap before grabbing
+        base = -offsetFor(pos);
         track.style.transition = 'none';
         viewport.classList.add('is-dragging');
       }
@@ -318,8 +355,8 @@ if ( $cc_assets ) {
         dragging = false;
         viewport.classList.remove('is-dragging');
         var threshold = Math.min(160, viewport.clientWidth * 0.12);
-        if (moved < -threshold) { go(index + 1); }
-        else if (moved > threshold) { go(index - 1); }
+        if (moved < -threshold) { go(pos + 1); }
+        else if (moved > threshold) { go(pos - 1); }
         else { render(true); }
       }
       viewport.addEventListener('mousedown', down);
@@ -328,7 +365,7 @@ if ( $cc_assets ) {
       viewport.addEventListener('touchstart', down, { passive: true });
       viewport.addEventListener('touchmove', move, { passive: false });
       viewport.addEventListener('touchend', up);
-      window.addEventListener('resize', function () { render(false); });
+      window.addEventListener('resize', function () { clearTimeout(normTimer); normalize(); render(false); });
       render(false);
     }
     // COLLAPSIBLE cards: show "Read more" only when the clamped text actually overflows; toggling opens
