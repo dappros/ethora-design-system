@@ -87,8 +87,9 @@ if ( $cc_assets ) {
   .cc-card { flex: 0 0 clamp(300px, 84vw, var(--content-max)); display: flex; flex-direction: column;
     border-radius: var(--radius-3xl); padding: clamp(var(--space-32),3.5vw,var(--space-48));
     background: var(--gradient-brand); color: var(--text-on-dark);
-    transform: scale(.93); transform-origin: center center; transition: transform .5s cubic-bezier(.4,0,.2,1); }
-  .cc-card.is-active { transform: scale(1); }
+    transform: scale(.93); transform-origin: center center; filter: blur(2.5px);
+    transition: transform .5s cubic-bezier(.4,0,.2,1), filter .5s ease; }
+  .cc-card.is-active { transform: scale(1); filter: none; }
   .cc-section.is-light .cc-card { background: #fff; background-image: none; border: 1px solid var(--border); color: var(--text-body); }
   .cc-card-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,.85fr); gap: clamp(var(--space-32),4vw,var(--space-64)); align-items: center; height: 100%; }
   .cc-card-grid.no-media { grid-template-columns: 1fr; }
@@ -121,7 +122,8 @@ if ( $cc_assets ) {
   .cc-section.is-invert .cc-card { background: #fff; background-image: none; border: 1px solid transparent; color: var(--text-body); box-shadow: var(--shadow-lift); }
   .cc-section.is-invert:not(.is-light) .cc-card { flex-basis: clamp(280px, 72vw, 500px);   /* compact card */
     padding: clamp(20px, 2.2vw, 26px) clamp(20px, 2.4vw, 28px) clamp(18px, 2vw, 24px);
-    transform: none; }   /* left-aligned multi-card row (see JS): no single-card scale focus */
+    transform: scale(.95); }   /* left-aligned multi-card row: side cards sit slightly smaller + blurred, the active one pops */
+  .cc-section.is-invert:not(.is-light) .cc-card.is-active { transform: scale(1); }
   .cc-section.is-invert .cc-card h3 { color: var(--ink); }
   .cc-section.is-invert .cc-block-label { color: var(--primary); }
   .cc-section.is-invert .cc-card-more { background: var(--primary); color: #fff; }
