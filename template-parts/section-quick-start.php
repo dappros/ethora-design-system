@@ -372,7 +372,14 @@ if ( ! $quick_start_assets_printed ) :
 					cursorN.className = 'qs-cursor-n';
 					cursorN.textContent = '1';
 					cursor.appendChild(cursorN);
-					if (qsSteps) { qsSteps.appendChild(track); qsSteps.appendChild(fill); qsSteps.appendChild(cursor); }
+					// rail goes FIRST in the DOM: the animated steps create their own stacking
+					// contexts at level 0, so paint order follows the DOM — prepending keeps the
+					// step dots painted ABOVE the line (the cursor stays last + z-indexed on top)
+					if (qsSteps) {
+						qsSteps.insertBefore(fill, qsSteps.firstChild);
+						qsSteps.insertBefore(track, fill);
+						qsSteps.appendChild(cursor);
+					}
 					// sticky head: pin below the fixed site header
 					var qsHead = sec.querySelector('.qs-head');
 					var headerEl = document.querySelector('.header');
