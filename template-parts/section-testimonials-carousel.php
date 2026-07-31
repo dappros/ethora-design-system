@@ -5,7 +5,11 @@
  * seconds, infinite loop (after the last comes the first), with prev/next buttons.
  * Editorial style, fully tokenised (css/tokens.css).
  *
- * Params ($args): 'eyebrow', 'heading', 'interval' (ms).
+ * Params ($args): 'eyebrow', 'heading', 'interval' (ms),
+ *   'items' — optional override of the quotes: array of rows
+ *   array( 'Quote text', 'Author name', 'Role, Company', 'avatar-file.svg' )
+ *   (defaults to the house set below — pass it when a page must keep its own
+ *   verbatim testimonial copy).
  */
 
 $tc = wp_parse_args(
@@ -15,11 +19,12 @@ $tc = wp_parse_args(
 		'heading'  => 'Trusted by teams shipping regulated communication',
 		'interval' => 5000,
 		'eyebrow_label' => false, // true → render the eyebrow as the pill .section-label (star + text) instead of the mono kicker
+		'items'    => array(),
 	)
 );
 $u = get_template_directory_uri();
 
-$tc_items = array(
+$tc_items = ( ! empty( $tc['items'] ) && is_array( $tc['items'] ) ) ? $tc['items'] : array(
 	array( 'Taras and the Ethora team are a reliable partner in messaging, tokenization and AI. Great communication and products.', 'Joe Sticca', 'Digital Product &amp; Technology Leader, Trust Industries', 'Joe_Sticca.svg' ),
 	array( 'I have worked with Ethora and team since 2018. They have been absolutely amazing and life-saving across multiple of my portfolio projects.', 'Adam Palmer', 'Co-founder, SIAD Ventures', 'Adam_Palmer.svg' ),
 	array( 'We partnered with Dappros/Ethora on an EU project and they successfully delivered the technology component. Highly recommended.', 'Peter Fearon', 'CEO, Remade Group', 'Peter_Fearon.svg' ),
