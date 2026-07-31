@@ -93,8 +93,9 @@ if ( $csx_assets ) {
   .csx-card { flex: 0 0 clamp(300px, 86vw, var(--content-max)); display: grid; grid-template-columns: 1fr;
     gap: var(--space-32); align-items: flex-start; border-radius: var(--border-radius-lg); padding: var(--space-16);
     background: var(--gradient-soft-brand); min-height: 476px; transform: scale(.94); transform-origin: center center;
-    transition: transform .5s cubic-bezier(.4, 0, .2, 1); }
-  .csx-card.active { transform: scale(1); }
+    filter: blur(2.5px);
+    transition: transform .5s cubic-bezier(.4, 0, .2, 1), filter .5s ease; }
+  .csx-card.active { transform: scale(1); filter: none; }
   /* desktop: image left, content right (2-up) — matches the home page */
   @media (min-width: 768px) {
     .csx-card { grid-template-columns: 1fr 1fr; padding: var(--space-32); }
@@ -181,39 +182,72 @@ if ( $csx_assets ) {
 <script>
   (function () {
     function initCsx(section) {
-      var viewport = section.querySelector('.csx-viewport');
-      var track    = section.querySelector('.csx-track');
-      var cards    = [].slice.call(section.querySelectorAll('.csx-card'));
-      var dots     = [].slice.call(section.querySelectorAll('.csx-dot'));
-      var prev     = section.querySelector('.csx-prev');
-      var next     = section.querySelector('.csx-next');
-      if (!viewport || !track || cards.length < 1) { return; }
+      var viewport  = section.querySelector('.csx-viewport');
+      var track     = section.querySelector('.csx-track');
+      var originals = [].slice.call(section.querySelectorAll('.csx-card'));
+      var dots      = [].slice.call(section.querySelectorAll('.csx-dot'));
+      var prev      = section.querySelector('.csx-prev');
+      var next      = section.querySelector('.csx-next');
+      var n         = originals.length;
+      if (!viewport || !track || n < 1) { return; }
       viewport.addEventListener('dragstart', function (e) { e.preventDefault(); });
-      var index = 0;
-      function centerShift(i) { var c = cards[i]; return c.offsetLeft + c.offsetWidth / 2 - viewport.clientWidth / 2; }
+      // INFINITE LOOP — same pattern as the cards carousel: clone the full card set on both
+      // sides of the track, navigate endlessly, and snap (no animation) to the matching
+      // original after sliding into a clone zone. Clones are aria-hidden.
+      var loop = n > 1;
+      var all = originals;
+      if (loop) {
+        var before = document.createDocumentFragment(), after = document.createDocumentFragment();
+        originals.forEach(function (c) {
+          var a = c.cloneNode(true), b = c.cloneNode(true);
+          a.classList.remove('active'); b.classList.remove('active');
+          a.setAttribute('aria-hidden', 'true'); b.setAttribute('aria-hidden', 'true');
+          before.appendChild(a); after.appendChild(b);
+        });
+        track.insertBefore(before, track.firstChild);
+        track.appendChild(after);
+        all = [].slice.call(track.children);
+      }
+      var pos = loop ? n : 0;   // physical position on the track (originals start at n)
+      var normTimer = null;
+      function logical(p) { return ((p - (loop ? n : 0)) % n + n) % n; }
+      function centerShift(p) { var c = all[p]; return c.offsetLeft + c.offsetWidth / 2 - viewport.clientWidth / 2; }
+      function paint() {
+        var cur = logical(pos);
+        all.forEach(function (c, k) { c.classList.toggle('active', logical(k) === cur); });
+        dots.forEach(function (d, k) { d.classList.toggle('active', k === cur); });
+        if (prev) { prev.disabled = loop ? false : pos <= 0; }
+        if (next) { next.disabled = loop ? false : pos >= n - 1; }
+      }
       function render(animate) {
         track.style.transition = animate ? 'transform .5s cubic-bezier(.4,0,.2,1)' : 'none';
-        track.style.transform = 'translateX(' + (-centerShift(index)) + 'px)';
-        cards.forEach(function (c, n) { c.classList.toggle('active', n === index); });
-        dots.forEach(function (d, n) { d.classList.toggle('active', n === index); });
-        if (prev) { prev.disabled = index <= 0; }
-        if (next) { next.disabled = index >= cards.length - 1; }
+        track.style.transform = 'translateX(' + (-centerShift(pos)) + 'px)';
+        paint();
       }
-      function go(i) { index = Math.max(0, Math.min(cards.length - 1, i)); render(true); }
-      if (prev) { prev.addEventListener('click', function () { go(index - 1); }); }
-      if (next) { next.addEventListener('click', function () { go(index + 1); }); }
-      dots.forEach(function (d, n) { d.addEventListener('click', function () { go(n); }); });
+      function normalize() {
+        if (loop && (pos < n || pos >= 2 * n)) { pos = n + logical(pos); render(false); }
+      }
+      function go(p) {
+        if (!loop) { pos = Math.max(0, Math.min(n - 1, p)); render(true); return; }
+        pos = p;
+        render(true);
+        clearTimeout(normTimer);
+        normTimer = setTimeout(normalize, 520);   // matches the .5s slide transition
+      }
+      if (prev) { prev.addEventListener('click', function () { go(pos - 1); }); }
+      if (next) { next.addEventListener('click', function () { go(pos + 1); }); }
+      dots.forEach(function (d, k) { d.addEventListener('click', function () { clearTimeout(normTimer); normalize(); go(loop ? n + k : k); }); });
       var dragging = false, startX = 0, base = 0, moved = 0;
-      function down(e) { dragging = true; moved = 0; startX = e.touches ? e.touches[0].clientX : e.clientX; base = -centerShift(index); track.style.transition = 'none'; viewport.classList.add('is-dragging'); }
+      function down(e) { dragging = true; moved = 0; startX = e.touches ? e.touches[0].clientX : e.clientX; clearTimeout(normTimer); normalize(); base = -centerShift(pos); track.style.transition = 'none'; viewport.classList.add('is-dragging'); }
       function move(e) { if (!dragging) { return; } var x = e.touches ? e.touches[0].clientX : e.clientX; moved = x - startX; track.style.transform = 'translateX(' + (base + moved) + 'px)'; if (e.cancelable && Math.abs(moved) > 6) { e.preventDefault(); } }
-      function up() { if (!dragging) { return; } dragging = false; viewport.classList.remove('is-dragging'); var threshold = Math.min(160, viewport.clientWidth * 0.12); if (moved < -threshold) { go(index + 1); } else if (moved > threshold) { go(index - 1); } else { render(true); } }
+      function up() { if (!dragging) { return; } dragging = false; viewport.classList.remove('is-dragging'); var threshold = Math.min(160, viewport.clientWidth * 0.12); if (moved < -threshold) { go(pos + 1); } else if (moved > threshold) { go(pos - 1); } else { render(true); } }
       viewport.addEventListener('mousedown', down);
       window.addEventListener('mousemove', move, { passive: false });
       window.addEventListener('mouseup', up);
       viewport.addEventListener('touchstart', down, { passive: true });
       viewport.addEventListener('touchmove', move, { passive: false });
       viewport.addEventListener('touchend', up);
-      window.addEventListener('resize', function () { render(false); });
+      window.addEventListener('resize', function () { clearTimeout(normTimer); normalize(); render(false); });
       render(false);
       window.addEventListener('load', function () { render(false); });
     }
