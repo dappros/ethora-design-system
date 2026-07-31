@@ -90,7 +90,7 @@ endif;
       <?php foreach ( $cta['buttons'] as $b ) :
         $style = isset( $b['style'] ) ? $b['style'] : 'light';
         if ( ! empty( $b['modal'] ) ) : ?>
-        <button class="book-demo-button cta-dark-btn <?php echo esc_attr( $style ); ?>"><?php echo esc_html( $b['label'] ); ?></button>
+        <button type="button" class="book-demo-button cta-dark-btn <?php echo esc_attr( $style ); ?>"><?php echo esc_html( $b['label'] ); ?></button>
         <?php else : ?>
         <a href="<?php echo esc_url( $b['url'] ); ?>"<?php echo ! empty( $b['new_tab'] ) ? ' target="_blank" rel="noopener"' : ''; ?> class="cta-dark-btn <?php echo esc_attr( $style ); ?>"><?php echo esc_html( $b['label'] ); ?></a>
         <?php endif;

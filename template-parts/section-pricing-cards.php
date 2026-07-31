@@ -151,7 +151,7 @@ $pp_bg = ( 'none' === $pp['bg'] ) ? '' : ' bg-' . $pp['bg'];
           <div class="ppc-conn"><?php echo esc_html( $p['conn'] ); ?></div>
         </div>
         <?php if ( $p['btn_modal'] ) : ?>
-        <button class="book-demo-button ppc-btn <?php echo esc_attr( $p['btn_style'] ); ?>"><?php echo esc_html( $p['btn'] ); ?></button>
+        <button type="button" class="book-demo-button ppc-btn <?php echo esc_attr( $p['btn_style'] ); ?>"><?php echo esc_html( $p['btn'] ); ?></button>
         <?php else : ?>
         <a href="<?php echo esc_url( $p['btn_url'] ); ?>" class="ppc-btn <?php echo esc_attr( $p['btn_style'] ); ?>"><?php echo esc_html( $p['btn'] ); ?></a>
         <?php endif; ?>
