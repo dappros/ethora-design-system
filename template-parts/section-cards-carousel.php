@@ -122,7 +122,7 @@ if ( $cc_assets ) {
   .cc-section.is-invert .cc-card { background: #fff; background-image: none; border: 1px solid transparent; color: var(--text-body); box-shadow: var(--shadow-lift); }
   .cc-section.is-invert:not(.is-light) .cc-card { flex-basis: clamp(280px, 72vw, 500px);   /* compact card */
     padding: clamp(20px, 2.2vw, 26px) clamp(20px, 2.4vw, 28px) clamp(18px, 2vw, 24px);
-    transform: scale(.95); }   /* left-aligned multi-card row: side cards sit slightly smaller + blurred, the active one pops */
+    transform: scale(.95); }   /* centred multi-card row: side cards sit slightly smaller + blurred, the active one pops */
   .cc-section.is-invert:not(.is-light) .cc-card.is-active { transform: scale(1); }
   .cc-section.is-invert .cc-card h3 { color: var(--ink); }
   .cc-section.is-invert .cc-block-label { color: var(--primary); }
@@ -268,9 +268,6 @@ if ( $cc_assets ) {
       var next = sec.querySelector('[data-cc-next]');
       var n = originals.length;
       if (!track || n < 1) { return; }
-      // The invert-compact variant is a LEFT-ALIGNED multi-card row (cards align to the header's
-      // content edge, next cards peek right); every other variant CENTRES the active card.
-      var leftAlign = sec.classList.contains('is-invert') && !sec.classList.contains('is-light');
       // INFINITE LOOP: clone the full card set on BOTH sides of the track. Navigation is endless in
       // either direction — past the last card the chain restarts at the first, and the first card
       // always has the last one peeking on its left. After the slide animation lands in a clone
@@ -292,23 +289,11 @@ if ( $cc_assets ) {
       var pos = loop ? n : 0;   // physical position on the track (originals start at n when looping)
       var normTimer = null;
       function logical(p) { return ((p - (loop ? n : 0)) % n + n) % n; }
-      // left inset of the header's content box, so card 0 lines up with the heading/text column
-      function gutter() {
-        var head = sec.querySelector('.cc-head');
-        if (!head) { return 0; }
-        return head.offsetLeft + (parseFloat(getComputedStyle(head).paddingLeft) || 0);
-      }
-      // translateX needed to position physical card p (offsetLeft/Width ignore any scale transform)
+      // translateX needed to CENTRE physical card p in the viewport — every variant centres the
+      // active card, so its neighbours peek equally on both sides (offsetLeft/Width ignore scale)
       function offsetFor(p) {
         var c = all[p];
-        if (!leftAlign) { return c.offsetLeft + c.offsetWidth / 2 - viewport.clientWidth / 2; }
-        var g = gutter();
-        var raw = c.offsetLeft - g;                                  // align card p's left edge to the content edge
-        if (loop) { return raw; }                                    // infinite chain: no ends to clamp against
-        var min = -g;                                                // start: card 0's left sits at the content edge (track pushed right by g)
-        var max = track.scrollWidth - (viewport.clientWidth - g);    // end: last card's right edge sits at the right content edge
-        if (max < min) { max = min; }                               // everything fits → nothing to scroll
-        return Math.min(Math.max(raw, min), max);
+        return c.offsetLeft + c.offsetWidth / 2 - viewport.clientWidth / 2;
       }
       function paint() {
         var cur = logical(pos);
