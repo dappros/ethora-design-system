@@ -364,9 +364,9 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Bento grid** | *(pattern on `page-self-hosted-server.php`)* | Asymmetric 2+3 card grid; large gradient/dark cards with peeking screenshots + media tiles. |
 | **Dark CTA** | `section-cta-dark.php` | Brand `.shs-dark` panel (eyebrow/heading/text/buttons). Use for EVERY dark CTA. |
 | **Pricing cards** | `section-pricing-cards.php` | 3-card pricing, middle highlighted, Monthly/Yearly toggle. |
-| **Testimonials carousel** | `section-testimonials-carousel.php` | Auto-advancing 3-up testimonial carousel with prev/next. |
-| **Cards carousel** | `section-cards-carousel.php` | Draggable horizontal slider of dark cards (next peeks); prev/next + swipe. For use-cases / challenge→solution. |
-| **Case studies** | `section-case-studies.php` | Case-study cards row. |
+| **Testimonials carousel** | `section-testimonials-carousel.php` | Auto-advancing 3-up testimonial carousel with prev/next; optional `items` override when a page must keep its own verbatim quotes. |
+| **Cards carousel** | `section-cards-carousel.php` | Draggable horizontal slider of dark cards, active card centred + sharp, sides scaled down + blurred, infinite loop (last peeks left of first); prev/next + swipe. For use-cases / challenge→solution. |
+| **Case studies** | `section-case-studies.php` | Case-study carousel: centred active card, blurred side cards, infinite loop, dots + prev/next. |
 | **Comparison** | `section-comparison.php` | Capability vs negative (✕) vs highlighted recommended (✓) column; responsive (cards on mobile). |
 | **Feature spotlight** | `section-feature-spotlight.php` | Big flagship blue card (chat mockup + chips) + numbered white cards. For a headline capability + supporting features. |
 | **Deployment stack** | `section-deployment.php` | Header + platform chips + dashed "your VPC" container laying an architecture diagram out as native cards (stacked layer groups + arrows, tinted core group, data/optional row) + legend. |

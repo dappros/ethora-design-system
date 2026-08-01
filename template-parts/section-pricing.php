@@ -4,10 +4,12 @@
  * Renders the reusable Variant-A cards with the compact "Save Months…" header.
  * The full /pricing/ page uses the same cards but with its own hero + Why + CTA + FAQ,
  * so the section and the page look distinct.
+ *
+ * Accepts overrides via $args (all optional): 'eyebrow', 'heading', 'subheading',
+ * 'show_header', 'bg' — e.g. pass array( 'eyebrow' => '' ) to drop the kicker.
  */
-get_template_part(
-	'template-parts/section',
-	'pricing-cards',
+$sp = wp_parse_args(
+	(array) ( $args ?? array() ),
 	array(
 		'eyebrow'     => 'Pricing',
 		'heading'     => 'Save Months of Work with Ethora',
@@ -16,3 +18,4 @@ get_template_part(
 		'bg'          => 'alt',
 	)
 );
+get_template_part( 'template-parts/section', 'pricing-cards', $sp );

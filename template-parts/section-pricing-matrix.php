@@ -18,6 +18,9 @@
  *       array( 'name' => 'Free',     'price' => '$0/mo' ),
  *       array( 'name' => 'Business', 'price' => '$99/mo', 'popular' => true, 'badge' => 'Most popular' ),
  *       array( 'name' => 'Enterprise','price' => 'Custom' ),
+ *       // optional per-plan CTA button in the header:
+ *       //   'cta' => array( 'label' => 'Sign Up', 'url' => 'https://…' )      // link
+ *       //   'cta' => array( 'label' => 'Book a Call', 'modal' => true )        // opens the book-call modal
  *     ),
  *     'groups'  => array(                                            // REQUIRED — grouped rows
  *       array( 'label' => 'Messaging & core features', 'rows' => array(
@@ -43,6 +46,7 @@ $pm = wp_parse_args(
 		'title'   => '',
 		'lead'    => '',
 		'shade'   => false,
+		'toggle'       => false,  // show the Monthly/Yearly billing toggle (needs price_yearly on plans)
 		'plans'        => array(),
 		'groups'       => array(),
 		'group_labels' => true,   // render the mono group-label separator rows
@@ -93,6 +97,13 @@ if ( $pm_assets ) {
   .pm-eyebrow { font-family: var(--font-mono); font-weight: var(--fw-medium); font-size: var(--fs-eyebrow); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--primary); margin: 0 0 var(--space-8); }
   .pm-h2 { font-family: var(--font-serif); font-weight: var(--fw-medium); font-size: var(--fs-h2); line-height: 1.08; letter-spacing: -.01em; color: var(--ink); margin: 0; }
   .pm-lead { font-size: var(--fs-lg); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; }
+  /* Monthly/Yearly billing toggle — canonical .ppc-toggle/.ppc-tg standard */
+  .pm-toggle { text-align: center; margin: 0 0 var(--space-32); }
+  .pm-toggle .ppc-toggle { display: inline-flex; align-items: center; gap: 4px; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 5px; }
+  .pm-toggle .ppc-tg { font-family: var(--font-sans); font-size: var(--fs-sm); font-weight: var(--fw-semibold); color: var(--text-body); background: none; border: 0; cursor: pointer; padding: 9px 20px; border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: var(--space-8); transition: background .2s ease, color .2s ease; }
+  .pm-toggle .ppc-tg.active { background: var(--ink); color: var(--white); }
+  .pm-toggle .ppc-off { font-size: 11px; font-weight: var(--fw-bold); color: var(--primary); }
+  .pm-toggle .ppc-tg.active .ppc-off { color: var(--accent-on-dark); }
   .pm-card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-3xl); box-shadow: var(--shadow-card); }
   .pm-scroll { overflow-x: auto; }
   table.pm { width: 100%; min-width: 720px; border-collapse: collapse; table-layout: fixed; }
@@ -102,11 +113,16 @@ if ( $pm_assets ) {
   .pm-corner { width: 34%; }
   .pm-plan { width: 22%; text-align: center; vertical-align: bottom; padding: var(--space-32) var(--space-16) var(--space-16); }
   .pm-plan-name { display: block; font-family: var(--font-serif); font-weight: var(--fw-semibold); font-size: var(--fs-2xl); color: var(--ink); line-height: var(--lh-snug); }
-  .pm-plan-price { display: block; font-size: var(--fs-sm); color: var(--text-caption); margin-top: var(--space-8); }
+  .pm-plan-price { display: block; font-family: var(--font-serif); font-weight: var(--fw-bold); font-size: var(--fs-h3); line-height: 1.1; color: var(--ink); margin-top: var(--space-8); }
   .pm-plan.pm-pop { background: var(--primary); border-radius: var(--radius-xl) var(--radius-xl) 0 0; padding-top: var(--space-16); }
   .pm-pop .pm-plan-name { color: var(--white); }
   .pm-pop .pm-plan-price { color: var(--accent-on-dark); }
   .pm-pop-tag { display: block; font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--fs-eyebrow); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--accent-on-dark); margin-bottom: var(--space-8); }
+  /* optional per-plan CTA button in the header */
+  .pm-cta { display: block; width: 100%; margin-top: var(--space-16); font-family: var(--font-body); font-size: var(--fs-sm); font-weight: var(--fw-semibold); line-height: 1; padding: 11px var(--space-16); border-radius: var(--radius-btn); text-decoration: none; border: 2px solid var(--primary); background: var(--white); color: var(--primary); cursor: pointer; transition: background .2s ease, color .2s ease, border-color .2s ease; }
+  .pm-cta:hover { background: var(--primary-light); }
+  .pm-pop .pm-cta { border-color: var(--white); background: var(--white); color: var(--primary); }
+  .pm-pop .pm-cta:hover { background: var(--accent-on-dark); }
   /* body */
   .pm tbody th[scope="row"] { text-align: left; font-weight: var(--fw-semibold); color: var(--ink); font-size: var(--fs-sm); line-height: var(--lh-snug); padding: var(--space-16); }
   .pm tbody td { text-align: center; color: var(--text-body); font-size: var(--fs-sm); padding: var(--space-16); }
@@ -144,6 +160,15 @@ if ( $pm_assets ) {
     </div>
     <?php endif; ?>
 
+    <?php if ( $pm['toggle'] ) : ?>
+    <div class="pm-toggle">
+      <div class="ppc-toggle" role="group" aria-label="Billing period">
+        <button type="button" class="ppc-tg active" data-bill="monthly">Monthly</button>
+        <button type="button" class="ppc-tg" data-bill="yearly">Yearly <span class="ppc-off">15% OFF</span></button>
+      </div>
+    </div>
+    <?php endif; ?>
+
     <div class="pm-card">
       <div class="pm-scroll">
         <table class="pm">
@@ -154,7 +179,17 @@ if ( $pm_assets ) {
               <th class="pm-plan<?php echo $pm_is_pop ? ' pm-pop' : ''; ?>" scope="col">
                 <?php if ( $pm_is_pop ) : ?><span class="pm-pop-tag"><?php echo esc_html( ! empty( $pm_pl['badge'] ) ? $pm_pl['badge'] : 'Most popular' ); ?></span><?php endif; ?>
                 <span class="pm-plan-name"><?php echo esc_html( $pm_pl['name'] ); ?></span>
-                <?php if ( ! empty( $pm_pl['price'] ) ) : ?><span class="pm-plan-price"><?php echo esc_html( $pm_pl['price'] ); ?></span><?php endif; ?>
+                <?php if ( ! empty( $pm_pl['price'] ) ) : ?><span class="pm-plan-price"<?php echo ( $pm['toggle'] && ! empty( $pm_pl['price_yearly'] ) ) ? ' data-monthly="' . esc_attr( $pm_pl['price'] ) . '" data-yearly="' . esc_attr( $pm_pl['price_yearly'] ) . '"' : ''; ?>><?php echo esc_html( $pm_pl['price'] ); ?></span><?php endif; ?>
+                <?php
+                if ( ! empty( $pm_pl['cta'] ) && is_array( $pm_pl['cta'] ) && ! empty( $pm_pl['cta']['label'] ) ) :
+                  $pm_cta = $pm_pl['cta'];
+                  if ( ! empty( $pm_cta['modal'] ) ) : ?>
+                <button type="button" class="book-demo-button pm-cta"><?php echo esc_html( $pm_cta['label'] ); ?></button>
+                  <?php else : ?>
+                <a class="pm-cta" href="<?php echo esc_url( ! empty( $pm_cta['url'] ) ? $pm_cta['url'] : '#' ); ?>"><?php echo esc_html( $pm_cta['label'] ); ?></a>
+                  <?php endif;
+                endif;
+                ?>
               </th>
               <?php endforeach; ?>
             </tr>
@@ -202,3 +237,23 @@ if ( $pm_assets ) {
     <?php if ( $pm['note'] ) : ?><p class="pm-note"><?php echo wp_kses_post( $pm['note'] ); ?></p><?php endif; ?>
   </div>
 </section>
+<?php if ( $pm['toggle'] ) : ?>
+<script>
+  (function () {
+    var sec = document.currentScript.previousElementSibling;
+    if ( ! sec || ! sec.classList.contains('pm-section') ) { sec = document.querySelector('.pm-section'); }
+    if ( ! sec ) { return; }
+    var tgs = sec.querySelectorAll('.pm-toggle .ppc-tg');
+    function setBill( mode ) {
+      tgs.forEach(function ( t ) { t.classList.toggle('active', t.getAttribute('data-bill') === mode); });
+      sec.querySelectorAll('.pm-plan-price').forEach(function ( el ) {
+        var v = el.getAttribute('data-' + mode);
+        if ( v !== null ) { el.textContent = v; }
+      });
+    }
+    tgs.forEach(function ( t ) {
+      t.addEventListener('click', function () { setBill( t.getAttribute('data-bill') ); });
+    });
+  })();
+</script>
+<?php endif; ?>

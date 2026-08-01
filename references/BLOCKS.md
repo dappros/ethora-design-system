@@ -357,7 +357,13 @@ buttons.
 
 ![Testimonials carousel](screenshots/testimonials-carousel.png)
 
-**Params:** `eyebrow`, `heading`, `interval` (ms, default 5000).
+**Params:** `eyebrow`, `heading`, `interval` (ms, default 5000), `items` (optional).
+
+`items` overrides the built-in house quote set: an array of rows
+`array( 'Quote text', 'Author name', 'Role, Company', 'avatar-file.svg' )` (avatar file
+resolved from `images/avatar/`). Pass it when a page must keep its **own verbatim
+testimonial copy** (the golden copy rule) instead of the house wording — live use:
+`page-ai-sdk.php`. Omit it everywhere else so the house set stays the single source.
 
 ---
 
@@ -367,16 +373,23 @@ The home-page **"Our Case Studies"** carousel, as a self-contained block. This i
 **canonical** look — whenever a page needs "Our Case Studies", render exactly this block; do
 not hand-roll the old `.case-study-*` markup. What it must always include:
 
-- **Cards** — full-bleed sliding track, the active card centred with its neighbour peeking +
-  scaling. On desktop (≥768px) each card is **two columns** (screenshot left, content right);
-  it stacks on mobile. Content = customer logo + short description + a green-check **success
-  highlights** list + a **Read more** link.
+- **Cards** — full-bleed sliding track in an **infinite loop**: the full card set is cloned
+  on both sides of the track (clones `aria-hidden`), prev/next/drag run endlessly in either
+  direction, and after the slide lands in a clone zone the track snaps (no animation) to the
+  matching original — the first card always has the last one peeking on its left. The
+  **active card is centred and sharp**; side cards sit at a slight scale (`.94`) with a
+  **2.5px blur** (focus depth, same treatment as the cards carousel). On desktop (≥768px)
+  each card is **two columns** (screenshot left, content right); it stacks on mobile.
+  Content = customer logo + short description + a green-check **success highlights** list +
+  a **Read more** link.
 - **Nav (switch) buttons** — the brand `.slider-btn` prev/next, **blue-outlined**
   (`1px solid var(--primary)` + primary chevron), **pinned top-right of the header** on
   desktop (centred under the heading on mobile). These are **bundled inside the block** (own
   `.csx-head` / `.csx-controls` CSS), NOT the legacy `.case-studies` globals — so they render
   correctly on any page. They are part of the design: never ship the section without them.
-- **Dots** under the track, and **drag / swipe** (mouse + touch).
+- **Dots** under the track (mapped to the LOGICAL card index, so they stay in sync through
+  loop wraps), and **drag / swipe** (mouse + touch). Nav buttons are never disabled while
+  looping.
 
 Self-contained — ships its **own CSS + JS once per request**, scoped to `.csx-*` classes so
 it works on any template (page templates load `css/index.css`, the home page loads
@@ -398,10 +411,17 @@ Live use: the home page (`index.php`), `page-self-hosted-llm-ai-agent.php`, `pag
 ## 13. Cards carousel — `section-cards-carousel.php`
 
 Title + lead on top, then a **full-width** track of dark brand cards: each card has a
-**text column on the left and an image on the right**; the **active card is centred** and its neighbours **peek equally** on both sides (and scale up/down on switch). Switch with the **centred** prev/next buttons (the brand `.slider-btn`
-standard) **or by dragging / swiping** (mouse and touch). Text blocks stack vertically and
-are labelled. Best for use-cases or "challenge → solution" content. `'light' => true` for
-white cards instead of dark.
+**text column on the left and an image on the right**; the **active card is centred** and its
+neighbours **peek equally** on both sides. The track is an **infinite loop**: the full card
+set is cloned on both sides (clones `aria-hidden`), prev/next/drag run endlessly in either
+direction, and after the slide lands in a clone zone the track snaps (no animation) to the
+matching original — the first card always has the last one peeking on its left; nav buttons
+are never disabled. **Focus depth:** side cards sit at a slight scale (`.93` centred / `.95`
+invert-compact) with a **2.5px blur**; the active card pops sharp at full size, both
+transitioning on the same `.5s` curve as the slide. Switch with the **centred** prev/next
+buttons (the brand `.slider-btn` standard) **or by dragging / swiping** (mouse and touch).
+Text blocks stack vertically and are labelled. Best for use-cases or "challenge → solution"
+content. `'light' => true` for white cards instead of dark.
 
 ![Cards carousel](screenshots/cards-carousel.png)
 
