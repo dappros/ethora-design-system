@@ -349,8 +349,9 @@ Screenshots, full prop tables and copy-paste snippets are in
 > Below the section blocks, BLOCKS.md also documents the **Core UI primitives** —
 > the single canonical CTA buttons, slider/nav buttons, toggle switch, and the
 > `--gradient-brand` blue section background. These are locked: reuse them exactly,
-> never restyle or reinvent. Their CSS ships in **`css/primitives.css`** (load it after
-> `css/tokens.css`) — import that file and use the classes; do not re-implement the rules.
+> never restyle or reinvent. In the theme their CSS already lives in the theme's own
+> stylesheets, so just use the classes. **`css/primitives.css` is skill-only**: a standalone
+> reference copy for work outside the theme; the theme does not load it, never add it there.
 
 | Block | Partial | What it is |
 |---|---|---|

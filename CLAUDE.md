@@ -42,8 +42,10 @@ spacing, radii, containers + a11y/perf quality floor). The reference page, fully
 tokens, is `page-self-hosted-server.php`.
 
 The interactive primitives — CTA buttons, slider/nav (switch) buttons and the toggle
-switch — get their canonical, token-based CSS from **`css/primitives.css`** (loaded after
-`tokens.css`). Reuse those classes; never re-declare the styles in a page or partial.
+switch — are styled in the theme by its own stylesheets (`style-index.css`, `css/index.css`, `css/blank.css`, `css/post.css`, `css/blog-list.css`; the toggle ships with `section-pricing-cards` / `section-pricing-matrix`). Reuse those classes;
+never re-declare the styles in a page or partial. **`css/primitives.css` is skill-only**
+(a standalone reference copy for work outside the theme): the theme does not load it,
+never add it there.
 
 ### Hard markup rules (DO NOT break)
 

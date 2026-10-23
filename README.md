@@ -18,7 +18,7 @@ standalone, not only from inside the theme.
 | `DESIGN.md` | Human-readable design guide: palette, type scale, spacing, radius, containers, button/toggle/slider rules, quality floor. |
 | `CLAUDE.md` | Project instructions (the same hard rules, restated as an always-on contract for Claude Code working in the theme). |
 | `css/tokens.css` | **The machine source of truth** — every colour/size/spacing/radius/width token in one `:root`. Build only with `var(--token)`. |
-| `css/primitives.css` | **The canonical interactive primitives** — CTA buttons (`.btn-*`), slider/nav buttons (`.slider-btn`), toggle switch (`.ppc-toggle`), all token-based. Load after `tokens.css` and use these classes; never restyle. |
+| `css/primitives.css` | **Skill-only** reference CSS for the interactive primitives (CTA buttons `.btn-*`, slider/nav `.slider-btn`, toggle `.ppc-toggle`), token-based, for work outside the theme. The WordPress theme does not load it (its own stylesheets style these classes); never add it there. |
 | `template-parts/` | The actual reusable block partials (`section-*.php`). Each is self-contained (ships its own `<style>`) and driven by `get_template_part()` args. |
 | `references/BLOCKS.md` | Full catalog: each reusable block + the **Core UI primitives** with a **screenshot**, prop table and a copy-paste `get_template_part()` snippet. |
 | `references/screenshots/` | Rendered screenshots of every block and primitive. |
@@ -63,8 +63,9 @@ cd .claude/skills/ethora-theme && git pull
    `template-parts/` via `get_template_part()` instead of inventing a new layout.
 3. Build with `var(--token)` values only (`css/tokens.css` is the single source of
    truth). Never hardcode hex/px. Reuse the locked **Core UI primitives** (CTA buttons,
-   slider/nav buttons, toggle switch, `--gradient-brand` blue section) exactly — their
-   CSS ships in `css/primitives.css`, loaded right after `css/tokens.css`:
+   slider/nav buttons, toggle switch, `--gradient-brand` blue section) exactly. In the
+   theme their CSS is already in the theme's stylesheets; outside the theme, load the
+   skill-only `css/primitives.css` right after `css/tokens.css`:
    ```html
    <link rel="stylesheet" href="css/tokens.css">
    <link rel="stylesheet" href="css/primitives.css">

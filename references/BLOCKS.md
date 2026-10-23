@@ -1299,10 +1299,11 @@ these are the single canonical form for their job. There is exactly one of each 
 the class/markup verbatim; do **not** invent a variant, change the radius/colour, or
 hand-roll a new one. All are tokenised.
 
-> **The canonical CSS for the primitives ships in `css/primitives.css`.** Load it after
-> `css/tokens.css` and use these exact classes — do **not** re-implement the rules in your
-> own stylesheet. One import gives every consumer the brand's buttons, slider/nav buttons
-> and toggle, wired to the tokens.
+> **In the theme**, the primitives are already styled by the theme's own stylesheets
+> (`style-index.css`, `css/index.css`, `css/blank.css`, `css/post.css`, `css/blog-list.css`; the toggle ships with `section-pricing-cards` / `section-pricing-matrix`): use these exact classes, never re-implement the rules in a page or partial.
+> **`css/primitives.css` is skill-only**: a standalone reference copy of the same rules for
+> work *outside* the theme (a prototype, another project). The theme does not load it; never
+> add it there. Outside the theme:
 >
 > ```html
 > <link rel="stylesheet" href="css/tokens.css">

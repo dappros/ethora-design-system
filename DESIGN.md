@@ -96,10 +96,11 @@ The two CTAs — **Get started** and **Book a Call** — are the brand standard 
 Never invent pill/other-radius CTAs. Reuse `.btn .btn-primary` / `.btn-outline`, or the
 token-based button classes (`.shs-btn`, `.ppc-btn`, `.cta-dark-btn`) which follow this rule.
 
-**Where the CSS lives (RULE).** The canonical, token-based CSS for all three interactive
-primitives — CTA buttons, slider/nav (switch) buttons and the toggle switch — ships in
-**`css/primitives.css`**. Load it after `css/tokens.css` and use those classes; never
-re-declare the styles in a page or partial.
+**Where the CSS lives (RULE).** In the theme, the CTA buttons, slider/nav (switch) buttons and
+the toggle switch are already styled by the theme's own stylesheets (`style-index.css`, `css/index.css`, `css/blank.css`, `css/post.css`, `css/blog-list.css`; the toggle ships with `section-pricing-cards` / `section-pricing-matrix`). Just use those
+classes; never re-declare the styles in a page or partial. **`css/primitives.css` belongs to the
+design-system skill only** (a standalone reference copy of the same rules for work outside the
+theme): the theme does not load it, and it must not be added to the theme.
 
 **Slider / nav (switch) buttons (RULE).** Prev/next buttons for any carousel or slider are the
 brand `.slider-btn` standard (as in the *Our Case Studies* section): **40px (2.5rem) square,
