@@ -69,6 +69,8 @@ $check = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9
   #demo-modal .bcm-aside li svg { flex: none; margin-top: 1px; }
   #demo-modal .bcm-illu { margin-top: auto; width: 100%; height: auto; border-radius: 12px; box-shadow: 0 18px 40px -20px rgba(0,0,0,.55); }
   #demo-modal .bcm-form { flex: 1 1 auto; min-width: 0; padding: 34px 30px; overflow-y: auto; max-height: 90vh; background: #fff; }
+  #demo-modal .bcm-alt { margin: 10px 0 0; text-align: center; }
+  #demo-modal .bcm-alt button { background: none; border: 0; color: #0052CD; font-size: 13px; cursor: pointer; text-decoration: underline; padding: 4px; }
   #demo-modal .bcm-form .eb { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: #0052CD; }
   #demo-modal .bcm-form h3 { font-weight: 700; font-size: 22px; color: #0E1A33; margin: 8px 0 18px; line-height: 1.2; }
   #demo-modal .modal-close { top: 14px; right: 16px; z-index: 5; line-height: 1; color: #8A93A6; }
@@ -102,10 +104,13 @@ $check = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9
     </div>
     <?php endif; ?>
     <div class="bcm-form">
-      <div class="eb">Get in touch</div>
-      <?php if ( $bc['form_title'] ) : ?><h3><?php echo esc_html( $bc['form_title'] ); ?></h3><?php endif; ?>
-      <div id="hubspot-form-wrapper">
-        <!-- HubSpot embed is lazy-loaded on first .book-demo-button click -->
+      <div class="eb">Book a call</div>
+      <h3>Pick a time that works for you</h3>
+      <!-- Calendly inline scheduler: lazy-initialized on first .book-demo-button click -->
+      <div id="bcm-calendly" class="calendly-inline-widget" data-url="https://calendly.com/taras-f/30min?hide_gdpr_banner=1" style="min-width:280px;height:540px;"></div>
+      <p class="bcm-alt"><button type="button" id="bcm-show-form">Prefer to send a message instead?</button></p>
+      <div id="hubspot-form-wrapper" hidden>
+        <!-- HubSpot embed is lazy-loaded when the visitor opts for the message form -->
         <div class="hs-form-frame"
              data-region="na1"
              data-form-id="86cdc2e8-2221-44b0-a926-02bec92c1bed"
@@ -117,19 +122,41 @@ $check = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9
 </div>
 
 <script>
-  /* Lazy-load the HubSpot form embed on first "Book a Call" click (keeps it off the initial page load). */
+  /* Scheduler-first booking modal:
+     - Calendly inline widget lazy-loads on first "Book a Call" click (nothing on initial page load).
+     - HubSpot message form stays as an opt-in fallback behind the "send a message" toggle.
+     - Completed bookings fire a GA4 demo_booked event via Calendly's postMessage API. */
   (function () {
-    var loaded = false;
+    var calendlyLoaded = false, hsLoaded = false;
+    function loadCalendly() {
+      if ( calendlyLoaded ) { return; }
+      calendlyLoaded = true;
+      var s = document.createElement('script');
+      s.src = 'https://assets.calendly.com/assets/external/widget.js';
+      s.async = true;
+      document.body.appendChild(s);
+    }
     function loadHubSpot() {
-      if ( loaded ) { return; }
-      loaded = true;
+      if ( hsLoaded ) { return; }
+      hsLoaded = true;
       var s = document.createElement('script');
       s.src = 'https://js.hsforms.net/forms/embed/4732608.js';
       s.defer = true;
       document.body.appendChild(s);
     }
     document.querySelectorAll('.book-demo-button').forEach(function ( btn ) {
-      btn.addEventListener('click', loadHubSpot, { once: true });
+      btn.addEventListener('click', loadCalendly, { once: true });
     });
+    var toggle = document.getElementById('bcm-show-form');
+    if ( toggle ) {
+      toggle.addEventListener('click', function () {
+        var cal = document.getElementById('bcm-calendly');
+        var wrap = document.getElementById('hubspot-form-wrapper');
+        if ( cal ) { cal.hidden = true; cal.style.display = 'none'; }
+        if ( wrap ) { wrap.hidden = false; }
+        toggle.parentNode.style.display = 'none';
+        loadHubSpot();
+      });
+    }
   })();
 </script>

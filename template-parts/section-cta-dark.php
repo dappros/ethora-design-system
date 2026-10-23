@@ -14,7 +14,7 @@
  *     'id'      => 'book-a-call',
  *     'buttons' => array(
  *       array( 'label' => 'Start Free Trial', 'url' => 'https://app.chat.ethora.com/register', 'style' => 'light' ),
- *       array( 'label' => 'Book a Call', 'url' => 'https://ethora.com/contact', 'style' => 'ghost' ),
+ *       array( 'label' => 'Book a Call', 'url' => 'https://ethora.com/contact/', 'style' => 'ghost' ),
  *       // 'modal' => true  → renders a .book-demo-button instead of a link
  *     ),
  *   ) );

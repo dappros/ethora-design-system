@@ -12,6 +12,10 @@
  *   'bg'          => 'alt'  // 'alt' (#F4F7FD) | 'white' | 'none'
  *
  * Plan data lives in the $pp_plans array below — edit prices in one place.
+ *
+ * The whole card is clickable (it triggers the card's main button): Free goes to sign-up,
+ * paid plans open the site-wide "Talk to us" modal (.book-demo-button). Clarity showed
+ * visitors clicking plan names and prices that did nothing (report 261016_near-miss-visitors).
  */
 
 $pp = wp_parse_args(
@@ -34,15 +38,16 @@ $pp_plans = array(
 		'mau' => '1,000 MAU', 'conn' => '100 Concurrent Connections',
 		'btn' => 'Sign Up', 'btn_url' => 'https://app.chat.ethora.com/register', 'btn_style' => 'outline', 'btn_modal' => false,
 		'feat_title' => 'All Chat & AI features, including:',
-		'feats' => array( 'Community Support', '30 Days of Free Support', 'No Credit Card Required' ),
+		'feats' => array( 'Community Support', '30 Days of Free Support' ),
 		'popular' => false,
 	),
 	array(
 		'name' => 'Small Business', 'svg' => '<svg viewBox="0 0 24 24" width="22" height="22"><line x1="4" y1="8" x2="20" y2="8"/><line x1="4" y1="16" x2="20" y2="16"/><circle cx="9" cy="8" r="2.4"/><circle cx="15" cy="16" r="2.4"/></svg>', 'badge' => 'Most Popular',
-		'monthly' => '$99', 'yearly' => '$84', 'per' => '/ mo',
+		'monthly' => '$149', 'yearly' => '$127', 'per' => '/ mo',
 		'sub_m' => 'billed monthly', 'sub_y' => 'billed annually',
 		'mau' => '5,000 MAU', 'conn' => '250 Concurrent Connections',
-		'btn' => 'Free Trial', 'btn_url' => 'https://app.chat.ethora.com/register?business=true', 'btn_style' => 'solid', 'btn_modal' => false,
+		'btn' => 'Talk to us', 'btn_url' => '/contact/', 'btn_style' => 'solid', 'btn_modal' => true,
+		'alt' => array( 'label' => 'or start a free trial', 'url' => 'https://app.chat.ethora.com/register?business=true' ),
 		'feat_title' => 'All Free, plus:',
 		'feats' => array( 'Tech Support', 'SLA 99.9%', 'AI Allowance', 'Custom Domain' ),
 		'popular' => true,
@@ -52,7 +57,7 @@ $pp_plans = array(
 		'monthly' => '$599+', 'yearly' => '$509+', 'per' => '/ mo',
 		'sub_m' => 'billed monthly', 'sub_y' => 'billed annually',
 		'mau' => 'Unlimited MAU', 'conn' => 'Unlimited Connections',
-		'btn' => 'Book a Call', 'btn_url' => '/contact', 'btn_style' => 'outline', 'btn_modal' => true,
+		'btn' => 'Talk to us', 'btn_url' => '/contact/', 'btn_style' => 'outline', 'btn_modal' => true,
 		'feat_title' => 'All Business, plus:',
 		'feats' => array( '24/7 Phone Support', 'Self-hosted AI', 'Custom Configuration', 'Dedicated / On-prem hosting' ),
 		'popular' => false,
@@ -82,7 +87,8 @@ if ( ! $pp_assets ) :
 	  .ppc-tg.active .ppc-off { color: var(--accent-on-dark); }
 	  /* grid */
 	  .ppc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 44px; align-items: start; }
-	  .ppc-card { position: relative; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 30px; display: flex; flex-direction: column; }
+	  .ppc-card { position: relative; background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-xl); padding: 30px; display: flex; flex-direction: column; cursor: pointer; transition: border-color .2s ease, box-shadow .2s ease; }
+	  .ppc-card:hover { border-color: var(--primary); box-shadow: 0 24px 48px -30px rgba(31, 106, 255, .45); }
 	  .ppc-card.is-popular { border: 1.5px solid var(--primary); box-shadow: 0 30px 60px -34px rgba(31, 106, 255, .55); transform: translateY(-8px); }
 	  .ppc-badge { position: absolute; top: -12px; left: 30px; font-family: var(--font-sans); font-size: 11px; font-weight: var(--fw-bold); letter-spacing: .04em; text-transform: uppercase; color: var(--white); background: var(--primary); padding: 5px 12px; border-radius: var(--radius-pill); }
 	  .ppc-badge.ghost { left: auto; right: 30px; color: var(--primary); background: var(--tint); }
@@ -102,6 +108,10 @@ if ( ! $pp_assets ) :
 	  .ppc-btn.solid:hover { background: var(--primary-hover); }
 	  .ppc-btn.outline { background: var(--white); color: var(--primary); border-color: var(--primary); }
 	  .ppc-btn.outline:hover { background: var(--primary-light); }
+	  .ppc-alt { display: block; text-align: center; margin-top: 10px; font-size: var(--fs-sm); color: var(--primary); text-decoration: underline; }
+	  .ppc-assure { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 28px; margin: 18px 0 0; padding: 0; }
+	  .ppc-assure li { display: inline-flex; align-items: center; gap: 8px; font-size: var(--fs-sm); font-weight: var(--fw-semibold); color: var(--ink); }
+	  .ppc-assure li svg { flex: none; }
 	  .ppc-divider { height: 1px; background: var(--border-hair); margin: 22px 0; }
 	  .ppc-feat-title { font-size: var(--fs-sm); font-weight: var(--fw-semibold); color: var(--ink); margin-bottom: 14px; }
 	  .ppc-feats { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
@@ -132,10 +142,14 @@ $pp_bg = ( 'none' === $pp['bg'] ) ? '' : ' bg-' . $pp['bg'];
       <button type="button" class="ppc-tg active" data-bill="monthly">Monthly</button>
       <button type="button" class="ppc-tg" data-bill="yearly">Yearly <span class="ppc-off">15% OFF</span></button>
     </div>
+    <ul class="ppc-assure">
+      <li><?php echo $pp_check; ?><span>No credit card needed</span></li>
+      <li><?php echo $pp_check; ?><span>Start free, upgrade when you&rsquo;re ready</span></li>
+    </ul>
 
     <div class="ppc-grid">
       <?php foreach ( $pp_plans as $p ) : ?>
-      <div class="ppc-card<?php echo $p['popular'] ? ' is-popular' : ''; ?>">
+      <div class="ppc-card<?php echo $p['popular'] ? ' is-popular' : ''; ?>" data-plan="<?php echo esc_attr( $p['name'] ); ?>">
         <?php if ( $p['badge'] ) : ?><span class="ppc-badge<?php echo $p['popular'] ? '' : ' ghost'; ?>"><?php echo esc_html( $p['badge'] ); ?></span><?php endif; ?>
         <div class="ppc-card-head">
           <span class="ppc-icon"><?php echo $p['svg']; ?></span>
@@ -154,6 +168,9 @@ $pp_bg = ( 'none' === $pp['bg'] ) ? '' : ' bg-' . $pp['bg'];
         <button type="button" class="book-demo-button ppc-btn <?php echo esc_attr( $p['btn_style'] ); ?>"><?php echo esc_html( $p['btn'] ); ?></button>
         <?php else : ?>
         <a href="<?php echo esc_url( $p['btn_url'] ); ?>" class="ppc-btn <?php echo esc_attr( $p['btn_style'] ); ?>"><?php echo esc_html( $p['btn'] ); ?></a>
+        <?php endif; ?>
+        <?php if ( ! empty( $p['alt'] ) ) : ?>
+        <a href="<?php echo esc_url( $p['alt']['url'] ); ?>" class="ppc-alt"><?php echo esc_html( $p['alt']['label'] ); ?></a>
         <?php endif; ?>
         <div class="ppc-divider"></div>
         <div class="ppc-feat-title"><?php echo esc_html( $p['feat_title'] ); ?></div>
@@ -182,6 +199,25 @@ $pp_bg = ( 'none' === $pp['bg'] ) ? '' : ' bg-' . $pp['bg'];
     }
     tgs.forEach(function ( t ) {
       t.addEventListener('click', function () { setBill( t.getAttribute('data-bill') ); });
+    });
+    // Whole card is clickable: a click anywhere outside a link/button triggers the card's
+    // main button (sign-up link or the Talk-to-us modal). GA4 pricing_plan_click records which.
+    sec.querySelectorAll('.ppc-card').forEach(function ( card ) {
+      var btn = card.querySelector('.ppc-btn');
+      if ( ! btn ) { return; }
+      var relayed = false; // the button click we trigger below bubbles back here; log it once
+      card.addEventListener('click', function ( e ) {
+        if ( relayed ) { relayed = false; return; }
+        var hit = e.target.closest('a, button');
+        if ( typeof gtag === 'function' ) {
+          gtag('event', 'pricing_plan_click', {
+            plan: card.getAttribute('data-plan'),
+            target: hit ? ( hit === btn ? 'button' : 'other_link' ) : 'card',
+            page_path: window.location.pathname
+          });
+        }
+        if ( ! hit ) { relayed = true; btn.click(); }
+      });
     });
   })();
 </script>

@@ -32,6 +32,7 @@
  *     'badges'      => array(                          // floating chip cards over the media (optional), bob up/down; per-badge 'icon' => false hides the icon tile
  *       array( 'title' => 'Your infrastructure', 'text' => 'AWS · Azure · GCP · on-premises' ),   // 1st → bottom-left
  *       array( 'title' => '100% data ownership', 'text' => '…', 'icon' => '<svg…>', 'pos' => 'tr' ), // 2nd → top-right
+ *       // optional per badge: 'url' => '#section' renders the chip as a link; 'ev' => 'label' adds data-ev tracking
  *     ),
  *     'compliance' => array(                          // bottom strip (optional)
  *       'label' => 'Compliance, built in at every layer.',
@@ -60,6 +61,7 @@ $hero = wp_parse_args(
 		'media_height' => '',
 		'media_html'   => '',
 		'media_shadow' => true,   // framed raster media casts a soft drop shadow by default; pass false for a flat, shadowless visual
+		'media_scale'  => 1,      // shrink the media inside its column (e.g. 0.85 = 85% width, centred); layout/badges unchanged
 		'rhombus'      => true,
 		'compliance'   => array(),
 		'full_height'  => true,
@@ -94,15 +96,20 @@ $hero_badges_html = '';
 if ( ! empty( $hero['badges'] ) && is_array( $hero['badges'] ) ) {
 	$hero_shield = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>';
 	foreach ( $hero['badges'] as $hb_i => $hbg ) {
-		$hbg  = wp_parse_args( (array) $hbg, array( 'title' => '', 'text' => '', 'icon' => '', 'pos' => '' ) );
+		$hbg  = wp_parse_args( (array) $hbg, array( 'title' => '', 'text' => '', 'icon' => '', 'pos' => '', 'url' => '', 'ev' => '' ) );
 		$hpos = $hbg['pos'] ? $hbg['pos'] : ( 0 === $hb_i ? 'bl' : 'tr' );
 		// 'icon' => false hides the icon tile entirely (text-only chip); '' falls back to the shield.
-		$hero_badges_html .= '<div class="ehero-badge ehero-badge--' . esc_attr( $hpos ) . '">'
+		// 'url' turns the chip into a link (visitors click these, so a plain div reads as broken).
+		$htag = $hbg['url'] ? 'a' : 'div';
+		$hero_badges_html .= '<' . $htag . ' class="ehero-badge ehero-badge--' . esc_attr( $hpos ) . '"'
+			. ( $hbg['url'] ? ' href="' . esc_url( $hbg['url'] ) . '"' : '' )
+			. ( $hbg['ev'] ? ' data-ev="hero_badge_click" data-ev-label="' . esc_attr( $hbg['ev'] ) . '"' : '' )
+			. '>'
 			. ( false === $hbg['icon'] ? '' : '<span class="ehero-badge-ico">' . ( $hbg['icon'] ? $hbg['icon'] : $hero_shield ) . '</span>' )
 			. '<span class="ehero-badge-tx">'
 			. ( $hbg['title'] ? '<span class="ehero-badge-title">' . esc_html( $hbg['title'] ) . '</span>' : '' )
 			. ( $hbg['text'] ? '<span class="ehero-badge-sub">' . wp_kses_post( $hbg['text'] ) . '</span>' : '' )
-			. '</span></div>';
+			. '</span></' . $htag . '>';
 	}
 }
 
@@ -167,6 +174,9 @@ if ( $hero_assets ) {
     max-width: min(86%, 21rem); background: var(--white); border: 1px solid var(--border);
     border-radius: var(--radius-btn); padding: var(--space-8) var(--space-16) var(--space-8) var(--space-8);
     box-shadow: var(--shadow-card); animation: ehero-badge-float 4.5s ease-in-out infinite; }
+  a.ehero-badge { text-decoration: none; color: inherit; cursor: pointer; transition: border-color .15s; }
+  a.ehero-badge:hover { border-color: var(--primary); }
+  a.ehero-badge:hover .ehero-badge-title { color: var(--primary); }
   .ehero-badge--bl { left: clamp(-1rem, -1.5vw, -.375rem); bottom: 9%; }
   .ehero-badge--tr { right: clamp(-.75rem, -1vw, -.25rem); top: 9%; animation-duration: 5.3s; animation-delay: -2.4s; }
   .ehero-badge-ico { flex: none; width: 2.125rem; height: 2.125rem; border-radius: var(--radius-btn);
@@ -243,8 +253,14 @@ if ( $hero_assets ) {
         <?php endif; ?>
       </div>
 
-      <?php if ( $hero_media ) : ?>
-      <div class="ehero-media<?php echo $hero['media_shadow'] ? '' : ' is-flat'; ?>"><?php echo $hero_media . $hero_badges_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img + badge markup ?></div>
+      <?php
+      if ( $hero_media ) :
+        // Optional media_scale (< 1) narrows the media within its column, keeping it centred;
+        // badges live inside the wrapper so they scale/position with the visual.
+        $hero_scale = (float) $hero['media_scale'];
+        $hero_media_style = ( $hero_scale > 0 && $hero_scale < 1 ) ? ' style="width:' . esc_attr( $hero_scale * 100 ) . '%;margin-inline:auto;"' : '';
+      ?>
+      <div class="ehero-media<?php echo $hero['media_shadow'] ? '' : ' is-flat'; ?>"<?php echo $hero_media_style; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- numeric width built above ?>><?php echo $hero_media . $hero_badges_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG / pre-built img + badge markup ?></div>
       <?php endif; ?>
     </div>
 

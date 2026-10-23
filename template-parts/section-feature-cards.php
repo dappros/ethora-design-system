@@ -14,6 +14,7 @@
  *     'title'   => 'Section heading',        // h2 (inline HTML allowed, optional)
  *     'lead'    => 'Optional intro.',         // (optional)
  *     'shade'   => false,                     // tint the section bg + hairline borders (optional)
+ *     'align'   => false,                     // reserve an equal title slot (true = 2 lines, or pass a line count) so every card's text starts at the same level
  *     'expandable' => false,                  // clamp long card text + animated "Read more" toggle (optional)
  *     'clamp'      => '8.5em',                // collapsed text height when expandable (optional)
  *     'lead_wide'  => false,                  // lead spans the full container width instead of the 560px column (optional)
@@ -44,6 +45,7 @@ $fc = wp_parse_args(
 		'title'   => '',
 		'lead'    => '',
 		'shade'         => false,
+		'align'         => false,  // true = reserve a 2-line title slot; or pass a number of lines
 		'shade_borders' => true,   // when shaded, the tint band gets top/bottom hairline borders by default; pass false to drop them (keep the tint)
 		'expandable'    => false,
 		'clamp'         => '8.5em',
@@ -94,6 +96,11 @@ if ( $fc_assets ) {
   .shs-fc-ico svg { width: 24px; height: 24px; }
   .shs-fc-card h3 { font-family: var(--font-serif); font-weight: var(--fw-semibold); font-size: var(--fs-h3-lg);
     line-height: var(--lh-snug); letter-spacing: -.01em; color: var(--ink); margin: 0; }
+  /* opt-in ('align' => true|N): titles reserve an equal slot on multi-column layouts,
+     so the description in every card of a row starts at the same level */
+  @media (min-width: 901px) {
+    .shs-fc-section.is-aligned .shs-fc-card h3 { min-height: calc(var(--fs-h3-lg) * var(--lh-snug) * var(--fc-title-lines, 2)); }
+  }
   .shs-fc-text { font-size: var(--fs-md); line-height: var(--lh-relaxed); color: var(--text-body); margin: var(--space-16) 0 0; }
   .shs-fc-text strong, .shs-fc-text b { color: var(--ink); font-weight: var(--fw-semibold); }
   .shs-fc-text a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
@@ -129,7 +136,7 @@ if ( $fc_assets ) {
 </style>
 <?php endif; ?>
 
-<section class="shs-fc-section<?php echo $fc['shade'] ? ' is-shaded' : ''; ?><?php echo ( $fc['shade'] && ! $fc['shade_borders'] ) ? ' no-shade-borders' : ''; ?><?php echo $fc['expandable'] ? ' is-expandable' : ''; ?><?php echo $fc['lead_wide'] ? ' is-lead-wide' : ''; ?>">
+<section class="shs-fc-section<?php echo $fc['shade'] ? ' is-shaded' : ''; ?><?php echo ( $fc['shade'] && ! $fc['shade_borders'] ) ? ' no-shade-borders' : ''; ?><?php echo $fc['expandable'] ? ' is-expandable' : ''; ?><?php echo $fc['lead_wide'] ? ' is-lead-wide' : ''; ?><?php echo $fc['align'] ? ' is-aligned' : ''; ?>"<?php echo ( $fc['align'] && 1 < (int) $fc['align'] ) ? ' style="--fc-title-lines: ' . (int) $fc['align'] . ';"' : ''; ?>>
   <div class="shs-fc-wrap">
     <?php if ( $fc['eyebrow'] || $fc['title'] || $fc['lead'] ) : ?>
     <div>

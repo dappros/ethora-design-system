@@ -279,7 +279,12 @@ if ( $cc_assets ) {
         originals.forEach(function (c) {
           var a = c.cloneNode(true), b = c.cloneNode(true);
           a.classList.remove('is-active'); b.classList.remove('is-active');
-          a.setAttribute('aria-hidden', 'true'); b.setAttribute('aria-hidden', 'true');
+          [a, b].forEach(function (clone) {
+            clone.setAttribute('aria-hidden', 'true');
+            clone.setAttribute('inert', '');
+            // aria-hidden containers must not hold focusable descendants (axe aria-hidden-focus)
+            [].forEach.call(clone.querySelectorAll('a[href], button, [tabindex]'), function (el) { el.setAttribute('tabindex', '-1'); });
+          });
           before.appendChild(a); after.appendChild(b);
         });
         track.insertBefore(before, track.firstChild);

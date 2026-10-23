@@ -205,7 +205,7 @@
                       </a>
                     </div>
                     <p class="author-info-descrip">CEO</p>
-                    <p>Candollar</p>
+                    <p>Atom Advantage</p>
                   </div>
                 </div>
               </div>

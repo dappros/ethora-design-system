@@ -53,7 +53,7 @@ $vc = wp_parse_args(
 		'competitors'  => array(),
 		'wins_label'   => '',
 		'note'         => '',
-		'note_label'   => 'The bottom line',   // small kicker above the note callout (set '' to hide)
+		'note_label'   => '',   // small kicker above the note callout (set '' to hide)
 		'marks'        => true,   // false → text-only cells (no check / dot / ✕), for text-heavy comparisons
 		'featured_last'=> false,  // true → put the featured (Ethora) column LAST (rightmost) instead of first
 	)
@@ -128,6 +128,8 @@ if ( $vc_assets ) {
   /* featured column moved to the far right: last grid track + raised card over it */
   .vc-grid.vc-eth-last { grid-template-columns: minmax(150px, 1.5fr) repeat(var(--vc-comps, 3), minmax(130px, 1fr)) minmax(160px, 1.15fr); }
   .vc-grid.vc-eth-last .vc-featured-card { grid-column: -2 / -1; }
+  /* ARIA rows: real row elements for the table semantics, invisible to the grid layout */
+  .vc-r { display: contents; }
   /* base cell */
   .vc-cell { position: relative; z-index: 1; display: flex; align-items: center; gap: var(--space-8);
     padding: var(--space-16); font-size: var(--fs-sm); line-height: var(--lh-snug); min-width: 0; }
@@ -152,7 +154,7 @@ if ( $vc_assets ) {
   .vc-eth-logo { width: 28px; height: 28px; border-radius: var(--radius-xs); background: rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center; flex: none; }
   .vc-eth-logo img { width: 18px; height: 18px; filter: brightness(0) invert(1); }
   .vc-eth-name { font-size: var(--fs-xl); font-weight: var(--fw-bold); color: var(--white); }
-  .vc-eth-sub { font-size: var(--fs-xs); color: var(--accent-on-dark); line-height: var(--lh-snug); }
+  .vc-eth-sub { font-size: var(--fs-xs); color: var(--text-on-dark); line-height: var(--lh-snug); } /* --accent-on-dark is 3.3:1 on --primary */
   /* value marks */
   .vc-m { flex: none; display: inline-flex; align-items: center; justify-content: center; }
   .vc-m-check { width: 20px; height: 20px; border-radius: var(--radius-pill); background: var(--primary-tint-10); color: var(--primary); }
@@ -163,7 +165,7 @@ if ( $vc_assets ) {
   /* wins row */
   .vc-wrow { padding-top: var(--space-16); padding-bottom: var(--space-16); }
   .vc-cap.vc-wrow { color: var(--text-caption); font-weight: var(--fw-medium); font-size: var(--fs-xs); border-bottom: none; }
-  .vc-comp.vc-wrow { justify-content: center; color: var(--text-muted); font-size: var(--fs-sm); border-bottom: none; }
+  .vc-comp.vc-wrow { justify-content: center; color: var(--text-caption); font-size: var(--fs-sm); border-bottom: none; } /* --text-muted is 3.1:1 on the section tint */
   .vc-eth.vc-wrow { background: var(--primary); color: var(--white); border-radius: 0 0 var(--radius-2xl) var(--radius-2xl); border-top: none; font-weight: var(--fw-semibold); }
   .vc-eth.vc-wrow .vc-m-check { background: rgba(255,255,255,.22); color: var(--white); }
   /* footnote */
@@ -198,6 +200,7 @@ if ( $vc_assets ) {
       <div class="vc-grid<?php echo $vc_feat_last ? ' vc-eth-last' : ''; ?>" style="--vc-comps: <?php echo count( $vc_comps ); ?>; --vc-rows: <?php echo count( $vc_caps ) + 1 + ( $vc_has_wins ? 1 : 0 ); ?>;" role="table" aria-label="<?php echo esc_attr( $vc['title'] ? $vc['title'] : 'Vendor comparison' ); ?>">
 
         <!-- header row -->
+        <div class="vc-r" role="row">
         <div class="vc-cell vc-cap vc-hrow" role="columnheader"></div>
         <?php ob_start(); ?>
         <div class="vc-cell vc-eth vc-eth-head vc-hrow" role="columnheader">
@@ -217,9 +220,11 @@ if ( $vc_assets ) {
         if ( $vc_feat_last ) { echo $vc_eth_head_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped when built above
         }
         ?>
+        </div>
 
         <!-- capability rows -->
         <?php foreach ( $vc_caps as $vc_i => $vc_cap ) : ?>
+        <div class="vc-r" role="row">
         <div class="vc-cell vc-cap" role="rowheader"><?php echo wp_kses_post( $vc_cap ); ?></div>
         <?php
         $vc_eth_cell = '<div class="vc-cell vc-eth vc-row" role="cell">' . $vc_feat_cell( isset( $vc_feat['values'][ $vc_i ] ) ? $vc_feat['values'][ $vc_i ] : '' ) . '</div>';
@@ -233,10 +238,12 @@ if ( $vc_assets ) {
         if ( $vc_feat_last ) { echo $vc_eth_cell; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped inside closure
         }
         ?>
+        </div>
         <?php endforeach; ?>
 
         <!-- wins row (only when a wins label/value is provided) -->
         <?php if ( $vc_has_wins ) : ?>
+        <div class="vc-r" role="row">
         <div class="vc-cell vc-cap vc-wrow" role="rowheader"><?php echo esc_html( $vc['wins_label'] ); ?></div>
         <?php
         $vc_eth_win = '<div class="vc-cell vc-eth vc-wrow" role="cell">' . ( ( $vc_marks && ! empty( $vc_feat['wins'] ) ) ? $vc_check : '' ) . '<span class="vc-v">' . esc_html( $vc_feat['wins'] ) . '</span></div>';
@@ -248,6 +255,7 @@ if ( $vc_assets ) {
         if ( $vc_feat_last ) { echo $vc_eth_win; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- escaped when built above
         }
         ?>
+        </div>
         <?php endif; ?>
 
         <!-- raised featured card (behind the featured column) -->

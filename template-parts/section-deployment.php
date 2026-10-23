@@ -88,7 +88,7 @@ $dep = wp_parse_args(
 			array( 'label' => 'AWS Marketplace', 'icon' => $dep_bag ),
 			array( 'label' => 'Private cloud', 'icon' => $dep_lock ),
 		),
-		'vpc_label'       => 'Your infrastructure — data never leaves your VPC',
+		'vpc_label'       => 'Your infrastructure: data never leaves your VPC',
 		'vpc_icon'        => $dep_shield,
 		'groups'          => array(
 			array(
@@ -110,7 +110,7 @@ $dep = wp_parse_args(
 			),
 			array(
 				'label' => 'Core services',
-				'note'  => '&mdash; the Ethora engine',
+				'note'  => '- the Ethora engine',
 				'tint'  => 'core',
 				'dot'   => 'core',
 				'cols'  => 3,

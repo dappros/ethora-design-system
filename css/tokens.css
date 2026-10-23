@@ -82,6 +82,7 @@
   --green-tint:     #e4f7ec;   /* soft green fill behind a check / "included" icon */
   --green-border:   #c8ebd5;   /* soft green outline — success pills / tags */
   --green-text:     #2e9e5b;   /* medium green — success pill label/icon */
+  --green-text-aa:  #15803d;   /* dark green — green TEXT on white (5.0:1, WCAG AA); --green/--green-text are for icons/fills only */
   --success-strong: #0b6e3e;   /* "win"/positive text on tint */
   --orange:         #f98216;
   --purple:         #930a95;
@@ -194,6 +195,7 @@
      ============================================================ */
   --container-xl: 1200px;   /* MAX content width — never exceed 1200px (rule) */
   --container-2xl: 1200px;
+  --hero-bleed-max: 1520px; /* the ONE sanctioned exception to --container-xl: the homepage hero composition (copy + flanking visuals) may spread to this width; all other sections stay at 1200 */
   --header-h:     92px;     /* fixed header height — first section top offset = header-h + gap */
   --hero-pt:      calc(var(--header-h) + clamp(24px, 4vw, 64px));  /* standard top padding for a page's first/hero section */
   --container-lg: 1080px;   /* text-led sections */

@@ -37,6 +37,8 @@ $description = isset( $args['description'] ) ? $args['description'] : '';
 $outro       = isset( $args['outro'] ) ? $args['outro'] : ''; // optional closing <p> rendered after the benefits list
 $outro_icon  = isset( $args['outro_icon'] ) ? $args['outro_icon'] : ''; // optional inline SVG → renders the outro as a soft-blue callout box with the icon
 $image       = isset( $args['image'] ) ? $args['image'] : 'use-kit.svg';
+$image_w     = isset( $args['image_w'] ) ? (int) $args['image_w'] : 616;   /* intrinsic size of the default use-kit.svg */
+$image_h     = isset( $args['image_h'] ) ? (int) $args['image_h'] : 659;
 $image_alt   = isset( $args['image_alt'] ) ? $args['image_alt'] : '';
 $bg_image    = isset( $args['bg_image'] ) ? $args['bg_image'] : 'rhombus-features-demo.svg';
 $benefits    = isset( $args['benefits'] ) && is_array( $args['benefits'] ) ? $args['benefits'] : array();
@@ -112,11 +114,11 @@ $section_class = 'use-kit' . ( $sticky ? ' is-sticky' : '' ) . ( $modifier ? ' '
 		<div class="why-ethora-grid"<?php echo $grid_style ? ' style="' . esc_attr( $grid_style ) . '"' : ''; ?>>
 			<div class="use-kit-sticky-wrapper">
 				<?php if ( $bg_image ) : ?>
-					<img src="<?php echo esc_url( $resolve( $bg_image, 'images/' ) ); ?>" alt="" class="use-kit-background" />
+					<img src="<?php echo esc_url( $resolve( $bg_image, 'images/' ) ); ?>" alt="" loading="lazy" class="use-kit-background" />
 				<?php endif; ?>
 				<?php if ( $image ) : ?>
 					<div class="use-kit-large">
-						<img src="<?php echo esc_url( $resolve( $image, 'images/' ) ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" />
+						<img src="<?php echo esc_url( $resolve( $image, 'images/' ) ); ?>" alt="<?php echo esc_attr( $image_alt ); ?>" width="<?php echo $image_w; ?>" height="<?php echo $image_h; ?>" loading="lazy" />
 					</div>
 				<?php endif; ?>
 			</div>
@@ -125,7 +127,7 @@ $section_class = 'use-kit' . ( $sticky ? ' is-sticky' : '' ) . ( $modifier ? ' '
 				<?php if ( $label ) : ?>
 					<div class="section-label">
 						<?php if ( $label_icon ) : ?>
-							<img src="<?php echo esc_url( $resolve( $label_icon, 'images/vector/' ) ); ?>" alt="" />
+							<img src="<?php echo esc_url( $resolve( $label_icon, 'images/vector/' ) ); ?>" alt="" loading="lazy" />
 						<?php endif; ?>
 						<span><?php echo esc_html( $label ); ?></span>
 					</div>
@@ -157,7 +159,7 @@ $section_class = 'use-kit' . ( $sticky ? ' is-sticky' : '' ) . ( $modifier ? ' '
 											<?php if ( $is_inline ) : ?>
 												<?php echo $icon_in; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- trusted inline SVG ?>
 											<?php else : ?>
-												<img src="<?php echo esc_url( $b_icon ); ?>" alt="<?php echo esc_attr( $b_alt ); ?>" />
+												<img src="<?php echo esc_url( $b_icon ); ?>" alt="<?php echo esc_attr( $b_alt ); ?>" loading="lazy" />
 											<?php endif; ?>
 										</div>
 									<?php endif; ?>

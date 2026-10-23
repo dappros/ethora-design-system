@@ -16,7 +16,7 @@
  *     'shade'   => false,                                            // tint the section bg
  *     'plans'   => array(                                            // REQUIRED — the columns
  *       array( 'name' => 'Free',     'price' => '$0/mo' ),
- *       array( 'name' => 'Business', 'price' => '$99/mo', 'popular' => true, 'badge' => 'Most popular' ),
+ *       array( 'name' => 'Business', 'price' => '$149/mo', 'popular' => true, 'badge' => 'Most popular' ),
  *       array( 'name' => 'Enterprise','price' => 'Custom' ),
  *       // optional per-plan CTA button in the header:
  *       //   'cta' => array( 'label' => 'Sign Up', 'url' => 'https://…' )      // link

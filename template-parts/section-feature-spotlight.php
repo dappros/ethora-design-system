@@ -76,7 +76,7 @@ if ( $fs_assets ) {
   /* flagship card */
   .fs-flagship { margin-top: var(--space-48); border-radius: var(--radius-3xl); overflow: hidden;
     padding: clamp(var(--space-32),4vw,var(--space-64));
-    background: var(--gradient-brand); color: var(--text-on-dark);
+    background: linear-gradient(135deg, var(--brand-500) 0%, var(--brand-800) 100%); color: var(--text-on-dark);
     display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: clamp(var(--space-32),4vw,var(--space-64)); align-items: center; }
   .fs-flag-label { font-family: var(--font-mono); font-weight: var(--fw-semibold); font-size: var(--fs-xs); letter-spacing: var(--tracking-wide); text-transform: uppercase; color: var(--accent-on-dark); margin: 0; }
   .fs-flag-title { font-family: var(--font-serif); font-weight: var(--fw-semibold); font-size: clamp(26px,3.2vw,40px); line-height: var(--lh-snug); letter-spacing: -.01em; color: #fff; margin: var(--space-16) 0 0; }
@@ -91,7 +91,7 @@ if ( $fs_assets ) {
   .fs-chat-ava { flex: none; width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; }
   .fs-chat-ava svg { width: 20px; height: 20px; }
   .fs-chat-name { font-weight: var(--fw-semibold); color: var(--ink); font-size: var(--fs-md); }
-  .fs-chat-status { display: flex; align-items: center; gap: var(--space-8); font-size: var(--fs-sm); color: var(--green); }
+  .fs-chat-status { display: flex; align-items: center; gap: var(--space-8); font-size: var(--fs-sm); color: var(--green-text-aa); } /* text needs 4.5:1 on white; the dot keeps --green */
   .fs-chat-status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
   .fs-chat-body { display: flex; flex-direction: column; gap: var(--space-16); padding-top: var(--space-16); }
   .fs-bubble { font-size: var(--fs-sm); line-height: var(--lh-base); border-radius: var(--radius-lg); padding: var(--space-16); max-width: 88%; }
@@ -105,7 +105,7 @@ if ( $fs_assets ) {
   /* numbered cards */
   .fs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap: var(--space-16); margin-top: var(--space-16); }
   .fs-card { position: relative; background: #fff; border: 1px solid var(--border); border-radius: var(--radius-2xl); padding: clamp(var(--space-32),3vw,var(--space-48)); }
-  .fs-card-num { position: absolute; top: clamp(var(--space-32),3vw,var(--space-48)); right: clamp(var(--space-32),3vw,var(--space-48)); font-family: var(--font-mono); font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--border-strong); }
+  .fs-card-num { position: absolute; top: clamp(var(--space-32),3vw,var(--space-48)); right: clamp(var(--space-32),3vw,var(--space-48)); font-family: var(--font-mono); font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--text-caption); } /* was --border-strong (1.5:1) */
   .fs-card-ico { width: 44px; height: 44px; border-radius: var(--radius-md); background: var(--tint); color: var(--primary); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-32); }
   .fs-card-ico svg { width: 22px; height: 22px; }
   .fs-card h3 { font-family: var(--font-serif); font-weight: var(--fw-semibold); font-size: var(--fs-2xl); color: var(--ink); margin: 0; line-height: var(--lh-snug); }

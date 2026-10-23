@@ -13,7 +13,7 @@ $sp = wp_parse_args(
 	array(
 		'eyebrow'     => 'Pricing',
 		'heading'     => 'Save Months of Work with Ethora',
-		'subheading'  => 'Build any chat use case into your product — in hours.',
+		'subheading'  => 'Build any chat use case into your product: in hours.',
 		'show_header' => true,
 		'bg'          => 'alt',
 	)

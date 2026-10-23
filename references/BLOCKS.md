@@ -35,8 +35,9 @@ clipping when content is taller than the viewport.
 | `media` | string | theme-relative path or URL — `.svg` is **inlined** (smooth GPU compositing), raster → `<img>` |
 | `media_alt` / `media_width` / `media_height` / `media_html` | | raster alt+dims, or raw markup override |
 | `media_shadow` | bool | framed raster media casts a soft drop shadow (`--shadow-lift`) by default; pass `false` for a flat, shadowless visual |
+| `media_scale` | float | shrink the media inside its column (e.g. `0.85` = 85% width, centred); layout and badges unchanged. Default `1` |
 | `rhombus` | bool | decorative corner shapes (default `true`) |
-| `badges` | array | floating chip cards over the media (gently bob up/down) — each `{ title, text, icon?, pos? }`; the 1st defaults to bottom-left, `'pos' => 'tr'` = top-right; `icon` is a 17px line SVG (`stroke="currentColor"`, defaults to a green shield; `'icon' => false` hides the icon tile for a text-only chip). **Every hero ships two**, with `title`/`text` matching the page's content — see the *Hero composition* rule in SKILL.md |
+| `badges` | array | floating chip cards over the media (gently bob up/down) — each `{ title, text, icon?, pos? }`; the 1st defaults to bottom-left, `'pos' => 'tr'` = top-right; `icon` is a 17px line SVG (`stroke="currentColor"`, defaults to a green shield; `'icon' => false` hides the icon tile for a text-only chip). Optional per badge: `'url' => '#section'` renders the chip as a link (hover turns it brand blue), `'ev' => 'label'` adds `data-ev` GA4 tracking. **Every hero ships two**, with `title`/`text` matching the page's content — see the *Hero composition* rule in SKILL.md |
 | `compliance` | array | `{ label, items[] }` — bottom strip (optional) |
 | `full_height` | bool | full-viewport hero: `min-height: 100vh`, content vertically centred in the area below the fixed header (top padding `--header-h`, no `--hero-pt`); grows instead of clipping tall content (default `true`; set `false` for a compact hero) |
 | `variant` | string | `''` = default (light gradient, dark text). **`'v2'`** = **bright brand-blue** hero (`--gradient-hero-v2`, `#4188f3 → #0640c3`) with **white** text and rhombus at `opacity .1`. **`v2` changes ONLY the colour — the layout is byte-for-byte the default hero** (same two-column grid, media framed in the right column and vertically centred, same compliance strip). It does NOT pin/enlarge the media or move any block, so it never covers the copy and needs zero per-page CSS. Pair with white buttons (`light` + `outline-light`); `full_height => true` optional. Any framed raster media works — no special cut-out needed |
@@ -232,6 +233,7 @@ of cards.
 | `shade_borders` | bool | when `shade` is on, the tint band gets top/bottom hairline borders by default; pass `false` to drop them (keep the tint) |
 | `expandable` / `clamp` | bool / string | clamp long card text (default `8.5em`) + animated "Read more" toggle; an opened card expands to the full container width |
 | `lead_wide` | bool | lead spans the full container width instead of the default 560px column |
+| `align` | bool / int | reserve an equal title slot on multi-column layouts so every card's text starts at the same level (`true` = 2 lines, or pass a line count). Default `false` |
 | `cards` | array | **required** — each: `title`, `text` (inline HTML), `icon` (white line SVG, `stroke="currentColor"`), `color` (icon-circle colour token, default `var(--primary)`), `link_url` + `link_label` (optional → renders the button) |
 
 ```php
@@ -347,6 +349,12 @@ Three pricing cards, middle highlighted, Monthly/Yearly toggle. Prices live in t
 page already has a hero heading), `bg` (`'alt'` | `'white'` | `'none'`).
 `section-pricing.php` wraps it for an in-page section; `page-pricing.php` wraps it for
 the full pricing page.
+
+**The whole card is clickable**: a click anywhere outside a link/button triggers the card's
+main button (Free → sign-up, paid plans → the site-wide "Talk to us" modal) and fires a GA4
+`pricing_plan_click` event (`plan`, `target`). A plan can carry an optional secondary link
+under its button: `'alt' => array( 'label' => 'or start a free trial', 'url' => '…' )`.
+A "No credit card needed / Start free" assurance row sits under the cards.
 
 ---
 
@@ -638,6 +646,7 @@ product-modules / "what you get" section — set `cols: 3` for six items). Self-
 |---|---|---|
 | `eyebrow` / `title` / `lead` | string | optional centred header |
 | `shade` | bool | tint the section bg + hairline borders |
+| `align` | bool / int | reserve an equal title slot (≥561px) so every card's description starts at the same level (`true` = 2 lines, or pass a line count). Default `false` |
 | `cols` | int | desktop columns, 2–4 (default 4) |
 | `cards` | array | **required** — each: `icon` (line SVG `stroke="currentColor"`, shown in the blue tile), `title`, `text` (inline HTML), `status` (optional — green ✓ tag, uppercased in CSS) |
 
@@ -725,7 +734,7 @@ get_template_part( 'template-parts/section-pricing-matrix', null, array(
   'title'  => 'Android Chat SDK Feature Matrix',
   'plans'  => array(
     array( 'name' => 'Free',       'price' => '$0/mo' ),
-    array( 'name' => 'Business',   'price' => '$99/mo', 'popular' => true, 'badge' => 'Most popular' ),
+    array( 'name' => 'Business',   'price' => '$149/mo', 'popular' => true, 'badge' => 'Most popular' ),
     array( 'name' => 'Enterprise', 'price' => 'Custom' ),
   ),
   'groups' => array(
@@ -1052,6 +1061,12 @@ left image sticks while the list scrolls, like `.shs-whatis`) and **inline-SVG b
 Also: **`'outro_icon' => '<svg…>'`** renders the `outro` as a soft-blue **callout box** with the
 icon (wrap the lead in `<strong>` for a bold kicker), and **`'modifier' => 'use-kit-cards'`** makes
 each benefit row lift into a white card on hover (elevation + shadow).
+Pass **`'image_w'` / `'image_h'`** with a custom `image` so the `<img>` gets the right CLS
+dimensions (defaults match `use-kit.svg`, 616×659); all its images are `loading="lazy"`.
+
+`section-book-call-modal` is **scheduler-first**: the first `.book-demo-button` click lazy-loads
+a Calendly inline widget; the HubSpot message form is an opt-in fallback behind a
+"Prefer to send a message instead?" toggle. Completed bookings fire a GA4 `demo_booked` event.
 
 ---
 

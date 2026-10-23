@@ -13,6 +13,7 @@
  *     'eyebrow' => '', 'title' => '', 'lead' => '',   // optional header
  *     'shade'   => false,                              // tint the section bg
  *     'cols'    => 4,                                  // desktop columns (2–4)
+ *     'align'   => false,                              // reserve an equal title slot (true = 2 lines, or pass a line count) so every card's text starts at the same level
  *     'cards'   => array(                               // REQUIRED — any length
  *       array(
  *         'icon'   => '<svg …>…</svg>',                // line icon (stroke="currentColor")
@@ -39,6 +40,7 @@ $cmpl = wp_parse_args(
 		'lead'    => '',
 		'shade'   => false,
 		'cols'    => 4,
+		'align'   => false,
 		'cards'   => array(),
 	)
 );
@@ -88,13 +90,17 @@ if ( $cmpl_assets ) {
   .cmpl-card:hover h3, .cmpl-card:hover p, .cmpl-card:hover .cmpl-status { color: #fff; }
   .cmpl-card:hover .cmpl-ico { background: rgba(255, 255, 255, .18); color: #fff; }
 
+  /* opt-in ('align' => true): titles reserve a two-line slot on multi-column layouts,
+     so the description in every card of a row starts at the same level */
+  @media (min-width: 561px) { .cmpl-section.is-aligned .cmpl-card h3 { min-height: calc(var(--fs-3xl) * var(--lh-snug) * var(--cmpl-title-lines, 2)); } }
+
   @media (max-width: 900px) { .cmpl-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
   @media (max-width: 560px) { .cmpl-grid { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) { .cmpl-card, .cmpl-card::before { transition: none; } .cmpl-card:hover { transform: none; } }
 </style>
 <?php endif; ?>
 
-<section class="cmpl-section<?php echo $cmpl['shade'] ? ' is-shaded' : ''; ?>">
+<section class="cmpl-section<?php echo $cmpl['shade'] ? ' is-shaded' : ''; ?><?php echo $cmpl['align'] ? ' is-aligned' : ''; ?>"<?php echo ( $cmpl['align'] && 1 < (int) $cmpl['align'] ) ? ' style="--cmpl-title-lines: ' . (int) $cmpl['align'] . ';"' : ''; ?>>
   <div class="cmpl-wrap">
     <?php if ( $cmpl['eyebrow'] || $cmpl['title'] || $cmpl['lead'] ) : ?>
     <div class="cmpl-head">
