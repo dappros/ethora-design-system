@@ -1,0 +1,445 @@
+/* =============================================================================
+   HERO CHAT DEMO  ·  home page
+   -----------------------------------------------------------------------------
+   Manager (web) and Customer (mobile) hold ONE conversation; a message sent on
+   one device lands on the other a beat later. That beat is the product promise.
+
+   Everything is scoped under `.hcd` — selectors AND @keyframes — so this file
+   cannot collide with the rest of the theme (`.notch`, `.row`, `.file` etc. all
+   exist elsewhere or plausibly could).
+
+   Tokens: the brand values (--primary, --white, --background, --green ...) come
+   from the theme's own :root in style-index.css. Only the values this section
+   needs and the theme lacks are declared below, on `.hcd` rather than :root so
+   they stay contained.
+
+   Themes: blue / orange / purple / green are the same four the hero already
+   offered, with the hex values from style-index.css. One fix carried over —
+   `.iphone.orange --accent-color` was #FEF2E8 (a near-white that made the send
+   icon invisible); this uses #F98216.
+
+   The sandbox this was built and tuned in lives at www/chat-animation-lab.html
+   — not linked from anywhere, kept for iterating on the animation.
+   ============================================================================= */
+
+.hcd{
+  /* --- values the theme's :root doesn't define --- */
+  --ink:#0e1a33;
+  --text-body-soft:#5a6478;
+  --text-caption:#6b7280;
+  --surface:#ffffff;
+  --surface-alt:#f4f7fd;
+  --tint:#eaf1ff;
+  --border:#e4e9f2;
+  --border-strong:#cdd6e5;
+  --hairline:#eaeef5;
+
+  --font-body:"Open Sans",system-ui,-apple-system,sans-serif;
+  --fw-semibold:600;
+  --fs-xs:12px; --fs-sm:14px; --fs-md:16px;
+  --lh-base:1.5;
+  --tracking-wide:.12em;
+
+  --space-4:4px; --space-8:8px; --space-16:16px; --space-32:32px;
+
+  --radius-xs:8px; --radius-md:12px; --radius-2xl:18px; --radius-3xl:24px;
+  --radius-pill:999px; --radius-btn:12px;
+
+  --shadow-card:0 4px 16px rgba(14,26,51,.08);
+  --shadow-lift:0 18px 48px rgba(14,26,51,.16);
+
+  --speed:1;
+
+  /* chat-component mirror (StyledComponents.ts) */
+  --chat-bubble-pad:8px 16px;
+  /* A percentage alone is fine on a phone but lets a bubble run 600px wide in a
+     desktop pane, where a one-line reply then reads as a paragraph. Cap it in px
+     as well, at roughly the measure a chat line should keep. */
+  --chat-bubble-max:min(78%, 420px);
+  --chat-radius-own:15px 15px 0 15px;
+  --chat-radius-other:15px 15px 15px 0;
+  --chat-shell-radius:15px;
+  --chat-time-size:.75rem;
+  --chat-time-color:#666666; /* 4.9:1 on the own-bubble tint, 5.7:1 on white (WCAG AA) */
+
+  /* theme — rewritten by the picker; defaults = `blue` from style-index.css */
+  --t-canvas:#f3f6fc; --t-accent:#0052cd; --t-own:#e7edf9; --t-send:#0055ff;
+
+  --e-out:cubic-bezier(.22,.9,.28,1);
+  --e-pop:cubic-bezier(.34,1.45,.5,1);
+}
+.hcd[data-theme="blue"]  {--t-canvas:#f3f6fc;--t-accent:#0052cd;--t-own:#e7edf9;--t-send:#0055ff}
+.hcd[data-theme="orange"]{--t-canvas:#fef3e2;--t-accent:#f98216;--t-own:#fde1c9;--t-send:#f98216}
+.hcd[data-theme="purple"]{--t-canvas:#f9e8fa;--t-accent:#930a95;--t-own:#e3bbe0;--t-send:#b620e0}
+.hcd[data-theme="green"] {--t-canvas:#e5f7ec;--t-accent:#16a34a;--t-own:#dcf3e5;--t-send:#00aa55}
+
+/* the lab's own stage sizing is not used here — see HERO PLACEMENT at the end */
+
+/* A pill radius only reads as a pill on ONE line. Once the swatches, Replay and
+   the role switch wrap onto a second row it turns into a stadium-shaped blob,
+   so the radius steps down to a card radius at the width where wrapping starts. */
+/* one row above the demo: platform chips + the colour picker, docked right.
+   align-self beats the legacy .hero-demo{align-items:center}, which otherwise
+   shrink-wraps and centres this row. */
+.hcd .hcd-topbar{display:flex;align-items:center;justify-content:flex-end;gap:var(--space-8);flex-wrap:wrap;margin-bottom:var(--space-16);align-self:flex-end;max-width:100%}
+.hcd .hcd-topbar .picker{margin-bottom:0}
+.hcd .picker{
+  display:flex;align-items:center;gap:var(--space-8);row-gap:var(--space-8);
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-pill);padding:var(--space-8) var(--space-16);
+  box-shadow:var(--shadow-card);width:max-content;max-width:100%;
+  margin-bottom:var(--space-16);flex-wrap:wrap;
+}
+@media (max-width:560px){ .hcd .picker{border-radius:var(--radius-2xl);width:100%} }
+.hcd .picker .options-title{font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--text-caption);text-transform:uppercase;letter-spacing:var(--tracking-wide);margin-right:var(--space-4)}
+.hcd .swatch{width:24px;height:24px;padding:0;border-radius:var(--radius-pill);border:2px solid transparent;cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s}
+.hcd .swatch:hover{transform:scale(1.12)}
+.hcd .swatch[aria-pressed="true"]{border-color:var(--ink);box-shadow:0 0 0 3px rgba(14,26,51,.08)}
+.hcd .swatch[data-theme="blue"]{background:#0052cd}
+.hcd .swatch[data-theme="orange"]{background:#f98216}
+.hcd .swatch[data-theme="purple"]{background:#b620e0}
+.hcd .swatch[data-theme="green"]{background:#00aa55}
+
+/* small restart — hidden until the run finishes */
+.hcd .restart{
+  display:inline-flex;align-items:center;gap:var(--space-4);
+  font-family:var(--font-body);font-size:var(--fs-xs);font-weight:var(--fw-semibold);
+  color:var(--text-caption);background:transparent;border:1px solid var(--border);
+  border-radius:var(--radius-pill);padding:var(--space-4) var(--space-8);
+  cursor:pointer;opacity:0;pointer-events:none;
+  transition:opacity .35s var(--e-out),color .18s,border-color .18s,background-color .18s;
+}
+.hcd .restart.show{opacity:1;pointer-events:auto}
+.hcd .restart:hover{color:var(--t-accent);border-color:var(--t-accent);background:var(--t-own)}
+.hcd .restart svg{transition:transform .4s var(--e-out)}
+.hcd .restart:hover svg{transform:rotate(-180deg)}
+
+/* ---- chat surface ---- */
+.hcd .chat{display:flex;flex-direction:column;background:var(--t-canvas);overflow:hidden;font-size:var(--fs-xs);position:relative}
+.hcd .chat-header{display:flex;align-items:center;gap:var(--space-8);background:var(--surface);padding:var(--space-8) var(--space-16);border-bottom:1px solid var(--hairline)}
+.hcd .chat-avatar{width:36px;height:36px;flex:0 0 36px;border-radius:var(--radius-pill);background:var(--t-own);color:var(--t-accent);font-weight:var(--fw-semibold);font-size:var(--fs-xs);display:grid;place-items:center;transition:background-color .3s,color .3s}
+/* the name block is the only flexible cell in the header; without min-width:0
+   a long room title pushes the action icons off the edge instead of truncating */
+.hcd .chat-header > div:not(.chat-avatar):not(.chat-actions){min-width:0}
+.hcd .chat-title{font-weight:var(--fw-semibold);color:var(--ink);font-size:var(--fs-sm);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcd .chat-sub{font-size:var(--fs-xs);color:var(--text-caption);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcd .presence{display:inline-block;width:6px;height:6px;border-radius:var(--radius-pill);background:var(--green);margin-right:var(--space-4)}
+.hcd .chat-actions{margin-left:auto;display:flex;gap:var(--space-4)}
+.hcd .icon-btn{width:32px;height:32px;display:grid;place-items:center;border:0;background:transparent;color:var(--t-accent);border-radius:var(--radius-pill);cursor:pointer;transition:background-color .18s,color .3s}
+.hcd .icon-btn:hover{background:var(--t-own)}
+
+.hcd .chat-body{
+  flex:1;padding:var(--space-16);display:flex;flex-direction:column;gap:var(--space-8);
+  overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;
+  scrollbar-color:var(--border-strong) transparent;
+  /* Fence off layout and paint. Without this, appending a bubble invalidates
+     layout for the whole hero — three chat panels, a phone frame and a scaled
+     subtree — on every single message. */
+  contain:layout paint;
+}
+.hcd .chat-body::-webkit-scrollbar{width:6px}
+.hcd .chat-body::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:var(--radius-pill)}
+.hcd .chat-body::-webkit-scrollbar-track{background:transparent}
+
+.hcd .day{align-self:center;font-size:var(--fs-xs);color:var(--text-caption);background:var(--white);border:1px solid var(--hairline);border-radius:var(--radius-pill);padding:2px var(--space-16);flex:0 0 auto}
+.hcd .row{display:flex;gap:var(--space-8);align-items:flex-end;flex:0 0 auto}
+.hcd .row.own{justify-content:flex-end}
+.hcd .row-avatar{width:28px;height:28px;flex:0 0 28px;border-radius:var(--radius-pill);background:var(--t-accent);color:var(--white);font-size:10px;font-weight:var(--fw-semibold);display:grid;place-items:center;transition:background-color .3s}
+.hcd .bubble{
+  max-width:var(--chat-bubble-max);padding:var(--chat-bubble-pad);
+  background:var(--white);border-radius:var(--chat-radius-other);
+  display:flex;flex-direction:column;box-shadow:0 1px 2px rgba(14,26,51,.06);
+  /* a flex child defaults to min-width:auto, which lets a long word or a
+     fixed-width attachment push past max-width instead of wrapping */
+  min-width:0;overflow-wrap:anywhere;
+}
+/* Attachments and translated messages carry more than one line of content, so
+   the 78% cap (tuned for short chat lines) squeezes them. Give those two cases
+   more room — on a 280px phone 78% is only ~176px, which an attachment row
+   cannot fit into without overflowing. */
+.hcd .row.has-file .bubble,
+.hcd .row.has-tr .bubble{max-width:min(92%, 460px)}
+.hcd .row.own .bubble{background:var(--t-own);border-radius:var(--chat-radius-own);transition:background-color .3s}
+.hcd .bubble .sender{font-weight:var(--fw-semibold);font-size:var(--fs-xs);color:var(--t-accent);margin-bottom:2px;transition:color .3s}
+.hcd .bubble .text{color:var(--ink);line-height:var(--lh-base)}
+.hcd .bubble .time{align-self:flex-end;font-size:var(--chat-time-size);color:var(--chat-time-color);margin-top:2px;display:flex;align-items:center;gap:var(--space-4)}
+
+/* ---- file attachment — mirrors UnsupportedContainer / FileName / FileSize
+   in StyledInputComponents/MediaComponents.tsx (radius 8, padding 8px 10px,
+   gap 8, canvas #f3f6fc, name 14/500/#141414, size #53575a). ---- */
+.hcd .file{
+  display:flex;align-items:center;gap:var(--space-8);
+  border-radius:var(--radius-xs);padding:8px 10px;background:#f3f6fc;
+  border:0;cursor:pointer;text-align:left;
+  width:100%;min-width:0;                       /* never force the bubble wider */
+  font-family:inherit;                          /* button elements fall back to the system UI font */
+  margin-bottom:var(--space-4);transition:background-color .18s;
+}
+.hcd .file:hover{background:var(--t-own)}
+.hcd .file-ico{width:34px;height:34px;flex:0 0 34px;border-radius:var(--radius-xs);background:#fff;display:grid;place-items:center;color:var(--t-accent);transition:color .3s}
+.hcd .file-meta{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:2px}
+.hcd .file-name{font-size:var(--fs-xs);font-weight:500;color:#141414;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.hcd .file-size{font-size:10px;font-weight:500;color:#53575a}
+.hcd .file-dl{color:var(--t-accent);flex:0 0 auto;display:grid;place-items:center;transition:color .3s}
+
+/* ---- translated message ------------------------------------------------
+   Component parity (MessageTranslations.tsx): the ORIGINAL body stays, then a
+   1px divider in the brand colour, then the translation underneath. The
+   component deliberately has no "Translated from X" caption (it was removed in
+   b712ddf), so there isn't one here either — the globe in the header is what
+   signals the feature. ---- */
+.hcd .tr-divider{
+  height:1px;width:100%;background:var(--t-accent);
+  /* The component uses margin:1px 0. At 1px the rule collides with the text
+     above and below and reads as a rendering glitch rather than a divider, so
+     this gives it air. It is the one deliberate deviation from component CSS. */
+  margin:6px 0 5px;opacity:.3;transition:background-color .3s;
+}
+/* The original is secondary information once a translation exists: smaller and
+   quieter, so the eye lands on the language the reader actually speaks. */
+.hcd .text.orig{color:var(--text-caption);font-size:var(--fs-xs);line-height:1.45}
+.hcd .text.tr{color:var(--ink)}
+
+/* ---- delivery states — exactly what the component does -------------------
+   Message.tsx renders `'sending...'` before the timestamp while pending, and
+   the `DoubleTick` SVG after it once sent. The tick is NOT theme-coloured: the
+   component hardcodes stroke #16A34A inside the icon (its `color` prop never
+   reaches the stroke), so it stays green on every theme. Reproduced as-is. */
+.hcd .row.pending .bubble{opacity:.62}
+.hcd .row .tick{display:inline-flex;align-items:center;line-height:0}
+.hcd .row.pending .tick{display:none}
+.hcd .row .sending{color:var(--chat-time-color)}
+.hcd .row:not(.pending) .sending{display:none}
+
+.hcd .typing{display:flex;gap:var(--space-4);padding:var(--space-4) 0}
+.hcd .typing i{width:6px;height:6px;border-radius:var(--radius-pill);background:var(--text-muted);display:block;animation:hcd-blink 1.2s infinite}
+.hcd .typing i:nth-child(2){animation-delay:.15s}
+.hcd .typing i:nth-child(3){animation-delay:.3s}
+@keyframes hcd-blink{0%,60%,100%{opacity:.25;transform:translateY(0)}30%{opacity:1;transform:translateY(-2px)}}
+
+.hcd .chat-dock{background:var(--surface);padding:var(--space-8) var(--space-16);border-top:1px solid var(--hairline);display:flex;align-items:center;gap:var(--space-8)}
+.hcd .chat-input{flex:1;font-family:var(--font-body);font-size:var(--fs-xs);color:var(--ink);background:var(--background);border:1px solid var(--border);border-radius:var(--radius-pill);padding:var(--space-8) var(--space-16);outline:none;min-width:0}
+.hcd .chat-input:focus{border-color:var(--t-accent)}
+.hcd .chat-input::placeholder{color:var(--text-muted)}
+.hcd .send{width:30px;height:30px;flex:0 0 30px;border-radius:var(--radius-pill);background:var(--t-send);color:var(--white);border:0;cursor:pointer;display:grid;place-items:center;transition:background-color .3s,transform .18s}
+.hcd .send:hover{transform:translateY(-1px)}
+.hcd .send.fire{animation:hcd-fire .38s var(--e-pop)}
+@keyframes hcd-fire{40%{transform:scale(.88)}100%{transform:scale(1)}}
+
+/* ---- device frames ---- */
+.hcd .browser{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-3xl);box-shadow:var(--shadow-lift);overflow:hidden}
+/* Web preview without an outer device frame (experiment): the browser window IS the
+   preview — its own border, radius and lift shadow, nothing wrapped around it. */
+.hcd .device-desktop{position:relative}
+.hcd .device-desktop .role{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:var(--space-8);white-space:nowrap;justify-content:center}
+/* the phone's role label floats above the fixed-height scale wrap */
+.hcd-devices .hcd-phone-wrap{position:relative}
+.hcd-devices .hcd-phone-wrap .role{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);margin-bottom:var(--space-8);white-space:nowrap;justify-content:center;flex-wrap:nowrap}
+.hcd .browser-bar{display:flex;align-items:center;gap:var(--space-8);padding:var(--space-8) var(--space-16);background:var(--surface-alt);border-bottom:1px solid var(--hairline)}
+.hcd .dot{width:9px;height:9px;border-radius:var(--radius-pill);background:var(--border-strong)}
+.hcd .url{margin-left:var(--space-8);font-size:var(--fs-xs);color:var(--text-caption);background:var(--white);border:1px solid var(--border);border-radius:var(--radius-pill);padding:2px var(--space-16)}
+
+.hcd .desk{display:grid;grid-template-columns:168px minmax(0,1fr);height:430px}
+.hcd .rooms{background:var(--surface);border-right:1px solid var(--hairline);padding:var(--space-8);overflow:hidden}
+.hcd .rooms-title{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:var(--tracking-wide);color:var(--text-caption);font-weight:var(--fw-semibold);padding:var(--space-8)}
+.hcd .room{
+  display:flex;gap:var(--space-8);align-items:center;width:100%;
+  padding:var(--space-8);border-radius:var(--radius-md);
+  border:0;background:transparent;font-family:inherit;text-align:left;
+  cursor:pointer;transition:background-color .18s;
+}
+.hcd .room:hover{background:var(--tint)}
+.hcd .room.active{background:var(--t-own)}
+.hcd .room:focus-visible{outline:2px solid var(--t-accent);outline-offset:1px}
+.hcd .room-av{width:28px;height:28px;flex:0 0 28px;border-radius:var(--radius-pill);background:var(--tint);color:var(--t-accent);font-size:10px;font-weight:var(--fw-semibold);display:grid;place-items:center;transition:color .3s}
+/* These are <span>s built in JS, so they are inline by default: the name and
+   the preview render on ONE line and ignore min-width, which is what pushed the
+   preview text out past the sidebar. They have to be a flex column of blocks
+   for the stacking and the ellipsis to work at all. */
+.hcd .room-meta{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:1px;overflow:hidden}
+.hcd .room-name{display:block;max-width:100%;font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcd .room-last{display:block;max-width:100%;font-size:11px;color:var(--text-caption);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hcd .badge{margin-left:auto;background:var(--t-send);color:var(--white);font-size:10px;font-weight:var(--fw-semibold);border-radius:var(--radius-pill);padding:1px 6px;opacity:0;transform:scale(.4);transition:background-color .3s}
+.hcd .badge.show{animation:hcd-pop .42s var(--e-pop) forwards}
+@keyframes hcd-pop{to{opacity:1;transform:none}}
+
+
+/* iPhone chassis — replicates the site's original .iphone mock: 270×550 body, 8px dark
+   frame, 45px corners, status bar (9:41 + signal/wifi/battery), Dynamic Island with the
+   camera dot, side buttons and the home indicator. */
+.hcd .phone{position:relative;width:270px;background:#1d1d1f;border-radius:45px;padding:8px;box-shadow:0 10px 25px rgba(0,0,0,.2)}
+.hcd .phone-screen{position:relative;background:var(--t-canvas);border-radius:37px;overflow:hidden;height:534px;display:flex;flex-direction:column}
+/* side buttons on the frame */
+.hcd .side-btn{position:absolute;background:#1d1d1f;border-radius:2px}
+.hcd .sb-action{left:-3px;top:110px;width:3px;height:20px}
+.hcd .sb-volup{left:-3px;top:150px;width:3px;height:34px}
+.hcd .sb-voldn{left:-3px;top:192px;width:3px;height:34px}
+.hcd .sb-power{right:-3px;top:170px;width:3px;height:56px}
+/* status bar: time left, island centred, signal/wifi/battery right */
+.hcd .hcd-statusbar{position:relative;flex:0 0 auto;display:flex;align-items:flex-start;justify-content:space-between;padding:15px 10px 6px;background:var(--surface)}
+.hcd .hcd-statusbar img{height:9px;display:block}   /* original .status-bar img height */
+.hcd .sbar-time{padding-left:14px}
+.hcd .home-indicator{position:absolute;bottom:7px;left:50%;transform:translateX(-50%);width:92px;height:4px;background:#000;border-radius:var(--radius-pill);z-index:3}
+.hcd .phone .chat{padding-bottom:10px}
+/* Dynamic Island — the original .iphone mock's proportions (75×23), floating pill with
+   the camera dot at its right end; sits between the time and the status icons without
+   ever touching them. */
+.hcd .notch{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:75px;height:22px;background:#1d1d1f;border-radius:var(--radius-pill);z-index:2;display:flex;align-items:center;justify-content:flex-end;padding-right:5px}
+.hcd .cam{width:8px;height:8px;border-radius:50%;background:#3a3a3c}
+.hcd .phone .chat{height:100%}
+.hcd .phone .chat-header{padding-top:var(--space-8)}   /* the island lives in the status bar above */
+
+.hcd .role{display:flex;align-items:center;gap:var(--space-8);margin-bottom:var(--space-8);flex-wrap:wrap}
+.hcd .role b{font-size:var(--fs-sm);color:var(--ink);font-weight:var(--fw-semibold)}
+.hcd .role span{font-size:var(--fs-xs);color:var(--text-caption)}
+.hcd .role .pill,.hcd .hcd-topbar .pill{font-size:11px;font-weight:var(--fw-semibold);letter-spacing:var(--tracking-wide);text-transform:uppercase;color:var(--t-accent);background:var(--t-own);border-radius:var(--radius-pill);padding:2px var(--space-8);transition:background-color .3s,color .3s}
+
+/* ===========================================================================
+   4. MOTION
+   =========================================================================== */
+/* entrance — .in is added one frame after the node is inserted, so the
+   transition always has a start value to animate from */
+.hcd .row,
+.hcd .day{opacity:0;transform:translate3d(-10px,12px,0) scale(.98)}
+.hcd .row.own{transform:translate3d(14px,12px,0) scale(.96)}
+.hcd .day{transform:translate3d(0,8px,0)}
+.hcd .row.in,
+.hcd .day.in{
+  opacity:1;transform:none;
+  transition:opacity calc(.34s / var(--speed)) var(--e-out),
+             transform calc(.42s / var(--speed)) var(--e-out);
+}
+.hcd .row.own.in{transition-timing-function:var(--e-pop)}
+
+/* Arrival flash on the RECEIVING device — the cross-device hop made visible.
+   It animates opacity only, on a compositor-friendly layer: the gradient itself
+   is painted once and never re-rasterised. The earlier version animated a
+   full-panel radial gradient over a live, scrolling chat, which is a repaint of
+   the entire panel every frame for a purely decorative touch. */
+.hcd .chat.arrive::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 60% at 50% 100%, var(--t-own) 0%, transparent 70%);
+  opacity:0;
+  will-change:opacity;
+  animation:hcd-flash .55s var(--e-out);
+}
+@keyframes hcd-flash{0%{opacity:.7}100%{opacity:0}}
+
+/* composer caret while the manager "types" */
+.hcd .chat-input.typing-caret{caret-color:transparent}
+.hcd .chat-input.typing-caret::after{content:""}
+.hcd .dock-caret{
+  width:1px;height:16px;background:var(--ink);margin-left:-10px;
+  animation:hcd-caret 1s steps(1) infinite;
+}
+@keyframes hcd-caret{50%{opacity:0}}
+
+@media (prefers-reduced-motion:reduce){
+  .hcd .row,
+.hcd .day{opacity:1!important;transform:none!important;transition:none!important}
+  .hcd .typing i,
+.hcd .badge.show,
+.hcd .send.fire,
+.hcd .chat.arrive::after{animation:none!important}
+  .hcd .badge.show{opacity:1;transform:none}
+}
+
+/* ===========================================================================
+   5. RESPONSIVE
+   =========================================================================== */
+/* Manager/Customer switch (mobile single-device view) — mini version of the brand
+   .ppc-toggle standard: pill track, active segment filled ink + white */
+.hcd .role-switch{display:none;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-pill);padding:3px}
+.hcd .role-switch button{font-family:var(--font-body);font-size:var(--fs-xs);font-weight:var(--fw-semibold);color:var(--text-body-soft);background:none;border:0;border-radius:var(--radius-pill);padding:4px 12px;cursor:pointer;transition:background-color .18s,color .18s}
+.hcd .role-switch button[aria-pressed="true"]{background:var(--ink);color:#fff}
+@media (max-width:900px){
+  
+  /* Two shrunken devices on a 375px screen are unreadable, and an unreadable
+     demo converts worse than none. One full-width chat + a role switch keeps
+     the cross-platform story and makes the tap itself the engagement. */
+  .hcd .device-desktop,
+.hcd .device-phone{display:none}
+  .hcd .device-mobile{display:block}
+  .hcd .role-switch{display:inline-flex}
+}
+@media (min-width:901px){.hcd .device-mobile{display:none}}
+.hcd .device-mobile .chat{border:1px solid var(--border);border-radius:var(--chat-shell-radius);box-shadow:var(--shadow-card);height:440px}
+
+
+/* =============================================================================
+   HERO PLACEMENT
+   -----------------------------------------------------------------------------
+   The first attempt floated the phone ON TOP of the browser's bottom-right.
+   That is the stock marketing composition and it was wrong here: the browser's
+   right edge is exactly where the manager's own messages sit, so the phone
+   covered the conversation it was supposed to be mirroring. A demo whose whole
+   point is "read this thread" must never hide the thread.
+
+   The phone now has its own column. The two frames sit side by side with a real
+   gap and zero overlap; the phone renders at its natural 280px and is scaled as
+   a whole, so its type stays proportional instead of cramped.
+
+   The theme caps .hero-demo at 600px, which is not enough for two devices, so
+   the demo widens itself. .hero-content still has ~460px of the 1200 container,
+   which is plenty for a headline and two buttons.
+   ============================================================================= */
+.hcd.hero-demo{max-width:760px}
+
+.hcd-devices{
+  margin-top:var(--space-32);   /* room for the floating role labels above the frames */
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:var(--space-32);          /* device gap on the 16px scale */
+  align-items:center;           /* the mobile preview centres vertically (experiment) */
+  width:100%;
+}
+.hcd-devices .browser{width:100%;min-width:0}
+
+/* Scaling wraps in its own box so the layout reserves the SCALED width — a bare
+   transform keeps the original 280px footprint and reopens the overlap. */
+.hcd-devices .hcd-phone-wrap{width:173px;flex:0 0 auto}
+.hcd-devices .hcd-phone-wrap .phone{
+  /* origin TOP left, not bottom left: with a bottom origin the visual box anchors to the
+     phone's UNSCALED layout bottom (553px), spilling ~193px below the 360px wrap and over
+     whatever section follows. Anchored to the top, the scaled box stays inside the wrap,
+     and the end-aligned wrap keeps the phone flush with the browser's bottom edge. */
+  transform:scale(.64);transform-origin:top left;
+  /* No filter:drop-shadow here. drop-shadow re-rasterises the whole subtree on
+     every paint, and this subtree contains a chat that repaints constantly —
+     it was a real contributor to the stutter. The .phone rule already carries a
+     box-shadow, which the compositor handles for free. */
+}
+/* 280 × .64 = 179 wide, 553 × .64 ≈ 353 tall — the wrap matches the SCALED visual
+   height exactly, so the end-aligned wrap bottom == the phone's visual bottom. */
+.hcd-devices .hcd-phone-wrap{height:352px;overflow:visible}
+
+/* Wide screens (the full-bleed two-column hero): the demo has the whole right half of
+   the viewport, so the phone renders at its NATURAL size next to a long desktop —
+   no scaling, wrap sized to the real 280 × 553 footprint. */
+/* Two-device band (stacked 901–1359 AND the full-bleed two-column hero): the phone
+   renders at its natural 270×550 and overlaps the browser's right edge a little —
+   the lift shadow keeps the two devices readable as separate layers. */
+@media (min-width: 901px){
+  .hcd-devices .hcd-phone-wrap{width:270px;height:550px}
+  .hcd-devices .hcd-phone-wrap .phone{transform:none}
+  .hcd-devices{gap:0}
+  .hcd-devices .hcd-phone-wrap{margin-left:-36px;z-index:2}
+}
+/* Full-bleed two-column hero only: drop the stacked layout's 760px demo cap. */
+@media (min-width: 1360px){
+  .hcd.hero-demo{max-width:none}
+}
+
+/* The inbox is the first thing to give up room: below this width it costs the
+   conversation more than it adds. */
+@media (max-width:1359px){
+  .hcd .rooms{display:none}
+  .hcd .desk{grid-template-columns:1fr}
+}
+
+@media (max-width:900px){
+  /* single full-width chat; the frames are gone, so the grid is too */
+  .hcd-devices{display:block}
+  .hcd-devices .hcd-phone-wrap{height:auto}
+  .hcd.hero-demo{max-width:600px}
+}

@@ -379,6 +379,14 @@ Screenshots, full prop tables and copy-paste snippets are in
 | **Feature list + media** | `section-feature-list-media.php` | Two-column split: icon + heading + description rows (hairline dividers) on one side, a framed product image (or a dashed "drop an image" placeholder) on the other. |
 | **Trust band** | `section-trust-band.php` | Full-bleed dark brand band (`.shs-dark`): mono label + row of white customer logos + a grid of headline stats (big number + caption). For a "trusted by" strip under a hero. |
 | **Sticky timeline nav** | `section-timeline-nav.php` | Sticky horizontal strip of year/step labels below the fixed header: active label enlarges, click smooth-scrolls to the target section, scrollspy + auto-centring. For history / step-by-step pages. |
+| **FAQ accordion** | `section-faq.php` | Bordered question cards, one open at a time; global `.faq*` CSS + `main.js` toggle; optional `FAQPage` JSON-LD. Use for EVERY FAQ. |
+| **Short answer** | `section-short-answer.php` | "Honest short answer" card under an Alternative-page hero: summary, "Stay with X if / Choose Ethora if" columns, Best-for verdict, `speakable` JSON-LD. |
+| **Migration steps** | `section-migration-steps.php` | Numbered "how to switch" step cards (mono 01/02 tiles) in an auto-fit grid + optional CTA row. For Alternative pages. |
+| **Video embed** | `section-video-embed.php` | Eyebrow + heading over a 16:9 privacy-enhanced YouTube frame + `VideoObject` JSON-LD. |
+| **Onboarding call** | `section-onboarding-call.php` | Three icon steps beside a white booking card (bullets, Book a Call, sign-up fallback). Book-a-call-first flow. |
+| **Glossary term** | `section-glossary-single.php` | Single glossary entry: watermark/illustration H1, lead, rich block sections (lists, code chips, images, videos), related-term pills. |
+| **Case-study styles** | `case-study-styles.php` | Shared CSS for case-study pages: prose column, captioned figures, era note, before/after table, quote, outcome. |
+| **Hero chat demo** | `hero-chat-demo.php` | Interactive Manager (web) + Customer (phone) live chat demo with colour picker; needs `css/hero-chat-demo.css` + `js/hero-chat-demo.js`. |
 
 Other partials exist (`section-choose-app`, `section-use-kit`, `section-quick-start`,
 `section-book-call-modal`, `section-pricing`, …) — list them with

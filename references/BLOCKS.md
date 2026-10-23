@@ -984,6 +984,8 @@ a question expands its answer, one open at a time. Styling is the theme's **glob
 markup, so it looks and behaves like every other FAQ on the site. Use it for ANY page FAQ instead
 of hand-writing `.faq-item` blocks.
 
+![FAQ accordion](screenshots/faq.png)
+
 **Props**
 
 | Prop | Type | Notes |
@@ -1046,6 +1048,226 @@ get_template_part( 'template-parts/section-timeline-nav', null, array(
 ```
 
 Live use: the history timeline on `page-about-us.php`.
+
+---
+
+## 27. Short answer — `section-short-answer.php`
+
+The **"honest short answer"** card for comparison / Alternative pages (AEO): placed right under
+the hero, a white card with a brand-blue left rule holding a definitional summary, a two-column
+"Stay with X if / Choose Ethora if" list (clock vs green check icons), a one-line **Best for**
+verdict and optional links. Emits a `WebPage` `speakable` JSON-LD pointing at the summary +
+verdict so assistants and voice surfaces can quote it. Self-contained (CSS once per request).
+
+![Short answer](screenshots/short-answer.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `summary` | array | **required** — paragraph strings (inline HTML ok); the block renders nothing without it |
+| `eyebrow` / `title` | string | eyebrow defaults to `The honest short answer` |
+| `stay_title` / `stay` | string / array | left column: when to keep the competitor |
+| `choose_title` / `choose` | string / array | right column (title defaults to `Choose Ethora if`) |
+| `verdict` | string | one-line "Best for: …" (inline HTML ok) |
+| `links` | array | `{ label, url }` text links under the verdict |
+
+```php
+get_template_part( 'template-parts/section-short-answer', null, array(
+  'title'      => 'Ethora vs Crisp: the honest short answer',
+  'summary'    => array( 'Crisp is …', 'Ethora is …' ),
+  'stay_title' => 'Stay with Crisp if',
+  'stay'       => array( '…', '…' ),
+  'choose'     => array( '…', '…' ),
+  'verdict'    => '<strong>Best for:</strong> …',
+  'links'      => array( array( 'label' => 'See all comparisons', 'url' => '/alternatives/' ) ),
+) );
+```
+
+Live use: every `page-*-alternative.php`, `page-mcp-server.php`.
+
+---
+
+## 28. Migration steps — `section-migration-steps.php`
+
+Numbered **"how to switch"** steps for comparison / Alternative pages: eyebrow + heading + lead,
+then a responsive grid (`auto-fit`, min 300px → 3-up on desktop) of bordered cards, each with a
+mono `01`/`02` numeral tile, title and text, closing with an optional CTA row. Numbers come
+from a CSS counter, so just pass the steps in order.
+
+![Migration steps](screenshots/migration-steps.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `steps` | array | **required** — each: `title`, `text` (inline HTML ok) |
+| `eyebrow` / `title` / `lead` | string | eyebrow defaults to `Migration` |
+| `buttons` | array | each: `label`, `url`, `style` (`primary`/`outline`), `modal: true` → opens the Book-a-Call modal |
+
+```php
+get_template_part( 'template-parts/section-migration-steps', null, array(
+  'title'   => 'Moving your website AI agent from Crisp to Ethora',
+  'lead'    => 'You can run both for a few days and switch when the answers match.',
+  'steps'   => array(
+    array( 'title' => 'Collect your knowledge', 'text' => '…' ),
+    array( 'title' => 'Crawl your site in Ethora', 'text' => '…' ),
+  ),
+  'buttons' => array(
+    array( 'label' => 'Start free', 'url' => 'https://app.chat.ethora.com/register', 'style' => 'primary' ),
+    array( 'label' => 'See all comparisons', 'url' => '/alternatives/', 'style' => 'outline' ),
+  ),
+) );
+```
+
+---
+
+## 29. Video embed — `section-video-embed.php`
+
+Explainer **YouTube video** for a page: eyebrow + heading over a 16:9 rounded frame
+(privacy-enhanced `youtube-nocookie.com`, `loading="lazy"`), plus a `VideoObject` JSON-LD for
+Google video results. Inserted by the video content factory (`ethora-bdsm`
+`scripts/glossary_video`) on static pages; safe to add by hand too.
+
+![Video embed](screenshots/video-embed.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `video` | string | **required** — YouTube id |
+| `title` / `description` | string | schema name/description + iframe title |
+| `upload_date` | string | ISO 8601 **with timezone** (Search Console requirement), e.g. `2026-08-21T20:15:00+00:00` |
+| `duration` | string | ISO 8601 duration, e.g. `PT2M6S` |
+| `eyebrow` / `heading` | string | defaults `Watch` / `Prefer to watch? The two minute version` |
+
+```php
+get_template_part( 'template-parts/section', 'video-embed', array(
+  'video'       => 'GghYyhBSgS0',
+  'title'       => 'What is RCS?',
+  'description' => 'One-sentence summary',
+  'upload_date' => '2026-08-21T20:15:00+00:00',
+  'duration'    => 'PT2M6S',
+) );
+```
+
+Inside a glossary term use the `video` block of `section-glossary-single` (#31) instead.
+
+---
+
+## 30. Onboarding call — `section-onboarding-call.php`
+
+**"An Onboarding Call, Not a Sales Pitch"**: three icon steps (book, get instant access, build)
+beside a white card with check bullets, a primary **Book a Call** button to the one-step booking
+page (`/get-access/`), a micro line and a "Sign up directly" fallback link. Part of the
+book-a-call-first experiment (`page-home-v2.php`, `page-get-access.php`). Self-contained; stacks
+to one column on mobile.
+
+![Onboarding call](screenshots/onboarding-call.png)
+
+**Props** (all optional, defaults are the live copy)
+
+| Prop | Type | Notes |
+|---|---|---|
+| `eyebrow` / `heading` / `lead` | string | left column header |
+| `steps` | array | 3 items `{ title, text }` (icons are calendar / unlock / code, in order) |
+| `card_title` / `card_bullets` | string / array | right card |
+| `cta_label` / `booking_url` | string | main button (default `/get-access/`) |
+| `signup_url` / `micro` | string | fallback sign-up link + the small line under the button |
+
+```php
+get_template_part( 'template-parts/section', 'onboarding-call', array(
+  'booking_url' => home_url( '/get-access/' ),
+  'signup_url'  => 'https://app.chat.ethora.com/register',
+) );
+```
+
+---
+
+## 31. Glossary term — `section-glossary-single.php`
+
+The **single glossary-term layout** (every `glossary/page-glossary-*.php`): breadcrumbs, eyebrow,
+the term as `<h1>` over a faded watermark (or a hero illustration), a lead, then sections of
+subheading + rich blocks (paragraphs, lists, endpoint code chips, captioned images, lazy YouTube
+embeds) and a "Related terms" pill strip. Scoped to `.gterm`, tokens only.
+
+![Glossary term](screenshots/glossary-single.png)
+
+**Props**
+
+| Prop | Type | Notes |
+|---|---|---|
+| `term` / `lead` | string | **required** — `<h1>` and the one-sentence definition |
+| `sections` | array | each `{ heading, blocks[] }`; a block is one of `{ p }`, `{ ol: [] }`, `{ ul: [] }`, `{ code, code_label }`, `{ img, alt, caption, w, h }`, `{ video, title, caption }` |
+| `watermark` | string | short faded backdrop text behind the H1 (e.g. `API`) |
+| `illustration` | string | key into the hero illustration library (e.g. `api`, `ai`); replaces the watermark |
+| `related` | array | `{ label, url }` pills at the bottom |
+| `back_url` / `back_label` / `eyebrow` | string | defaults `/glossary/` / `All terms` / `Glossary` |
+
+```php
+get_template_part( 'template-parts/section', 'glossary-single', array(
+  'watermark' => 'API',
+  'term'      => 'API (Application Programming Interface)',
+  'lead'      => 'A set of rules and protocols that let software talk to each other.',
+  'sections'  => array(
+    array( 'heading' => 'General definition', 'blocks' => array(
+      array( 'p'  => 'Paragraph HTML…' ),
+      array( 'ul' => array( 'Bullet one', 'Bullet two' ) ),
+      array( 'video' => 'GghYyhBSgS0', 'title' => 'What is an API?', 'caption' => 'Prefer to watch?' ),
+    ) ),
+  ),
+  'related'   => array( array( 'label' => 'Chat SDK', 'url' => '/glossary/chat-sdk/' ) ),
+) );
+```
+
+---
+
+## 32. Case-study styles — `case-study-styles.php`
+
+Not a section: the **shared CSS for case-study pages** (`page-case-study-*.php`). A case study is
+built from the reusable blocks above plus a few prose pieces only case studies use, and this file
+styles them: `.cs-prose` (eyebrow + h2 + paragraphs/lists in a `--container-md` column),
+`.cs-fig` (captioned screenshot), `.cs-era` (quiet "early engine" note), `.cs-ba` (before / after
+table, scrolls sideways on phones), a single customer quote and the light outcome statement. It
+also collapses the seam between two adjacent light `.shs-sec` sections. Prints once per request.
+
+![Case-study prose](screenshots/case-study-prose.png)
+
+```php
+<main class="cs-page">
+  <?php get_template_part( 'template-parts/case-study-styles' ); ?>
+  <section class="cs-prose"><div class="cs-prose-wrap">
+    <p class="cs-eyebrow">Overview</p>
+    <h2>…</h2>
+    <p>…</p>
+  </div></section>
+  <!-- …reusable blocks… -->
+</main>
+```
+
+New case studies are a template of block calls plus these classes, never another copy of the CSS.
+
+---
+
+## 33. Hero chat demo — `hero-chat-demo.php`
+
+The interactive **"See it live" demo** (`#demo`, scoped under `.hcd`): a Manager web inbox and a
+Customer phone hold one conversation; it plays once on scroll-in, then both chats go live (inbox
+rooms are clickable, each keeps its own history). Top bar: platform pills, a colour picker
+(blue / orange / purple / green themes), Replay, and a Manager/Customer role switch.
+
+![Hero chat demo](screenshots/hero-chat-demo.png)
+
+Not self-contained: styles live in **`css/hero-chat-demo.css`** and behaviour in
+**`js/hero-chat-demo.js`** (both shipped in this skill); `functions.php` enqueues them for the
+home layout. Takes no args.
+
+```php
+<?php get_template_part( 'template-parts/hero-chat-demo' ); ?>
+```
+
+Live use: `page-home-v2.php`, inside the classic hero (`/home-v2/`) and in the stand-alone
+"See it live" section on the front page. `index.php` keeps its own copy.
 
 ---
 
