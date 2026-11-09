@@ -1275,7 +1275,16 @@ Live use: `page-home-v2.php`, inside the classic hero (`/home-v2/`) and in the s
 
 List everything with `ls template-parts/` and read each file's top docblock for its
 params: `section-choose-app`, `section-use-kit`, `section-quick-start`,
-`section-pricing`, `section-cta`, `section-testimonials`, `section-book-call-modal`.
+`section-pricing`, `section-cta`, `section-testimonials`, `section-book-call-modal`,
+`section-onboarding-call`.
+
+`section-onboarding-call` ("An Onboarding Call, Not a Sales Pitch"): three step cards
+(book, instant access, build) beside a white booking card whose CTA sends the visitor to
+the one-step booking page `/get-access/`, with a "Sign up directly" escape hatch. Built for
+the book-a-call-first homepage experiment (`page-home-v2.php`, switch
+`ETHORA_HOME_BOOK_FIRST` in `functions.php`). Props: `heading`, `lead`, `steps`,
+`card_title`, `card_bullets`, `cta_label`, `booking_url`, `signup_url`, `micro`.
+No screenshot yet.
 
 `section-use-kit` (sticky illustration + benefits list) supports **`'sticky' => true`** (the
 left image sticks while the list scrolls, like `.shs-whatis`) and **inline-SVG benefit icons**
